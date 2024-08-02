@@ -1,10 +1,10 @@
 import Logo from "../../assets/main_logo.svg";
-import Nav_Bar from "../../components/Nav_Bar/Nav_Bar"
+
 
 export default function Registration() {
     return (
         <div className="flex w-full h-screen ">
-            {/* <Nav_Bar /> */}
+            
             
            <div className="w-full flex items-center justify-center lg:w-1/2">
                 <h1 className="text-2xl">
