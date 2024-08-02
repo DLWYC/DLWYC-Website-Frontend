@@ -3,14 +3,11 @@ import Logo from "../../assets/main_logo.svg";
 
 export default function Registration() {
     return (
-        <div className="flex w-full h-screen ">
-            
-            
-           <div className="w-full flex items-center justify-center lg:w-1/2">
-                <h1 className="text-4xl">
-                    2024 <span>Camp</span> Registration
-                </h1>
+        <div className="flex items-center justify-center lg:w-1/2 w-full h-screen ">
                 <div>
+                    <h1 className="text-4xl font-bold">
+                    2024 <span className="text-red-600">Camp</span> Registration
+                </h1>
                     <div>
                        <label>First Name</label>
                         <input 
@@ -95,7 +92,7 @@ export default function Registration() {
                     
                 </div>
                 
-           </div>
+           
            
            <div className="hiddden lg:flex h-full items-center justify-center bg-gray-200">
                 <div className="">
