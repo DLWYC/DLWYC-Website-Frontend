@@ -1,11 +1,11 @@
-import Logo from "../../assets/logo.png";
+import Logo from "../../assets/main_logo.svg";
 
 const NavBar = () => {
   return (
     <div>
       <nav className="bg-white text-[#1e1e1ea2]">
         <a href="">
-          <img src={Logo} alt="" className="w-11" />
+          <img src={Logo} alt="" className="w-30px]" />
         </a>
 
           <ul className="space-x-2">
@@ -22,7 +22,7 @@ const NavBar = () => {
               <a href="/gallery" className="text-gray-600">Gallery</a>
             </li>
             <li>
-              <a href="/gallery" className="text-gray-600">Gallery</a>
+              <a href="/registration" className="text-gray-600">Registration</a>
             </li>
             <li>
               <a href="/gallery" className="text-gray-600">Gallery</a>
