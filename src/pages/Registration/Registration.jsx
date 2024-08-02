@@ -7,7 +7,7 @@ export default function Registration() {
             
             
            <div className="w-full flex items-center justify-center lg:w-1/2">
-                <h1 className="text-2xl">
+                <h1 className="text-4xl">
                     2024 <span>Camp</span> Registration
                 </h1>
                 <div>
