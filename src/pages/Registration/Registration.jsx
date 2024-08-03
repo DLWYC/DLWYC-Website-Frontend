@@ -1,10 +1,12 @@
 import Logo from "../../assets/main_logo.svg";
+import dlw from '../../assets/registrationpage/dlw.jpeg';
 
 
 
 export default function Registration() {
     return (
-        <div className="flex items-center justify-center lg:w-1/2 w-full h-screen ">
+        <div className="flex items-center justify-center gap-20  h-screen ">
+
                 <div>
                     <img className="w-[300px] mb-1" src={Logo} alt="Logo" />
                     <h1 className="text-4xl font-bold mb-2">
@@ -96,12 +98,24 @@ export default function Registration() {
                 
            
            
-           <div className="hiddden lg:flex h-full items-center justify-center bg-gray-200">
-                <div className="">
-                
+           <div className="hiddden lg:flex h-full items-center justify-center ">
+                <div className="gap-4">
+                    <img className="w-[600px] border rounded-md" src={dlw} alt="" />
+
+                    <div className="text-center mt-3 mb-6">
+                        <h1 className="mb-6 font-bold text-red-700">
+                        Romans 16:26
+                        </h1>
+                        <p className="text-blue-900 font-semibold">
+                        “ But now is made manifest, and by the scriptures of the <br /> prophets, according to the commandment of the everlasting <br />God, made known to all nations for the obedience of faith: “
+                        </p>
+                     </div>
                 </div>
+                
            </div>
            
         </div>
+
+        
     )
 }
