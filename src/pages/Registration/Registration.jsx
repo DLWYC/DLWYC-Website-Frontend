@@ -82,7 +82,7 @@ export default function Registration() {
                     <div>
                         <label>Price </label>
                         <input 
-                        className="w-full border border-blue-700 rounded-md p-2 mt-1"
+                        className="w-full border border-blue-900 rounded-md p-2 mt-1"
                         placeholder="#2500" required
                         /> 
                     </div>
