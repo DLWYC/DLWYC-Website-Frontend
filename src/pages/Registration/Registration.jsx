@@ -1,11 +1,13 @@
 import Logo from "../../assets/main_logo.svg";
 
 
+
 export default function Registration() {
     return (
         <div className="flex items-center justify-center lg:w-1/2 w-full h-screen ">
                 <div>
-                    <h1 className="text-4xl font-bold">
+                    <img className="w-[300px] mb-4" src={Logo} alt="Logo" />
+                    <h1 className="text-4xl font-bold mb-2">
                     2024 <span className="text-red-600">Camp</span> Registration
                 </h1>
                     <div>
@@ -96,7 +98,7 @@ export default function Registration() {
            
            <div className="hiddden lg:flex h-full items-center justify-center bg-gray-200">
                 <div className="">
-                    
+                
                 </div>
            </div>
            
