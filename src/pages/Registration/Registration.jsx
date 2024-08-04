@@ -1,12 +1,14 @@
 import Logo from "../../assets/main_logo.svg";
 import dlw from '../../assets/registrationpage/dlw.jpeg';
+// import NavBar from "../../components/Nav_Bar/Nav_Bar"
 
 
 
 export default function Registration() {
     return (
-        <div className="flex items-center justify-center gap-20  h-screen ">
-
+        
+        <div className="flex items-center justify-center gap-20 lg:w-12/6 h-screen ">
+                    
                 <div>
                     <img className="w-[300px] mb-1" src={Logo} alt="Logo" />
                     <h1 className="text-4xl font-bold mb-2">
@@ -106,7 +108,7 @@ export default function Registration() {
                         <h1 className="mb-6 font-bold text-red-700">
                         Romans 16:26
                         </h1>
-                        <p className="text-blue-900 font-semibold">
+                        <p className="text-blue-900 font-semibold ">
                         “ But now is made manifest, and by the scriptures of the <br /> prophets, according to the commandment of the everlasting <br />God, made known to all nations for the obedience of faith: “
                         </p>
                      </div>
