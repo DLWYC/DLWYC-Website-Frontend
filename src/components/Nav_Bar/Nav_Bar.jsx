@@ -5,7 +5,7 @@ const NavBar = () => {
     <div>
       <nav className="bg-white text-[#1e1e1ea2]">
         <a href="">
-          <img src={Logo} alt="" className="w-30px]" />
+          <img src={Logo} alt="" className="[w-30px]" />
         </a>
 
           <ul className="space-x-2">
