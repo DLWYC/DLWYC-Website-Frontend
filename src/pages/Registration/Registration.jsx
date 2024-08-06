@@ -7,14 +7,14 @@ import dlw from '../../assets/registrationpage/dlw.jpeg';
 export default function Registration() {
     return (
         
-        <div className="flex items-center justify-center gap-20 lg:w-12/6 h-screen ">
+        <div className="flex items-center justify-center gap-20 lg:w-12/6 h-screen text-blue-900 ">
                     
                 <div>
                     <img className="w-[300px] mb-1" src={Logo} alt="Logo" />
                     <h1 className="text-4xl font-bold mb-1">
                     2024 <span className="text-red-600">Camp</span> Registration
                 </h1>
-                    <div>
+                    <div className="text-[15px]">
                        <label>First Name</label>
                         <input 
                         className="w-full border border-blue-900 rounded-md p-2 mt-1 "
@@ -22,15 +22,15 @@ export default function Registration() {
                         /> 
                     </div>
 
-                    <div>
-                       <label>Email</label>
+                    <div className="text-[15px]">
+                       <label className="text-blue-900">Email</label>
                         <input 
                         className="w-full border border-blue-900 rounded-md p-2 mt-1"
                         placeholder="Enter Your Email" required
                         /> 
                     </div>
 
-                    <div className="flex gap-10">
+                    <div className="flex gap-10 text-[15px]">
                         <div>
                             <label>Phone Number</label>
                             <input 
@@ -51,7 +51,7 @@ export default function Registration() {
                             </select>
                         </div>
                     </div>
-                    <div>
+                    <div className="text-[15px]">
                         <label>Upload Profile Image</label>
                         <input 
                         className="w-full border border-blue-900 rounded-md p-2 mt-1 "
@@ -59,7 +59,7 @@ export default function Registration() {
                         /> 
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 text-[15px]">
                         <div>
                             <label>Archdeaconry</label>
                             <select className="w-full border border-blue-900 rounded-md p-2 mt-1"
@@ -71,7 +71,7 @@ export default function Registration() {
                             </select>
                         </div>
 
-                        <div>
+                        <div className="text-[15px]">
                             <label>Parish</label>
 
                             <select className="w-full border border-blue-900 rounded-md p-2 mt-1"
@@ -83,7 +83,7 @@ export default function Registration() {
                             </select>
                         </div>
                     </div>
-                    <div>
+                    <div className="text-[15px]">
                         <label>Price </label>
                         <input 
                         className="w-full border border-blue-900 rounded-md p-2 mt-1"
@@ -91,7 +91,7 @@ export default function Registration() {
                         /> 
                     </div>
 
-                    <button className="w-full border bg-blue-900 rounded-md p-2 mt-9 text-white">
+                    <button className="w-full border bg-blue-900 rounded-md p-2 mt-9 text-white text-[15px]">
                         Register
                     </button>
 
@@ -102,10 +102,10 @@ export default function Registration() {
            
            <div className="hiddden lg:flex h-full items-center justify-center ">
                 <div className="gap-4">
-                    <img className="w-[600px] border rounded-md" src={dlw} alt="" />
+                    <img className="w-[600px] border " src={dlw} alt="" />
 
-                    <div className="text-center mt-3 mb-6">
-                        <h1 className="mb-6 font-bold text-red-700">
+                    <div className="text-center mt-1 mb-1">
+                        <h1 className="mb-4 font-bold text-red-700">
                         Romans 16:26
                         </h1>
                         <p className="text-blue-900 font-semibold ">
