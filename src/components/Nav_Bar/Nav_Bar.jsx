@@ -5,27 +5,27 @@ const NavBar = () => {
     <div>
       <nav className="bg-white text-[#1e1e1ea2]">
         <a href="">
-          <img src={Logo} alt="" className="[w-30px]" />
+          <img src={Logo} alt="" className="w-[250px]" />
         </a>
 
-          <ul className="space-x-2">
+          <ul className="space-x-2 font-rubik">
             <li>
               <a href="/" className="text-reddish">Home</a>
             </li>
             <li>
-              <a href="/about" className="text-gray-600">About Us</a>
+              <a href="/about">About Us</a>
             </li>
             <li>
-              <a href="/events" className="text-gray-600">Event</a>
+              <a href="/events">Event</a>
             </li>
             <li>
-              <a href="/gallery" className="text-gray-600">Gallery</a>
+              <a href="/gallery">Gallery</a>
             </li>
             <li>
-              <a href="/registration" className="text-gray-600">Registration</a>
+              <a href="/contact-us">Contact Us</a>
             </li>
             <li>
-              <a href="/gallery" className="text-gray-600">Gallery</a>
+              <a href="/registration">Registration</a>
             </li>
           </ul>
 
