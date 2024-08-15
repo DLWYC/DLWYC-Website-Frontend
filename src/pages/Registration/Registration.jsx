@@ -7,15 +7,16 @@ import dlw from '../../assets/registrationpage/dlw.jpeg';
 export default function Registration() {
     return (
         
-        <div className="grid p-3 items-center justify-center lg:grid-cols-2 h-[100dvh]  font-rubik">
+        <div className="grid p-3 lg:items-center lg:justify-center lg:grid-cols-2 lg:h-[100dvh] font-rubik">
                     
-                <div className="rounded-lg flex flex-col space-y-2 p-5 border basis-[50%]">
+                <div className="rounded-lg flex flex-col space-y-2 p-5 lg:basis-[50%] basis-full">
                     <img className="w-[250px] relative -left-2" src={Logo} alt="Logo" />
                     <h1 className="lg:text-[25px] font-normal font-rubik-moonrock text-primary-main"> 2024 <span className="text-red-600">Camp</span> Registration </h1>
 
                     <form action="" className="space-y-3">
                         <div className="text-[15px] space-y-1">
-                            <label className="text-faint-blue font-normal tracking-[0.6px]">First Name</label>
+                            <label className="text-faint-blue fo
+                            nt-normal tracking-[0.6px]">First Name</label>
                             <input type="text"
                             className="w-full outline-none ring-[0.3px] ring-text-primary rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] "
                             placeholder="Enter Your Name" required
@@ -30,7 +31,7 @@ export default function Registration() {
                             /> 
                         </div>
 
-                        <div className="flex lg:flex-row flex-col lg:space-x-2 text-[15px]">
+                        <div className="flex lg:flex-row flex-col lg:space-x-2 text-[15px] space-y-3 lg:space-y-0">
                             <div className="basis-[50%] space-y-1">
                                 <label className="text-faint-blue font-normal tracking-[0.6px]">Phone Number</label>
                                 <input type="number"
@@ -51,7 +52,7 @@ export default function Registration() {
                         </div>
                         
 
-                        <div className="flex flex-col lg:flex-row lg:gap-2 text-[15px]">
+                        <div className="flex flex-col lg:flex-row lg:gap-2 text-[15px] space-y-3 lg:space-y-0">
                             <div className="basis-[50%] space-y-1">
                                 <label className="text-faint-blue font-normal tracking-[0.6px]">Archdeaconry</label>
                                 <select className="w-full outline-none ring-[0.3px] ring-text-primary rounded-md p-3 tracking-[0.8px] text-[14px] text-text-primary bg-transparent"
@@ -94,13 +95,15 @@ export default function Registration() {
                             </div>
                         </div>
 
-                        <div className="text-[15px] space-y-1">
+                        
+
+                        {/* <div className="text-[15px] space-y-1">
                             <label className="text-faint-blue font-normal tracking-[0.6px]">Price </label>
                             <input type="text" 
                             className="w-full outline-none ring-[0.3px] ring-text-primary rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px]"
                             value="# 2500" readOnly
                             /> 
-                        </div>
+                        </div> */}
 
                         <button type="submit" className="w-full outline-none ring-[0.3px] ring-text-primary bg-blue-900 rounded-md p-3 text-white text-[15px]">
                             Register
