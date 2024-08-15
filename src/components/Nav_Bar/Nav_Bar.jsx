@@ -3,7 +3,7 @@ import Logo from "../../assets/main_logo.svg";
 const NavBar = () => {
   return (
     <div>
-      <nav className="bg-white text-[#1e1e1ea2]">
+      <nav className="text-[#1e1e1ea2] fixed lg:flex  bg-white ">
         <a href="">
           <img src={Logo} alt="" className="w-[250px]" />
         </a>
