@@ -31,22 +31,22 @@ const EventsData = [
           image: Event3,
           link: "/home"
      },
-     // {
-     //      id: 4,
-     //      date: "December 5, 2021",
-     //      title: "Start Sunday Special Service",
-     //      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel ipsum nulla, maiores ipsa beatae voluptate ducimus adipisci eos? Atque minima aliquam accusamus quidem recusandae suscipit distinctio sit illo repellat  lorem sfsdfsdfs sdfhsdfdshbfhsdbfhjdsf ashdjbashdbajbshdabsdas bsdkbdkqjbwdkjqwbdkjqbwdjbqwkjdbqwjdbkqwjbdkqwbdkjqbwdkjbqwkjdbqwkjdbqwkjdbkjqwbdkjqwd",
-     //      image: Event4,
-     //      link: "/home"
-     // },
-     // {
-     //      id: 5,
-     //      date: "December 5, 2021",
-     //      title: "Start Sunday Special Service",
-     //      description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel ipsum nulla, maiores ipsa beatae voluptate ducimus adipisci eos? Atque minima aliquam accusamus quidem recusandae suscipit distinctio sit illo repellat  lorem sfsdfsdfs sdfhsdfdshbfhsdbfhjdsf ashdjbashdbajbshdabsdas bsdkbdkqjbwdkjqwbdkjqbwdjbqwkjdbqwjdbkqwjbdkqwbdkjqbwdkjbqwkjdbqwkjdbqwkjdbkjqwbdkjqwd",
-     //      image: Event5,
-     //      link: "/home"
-     // },
+     {
+          id: 4,
+          date: "December 5, 2021",
+          title: "Start Sunday Special Service",
+          description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel ipsum nulla, maiores ipsa beatae voluptate ducimus adipisci eos? Atque minima aliquam accusamus quidem recusandae suscipit distinctio sit illo repellat  lorem sfsdfsdfs sdfhsdfdshbfhsdbfhjdsf ashdjbashdbajbshdabsdas bsdkbdkqjbwdkjqwbdkjqbwdjbqwkjdbqwjdbkqwjbdkqwbdkjqbwdkjbqwkjdbqwkjdbqwkjdbkjqwbdkjqwd",
+          image: Event4,
+          link: "/home"
+     },
+     {
+          id: 5,
+          date: "December 5, 2021",
+          title: "Start Sunday Special Service",
+          description: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vel ipsum nulla, maiores ipsa beatae voluptate ducimus adipisci eos? Atque minima aliquam accusamus quidem recusandae suscipit distinctio sit illo repellat  lorem sfsdfsdfs sdfhsdfdshbfhsdbfhjdsf ashdjbashdbajbshdabsdas bsdkbdkqjbwdkjqwbdkjqbwdjbqwkjdbqwjdbkqwjbdkqwbdkjqbwdkjbqwkjdbqwkjdbqwkjdbkjqwbdkjqwd",
+          image: Event5,
+          link: "/home"
+     },
 ]
 
 export default EventsData

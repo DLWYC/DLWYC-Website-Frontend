@@ -32,13 +32,13 @@ const Footer = () =>{
                <h1 className="text-[18px] font-medium ">Socials</h1>
 
                <div className="flex gap-3">
-                    <a href="" className="w-[40px] h-[504x] rounded-full grid place-content-center bg-[#06061a25]">
+                    <a href="https://www.instagram.com/dlwyouth/" className="w-[40px] h-[504x] rounded-full grid place-content-center bg-[#06061a25]" target="_blank"> 
                      <FaInstagram className="text-[20px]"/>    
                     </a>
-                    <a href="" className="w-[40px] h-[40px] rounded-full grid place-content-center bg-[#06061a25]">
+                    <a href="" className="w-[40px] h-[40px] rounded-full grid place-content-center bg-[#06061a25]" target="_blank">
                      <FaTwitter className="text-[20px]"/>    
                     </a>
-                    <a href="" className="w-[40px] h-[504x] rounded-full grid place-content-center bg-[#06061a25]">
+                    <a href="https://www.facebook.com/dlwyouthchaplaincy/" className="w-[40px] h-[504x] rounded-full grid place-content-center bg-[#06061a25]" target="_blank">
                      <FaFacebookF className="text-[20px]"/>    
 
                     </a>
