@@ -3,29 +3,7 @@
 *{
   padding: 0;
   margin: 0;
-}
-
-nav {
-  width: 100%;
-  justify-content: space-around;
-  padding: 15px;
-  transition: 0.6s;
-  display: flex;
-  z-index: 3;
-  align-items: center;
-  /* position: fixed; */
-}
-nav ul,nav ul li, nav ul li a{
-  background: transparent;
-}
-nav ul li {
-  display: inline-block;
-}
-
-nav ul li a {
-  font-size: 14px;
-  font-weight: light;
-  padding: 10px 12px;
+  scroll-behavior: smooth;
 }
 
 .reg_image{
@@ -84,4 +62,142 @@ nav ul li a {
   border-right: 3px solid orange;
   width: 80px;
   height: 80px;
+}
+
+
+nav {
+  width: 100%;
+  justify-content: space-around;
+  padding: 15px;
+  transition: 0.6s;
+  display: flex;
+  background: transparent;
+  z-index: 3;
+  align-items: center;
+  position: fixed;
+}
+.navLinks {
+  display: flex;
+}
+
+nav ul li {
+  color: #091E54;
+  display: inline-block;
+}
+nav ul li a {
+  cursor: pointer;
+  font-size: 15px;
+  transition: 0.3s all ease-in;
+  padding: 10px 15px;
+  margin: 5px;
+}
+
+.stickyNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #fdfdfde7;
+  z-index: 20;
+  padding: 15px;
+  display: flex;
+  justify-content: space-around;
+  /* place-content: center; */
+  align-items: center;
+  box-shadow: 0px 0px 2px 1px #fff;
+  transition: 0.5s all ease-in-out;
+  box-shadow: 0px 0px 10px 0px var(--box-shadow);
+  backdrop-filter: blur(6px) saturate(147%);
+  -webkit-backdrop-filter: blur(6px) saturate(147%);
+}
+.stickyNav a {
+  color: #091E54;
+}
+.stickyNav button{
+  color: white
+}
+#miniNav{
+  width: 250px;
+  background: white
+}
+/* . ul{
+  display: flex;
+} */
+
+@media (max-width: 750px) {
+  .navLinks {
+    position: fixed;
+    right: 0%;
+    top: 0%;
+    place-content: center;
+    align-items: center;
+    display: none;
+    /* border: 1px solid white; */
+    flex-direction: column;
+    background: linear-gradient(to bottom, #d62828ee, #0f0e3bc2);
+    width: 100%;
+    height: 100lvh;
+    transition: 1s ease-in-out;
+    animation: slide 0.7s 1;
+    z-index: 4;
+  }
+  @keyframes slide {
+    from {
+      right: -90%;
+    }
+    to {
+      right: 0%;
+    }
+  }
+  #icon,
+  #iconmultiply {
+    display: flex;
+  }
+  .stickyNav #icon {
+    color: black;
+  }
+  .stickyNav a {
+    color: white;
+  }
+  .mainNav {
+    display: grid;
+    width: 100%;
+    /* border: 3px solid red; */
+    gap: 4px;
+  }
+  .mainNav li {
+    display: grid;
+    width: 100%;
+    color: white;
+    border: 1px solid white;
+    /* border-radius: 50px; */
+    gap: 20px;
+    text-align: center;
+    position: relative;
+    /* overflow: hidden; */
+  }
+  .miniNav{
+    position: relative;
+    /* background: red; */
+    /* padding: 15px 20px; */
+    /* display:  grid; */
+    /* background: red; */
+    /* height: 10px; */
+    /* width: 1200px; */
+    top: 0px;
+  }
+  #miniNav{
+    width: 100%;
+    top: 0;
+  }
+  #miniNav li a{
+    color: #091E54;
+  }
+  /* .nav ul li a {
+    text-align: center;
+  }
+  .nav ul li:hover {
+    background: #fff;
+    color: #d62828;
+  } */
 }

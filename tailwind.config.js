@@ -27,7 +27,8 @@ export default {
         'dosis': 'Dosis'
       },
       padding: {
-        'button': '13px 30px'
+        'button': '13px 30px',
+        'eventbutton': '13px 100px'
       }
     },
   },

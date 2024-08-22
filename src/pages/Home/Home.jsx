@@ -2,7 +2,7 @@ import NavBar from "../../components/Nav_Bar/Nav_Bar";
 import ChaplainBanner from "../../assets/homepage/ChaplainBanner.svg";
 import Chaplain from "../../assets/homepage/chaplain.jpg";
 import CountUp from "react-countup";
-import EventCard from "../../components/Cards/Event_Card"
+import EventCard from "../../components/Cards/Event"
 import EventData from "../../data/Events"
 import Footer from "../../components/Footer/Footer"
 
@@ -13,10 +13,10 @@ const HomePage = () => {
       <NavBar />
 
       {/* Banner */}
-      <div className="lg:p-[50px] p-2 grid lg:grid-cols-2 ">
-        <div className=" flex justify-center items-center lg:p-[30px]">
+      <div className="lg:p-[50px] p-2 grid lg:grid-cols-2">
+        <div className=" flex justify-center items-center lg:p-[30px]lg:h-full h-[90lvh]">
           <div className=" w-full text-left space-y-5 p-3">
-            <h1 className="lg:text-[50px] text-[40px] text-primary-main font-poppins font-bold leading-[50px]">
+            <h1 className="lg:text-[50px] text-[40px] text-primary-main font-rubik font-bold leading-[50px]">
               Welcome To DLWYC!
             </h1>
             <p className="font-grotesk text-text-paragraph leading-7 text-[15px] w-[95%]">
@@ -32,7 +32,7 @@ const HomePage = () => {
             <div className="flex">
               
               <a
-                href=""
+                href="#chaplain"
                 className="p-button rounded-md font-poppins font-bold text-[15px] bg-reddish text-white"
               >
                 Explore
@@ -42,7 +42,7 @@ const HomePage = () => {
         </div>
 
         <div className=" flex justify-center items-center p-[20px]">
-          <div className="w-full lg:h-[75vh] h-[80lvh] flex  space-x-2 lg:mt-14">
+          <div className="w-full lg:h-[75vh] h-[60lvh] flex  space-x-2 lg:mt-14">
 
             <div className="left flex flex-col lg:basis-[30%] basis-[50%] space-y-5">
               <div className="top_left  basis-[60%] rounded-l-3xl overflow-hidden"></div>
@@ -63,7 +63,7 @@ const HomePage = () => {
       {/* Word From Chaplain */}
       <div
         className="bg-cover bg-no-repeat lg:flex lg:p-[40px] p-6 gap-5 relative lg:space-y-0 space-y-12"
-        style={{ backgroundImage: `url(${ChaplainBanner})` }}
+        style={{ backgroundImage: `url(${ChaplainBanner})` }} id="chaplain"
       >
         <div className="basis-[50%] flex items-center justify-center lg:p-[30px] lg:m-0 mt-8">
           <div
@@ -72,23 +72,15 @@ const HomePage = () => {
           ></div>
         </div>
 
-        <div className="basis-[60%] flex items-center justify-center ">
+        <div className="basis-[60%] flex items-center justify-center">
           <div className=" w-full flex flex-col justify-center text-left p-3 space-y-4 ">
             <h1 className="font-header text-white lg:text-[36px] text-[30px]">
               A Word From The Chaplain
             </h1>
             <p className="leading-7 text-[15px] text-white  lg:w-[80%] font-light font-grotesk">
-              Join us for a warm and welcoming worship experience rooted in the
-              rich traditions of Anglicanism. Located in the heart of our
-              community, All Saints Anglican Church is a vibrant and inclusive
-              parish that serves individuals and families of all ages and
-              backgrounds.
-              <br /><br />
-              Whether you’re new to Anglicanism, looking for a
-              spiritual home, or seeking to deepen your faith, we invite you to
-              join us at All Saints Anglican Church. Experience the warmth of
-              our community, the richness of our liturgy, and the joy of
-              worshiping together. We look forward to welcoming you!
+             Lorem ipsum dolor sit amet consectetur, adipisicing elit. Vel eius optio asperiores molestiae, quia sed laboriosam totam aliquid, nesciunt quas saepe impedit in ab tenetur accusantium earum possimus aspernatur dolores, magni perspiciatis architecto sequi inventore quidem neque? Ex dolore a error quia necessitatibus omnis fugit, velit asperiores cupiditate saepe explicabo.
+             <br />
+             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia accusantium amet harum perferendis error consequuntur, sapiente aut, illo enim reprehenderit blanditiis quo veritatis, repellendus dolor ipsa similique sequi placeat nisi vel officiis nihil! Vel, expedita voluptatibus consequuntur distinctio nesciunt voluptate.
             </p>
 
           <div className=" h-full">
@@ -132,16 +124,21 @@ const HomePage = () => {
       {/* Theme */}
 
       {/* Events */}
-    <div className="grid bg-[#f6f6f634]">
+    <div className="grid bg-[#f6f6f634] p-3">
       <h1 className="font-header text-[34px] p-6 text-primary-main">Upcoming Events</h1>
 
-      <div className="p-4 gap-5 grid lg:grid-cols-2 items-center">
+      <div className="p-2 gap-5 grid lg:grid-cols-2 items-center">
       {EventData.map(event=>(
         <div key={event.id} className={`grid ${event.id === 1 ? 'row-span-2  justify-center items-center' : ''}`}>
           <EventCard title={event.title} date={event.date} description={event.description} image={event.image} link={'/registration'} id={event.id}  position={`${event.id === 1 ? 'grid lg:space-y-2' : 'lg:flex grid mt-0'}`} imagesize='True'/>
         </div>
-      ))}
+      )).slice(0,3)}
     </div>
+    
+    <div className="p-5 grid place-content-center">
+      <a href="/events" className="bg-reddish text-white font-rubik tracking-wide p-eventbutton rounded-full hover:bg-primary-main transition-all"> View All </a>
+    </div>
+
     </div>
       {/* Events */}
 
