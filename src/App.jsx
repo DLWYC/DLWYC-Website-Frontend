@@ -5,6 +5,7 @@ import Registration from './pages/Registration/Registration'
 import EventsPage from './pages/Events/Events'
 import ChaplainsPage from './pages/About/Chaplains'
 import GalleryPage from './pages/Gallery/Gallery'
+import Success from './pages/Success/Success'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 // Pages
@@ -23,6 +24,7 @@ function App() {
             <Route path='/events' element={<EventsPage />} />
             <Route path='/gallery' element={<GalleryPage />} />
             <Route path='/registration' element={<Registration />} />
+            <Route path='/registration/success' element={<Success />} />
           </Routes>
       </Router>
     </div>
