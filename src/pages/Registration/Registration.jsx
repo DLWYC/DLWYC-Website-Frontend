@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Logo from "../../assets/main_logo.svg";
 import dlw from '../../assets/registrationpage/dlw.jpeg';
 import axios from 'axios'
@@ -12,18 +12,21 @@ export default function Registration() {
     const [phoneNumber, setPhoneNumber] = useState('')
     const [gender, setGender] = useState('')
     const [archdeaconry, setArchdeaconry] = useState('')
+    const [age, setAge] = useState('')
     const [parish, setParish] = useState('')
+    const [transactionID, setTransactionID] = useState('')
     const [error, setError] = useState({})
-    const [success, setSuccess] = useState('')
     const navigate = useNavigate()
 
     const data = {
         fullName,   
         email,
         phoneNumber,
+        age,
         gender,
         archdeaconry,
-        parish
+        parish,
+        transactionID
     }
 
     console.log(data)
@@ -31,9 +34,8 @@ export default function Registration() {
         e.preventDefault()
        try{
         await axios.post('http://localhost:5000/api/registration', data)
-        .then(response =>{
-            setSuccess(response.data)
-            navigate('/registration')
+        .then(() =>{
+            navigate('/registration/success')
         })
         .catch(error =>{
             throw (error.response.data.errors)
@@ -58,14 +60,14 @@ export default function Registration() {
 
                 <div className="rounded-lg flex flex-col space-y-2  p-5 lg:basis-[50%] basis-full lg:justify-center relative">
                     <a href="/">
-                    <img className="w-[250px]  lg:absolute top-[10px]" src={Logo} alt="Logo" />
+                    <img className="w-[250px] top-[10px]" src={Logo} alt="Logo" />
                     </a>
                     
 
                     <h1 className="lg:text-[25px] font-normal font-rubik-moonrock text-primary-main"> 2024 <span className="text-red-600">Camp</span> Registration </h1>
-                    {success ? (<div className="rounded-xl text-white bg-green-500 p-3">Registration Successful</div>) : (<></>)}
+                    {/* {success ? (<div className="rounded-xl text-white bg-green-500 p-3">Registration Successful</div>) : (<></>)} */}
                     
-                    <form action method="post" className="space-y-5 " >
+                    <form method="post" className="space-y-5 " >
                         <div className="space-y-3">
                         <div className="text-[15px] space-y-1">
                             <label className="text-faint-blue fo
@@ -112,12 +114,17 @@ export default function Registration() {
                             
                             <div className="basis-[50%] space-y-1">
                                 <label className="text-faint-blue font-normal tracking-[0.6px]">Age:</label>
-                                <input type="number"
-                                className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['phoneNumber'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="phoneNumber"
+                                {/* <input type="number"
+                                className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['age'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="age"
                                 placeholder="Enter Your Age" required
-                                onInput={e=>setPhoneNumber((e.target.value))}
+                                onInput={e=>setAge((e.target.value))}
                                 onChange={removeError}
-                                /> 
+                                />  */}
+                                <select className={`w-full outline-none ring-[0.3px] rounded-md p-3 text-[14px] tracking-[0.8px] text-text-primary bg-transparent ${error['age'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`}  name="age" onInput={e=>setAge((e.target.value))} onChange={removeError} required>
+                                    <option value="">Select Age</option>
+                                    <option value="15-20">15-20</option>
+                                    <option value="21+">21+</option>
+                                </select>
                                 {error['age'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['age'])}</p>) : (<></>) }
                             </div>
 
@@ -176,11 +183,23 @@ export default function Registration() {
                                 <input type="text"
                                 className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['parish'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="parish"
                                 placeholder="Enter Parish" onInput={e=>setParish((e.target.value))} 
-                                onChange={removeError}required
+                                onChange={removeError} required
                                 /> 
                                 {error['parish'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['parish'])}</p>) : (<></>) }
                             </div>
                         </div>
+                        </div>
+
+                        <div className="text-[15px] space-y-1">
+                            <label className="text-faint-blue fo
+                            nt-normal tracking-[0.6px]">Transaction ID:</label>
+                            <input type="text"
+                            className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['transactionID'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'} `} name="transactionID"
+                            placeholder="Enter Your Transaction ID" required 
+                            onInput={e=>setTransactionID((e.target.value))}
+                            onChange={removeError}
+                            /> 
+                            {error['transactionID'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['transactionID'])}</p>) : (<></>) }
                         </div>
 
                         <div className=" mt-5">
@@ -195,8 +214,8 @@ export default function Registration() {
                 
            
            
-           <div className="lg:flex flex-col hidden justify-between basis-[50%] space-y-3">
-                    <div className="flex items-center justify-center basis-[80%] reg_image ">
+           <div className="lg:flex flex-col hidden basis-[50%] space-y-2">
+                    <div className="flex items-center reg_image ">
                         <img className="w-full" src={dlw} alt="" />
                     </div>
 
