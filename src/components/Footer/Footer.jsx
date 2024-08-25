@@ -14,7 +14,7 @@ const Footer = () =>{
                <div className="flex flex-col justify-center space-y-4 ">
                     <h1 className="text-[18px] font-medium ">Contact Us</h1>
                     <ul className="space-y-3">
-                         <li className="">Email: <a href="mailto:timmyaof02@gmail.com">timmyaof02@gmail.com</a> </li>
+                         <li className="">Email: <a href="mailto:dlwyouth@gmail.com">dlwyouth@gmail.com</a> </li>
                          <li>Address: </li>
                     </ul>
                </div>
