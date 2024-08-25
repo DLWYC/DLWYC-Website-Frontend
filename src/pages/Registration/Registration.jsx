@@ -203,7 +203,7 @@ export default function Registration() {
                         </div>
 
                         <div className=" mt-5">
-                        <button type="submit" onClick={submitForm} className="w-full outline-none ring-[0.3px] ring-text-primary bg-blue-900 hover:bg-reddish rounded-md p-3 text-white text-[15px]">
+                        <button type="submit" onClick={submitForm} className="w-full outline-none ring-[0.3px] ring-text-primary bg-blue-900 hover:bg-reddish transition-all rounded-md p-3 text-white text-[15px]">
                             Register
                         </button>
                         </div>

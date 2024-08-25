@@ -196,8 +196,9 @@ nav ul li a {
   /* .nav ul li a {
     text-align: center;
   }
-  .nav ul li:hover {
+    */
+  #miniVav li a:hover {
     background: #fff;
     color: #d62828;
-  } */
+  }
 }
