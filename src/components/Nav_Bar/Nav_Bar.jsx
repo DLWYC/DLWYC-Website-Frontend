@@ -52,7 +52,7 @@ const NavBar = () => {
               <p className="p-3">About Us</p>
               <ul id="miniNav" className="lg:absolute hidden relative" onMouseLeave={removeMiniNav}>
                 <li className="grid p-0">
-                  <a className="border" href="">
+                  <a className="border" href="/about">
                     Chaplaincy
                   </a>
                 </li>
