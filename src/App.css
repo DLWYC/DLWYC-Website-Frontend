@@ -41,6 +41,9 @@
   background-size: cover;
 }
 
+#about_header{
+  -webkit-text-stroke: 1px #091E54;
+}
 
 .chaplain::before{
   content: '';
@@ -124,7 +127,7 @@ nav ul li a {
   display: flex;
 } */
 
-@media (max-width: 750px) {
+@media (max-width: 850px) {
   .navLinks {
     position: fixed;
     right: 0%;
@@ -202,3 +205,5 @@ nav ul li a {
     color: #d62828;
   }
 }
+
+

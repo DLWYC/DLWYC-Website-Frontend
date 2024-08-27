@@ -5,10 +5,11 @@ import Registration from './pages/Registration/Registration'
 import EventsPage from './pages/Events/Events'
 import AboutPage from './pages/About/About'
 import ChaplainsPage from './pages/About/Chaplains'
+import ChairmanPage from './pages/About/Chairmans'
 import GalleryPage from './pages/Gallery/Gallery'
 import Success from './pages/Success/Success'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
+// import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 // Pages
 const queryClient = new QueryClient()
 
@@ -23,6 +24,7 @@ function App() {
             <Route path='/' element={<HomePage />} />
             <Route path='/about' element={<AboutPage />} />
             <Route path='/about/chaplains' element={<ChaplainsPage />} />
+            <Route path='/about/chairmans' element={<ChairmanPage />} />
             <Route path='/events' element={<EventsPage />} />
             <Route path='/gallery' element={<GalleryPage />} />
             <Route path='/registration' element={<Registration />} />

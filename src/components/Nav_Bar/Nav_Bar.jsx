@@ -32,7 +32,7 @@ const NavBar = () => {
           <img src={Logo} alt="" className="w-[250px]" />
         </a>
 
-        <div className="navLinks" id="navLinks">
+        <div className="navLinks lg:flex hidden" id="navLinks">
           <FaXmark
             className="text-white hidden text-[35px] font-bold cursor-pointer absolute top-10 right-10"
             id="iconmultiply"
@@ -57,12 +57,12 @@ const NavBar = () => {
                   </a>
                 </li>
                 <li className="grid p-0">
-                  <a className="border" href="about/chaplains">
+                  <a className="border" href="/about/chaplains">
                     Our Chaplains
                   </a>
                 </li>
                 <li className="grid p-0">
-                  <a className="border " href="">
+                  <a className="border " href="/about/chairmans">
                     Our Chairman
                   </a>
                 </li>
@@ -74,9 +74,9 @@ const NavBar = () => {
             <li>
               <a href="/events">Event</a>
             </li>
-            <li>
+            {/* <li>
               <a href="/gallery">Gallery</a>
-            </li>
+            </li> */}
             <li>
               <a href="/contact-us">Contact Us</a>
             </li>
