@@ -21,7 +21,7 @@ const About = () => {
 
         <div className="flex lg:flex-row flex-col-reverse space-x-6 mt-16 justify-between items-center lg:p-2 ">
 
-          <div className="flex lg:basis-[50%] lh:h-[75vh] h-[50vh] space-x-5  w-full mt-6 lg:mt-0">
+          <div className="flex lg:basis-[50%] lg:h-[75vh] h-[50vh] space-x-5  w-full mt-6 lg:mt-0">
 
 
             <div className=" space-y-5 flex flex-col basis-[50%] ">
@@ -112,7 +112,7 @@ const About = () => {
           {/*  */}
 
 
-        <div className="flex flex-col">
+        <div className="flex lg:flex-row flex-col">
           <div className="basis-[50%] flex flex-col items-center justify-center p-[40px] space-y-4">
 
 
