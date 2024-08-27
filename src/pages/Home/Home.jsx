@@ -14,7 +14,7 @@ const HomePage = () => {
 
       {/* Banner */}
       <div className="lg:p-[50px] p-2 grid lg:grid-cols-2">
-        <div className=" flex justify-center items-center lg:p-[30px]lg:h-full h-[90lvh]">
+        <div className=" flex justify-center items-end lg:items-center lg:p-[30px] lg:h-full h-[75lvh]">
           <div className=" w-full text-left space-y-5 p-3">
             <h1 className="lg:text-[50px] text-[40px] text-primary-main font-rubik font-bold leading-[50px]">
               Welcome To DLWYC!
@@ -42,7 +42,7 @@ const HomePage = () => {
         </div>
 
         <div className=" flex justify-center items-center p-[20px]">
-          <div className="w-full lg:h-[75vh] h-[60lvh] flex  space-x-2 lg:mt-14">
+          <div className="w-full lg:h-[75vh] h-[70lvh] flex  space-x-2 mt-2 lg:mt-14">
 
             <div className="left flex flex-col lg:basis-[30%] basis-[50%] space-y-5">
               <div className="top_left  basis-[60%] rounded-l-3xl overflow-hidden"></div>

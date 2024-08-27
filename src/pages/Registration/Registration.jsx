@@ -151,6 +151,7 @@ export default function Registration() {
                                     <option value="Amuwo Odofin">Amuwo Odofin</option>
                                     <option value="Bariga">Bariga</option>
                                     <option value="Cathedral">Cathedral</option>
+                                    <option value="Egbe">Egbe</option>
                                     <option value="Festac">Festac</option>
                                     <option value="Gowon Estate">Gowon Estate</option>
                                     <option value="Iba">Iba</option>
