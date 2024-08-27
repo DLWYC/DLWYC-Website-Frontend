@@ -8,19 +8,19 @@ import ChaplainsPage from './pages/About/Chaplains'
 import ChairmanPage from './pages/About/Chairmans'
 import GalleryPage from './pages/Gallery/Gallery'
 import Success from './pages/Success/Success'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+import NotFound from "./pages/404/NotFound";
 // import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 // Pages
-const queryClient = new QueryClient()
+
 
 function App() {
 
   return (
-    <QueryClientProvider client={queryClient}>
-
     <div>
       <Router>
           <Routes>
+            <Route path="*" element={<NotFound />} />
             <Route path='/' element={<HomePage />} />
             <Route path='/about' element={<AboutPage />} />
             <Route path='/about/chaplains' element={<ChaplainsPage />} />
@@ -32,8 +32,6 @@ function App() {
           </Routes>
       </Router>
     </div>
-    {/* <ReactQueryDevtools /> */}
-    </QueryClientProvider>
   )
 }
 
