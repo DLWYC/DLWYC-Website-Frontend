@@ -1,7 +1,7 @@
 function Cards(e) {
      return (
        <div className="relative flex flex-col">
-         <div className="relative border bg-[#0e0d2054]">
+         <div className="relative bg-[#0e0d2054]">
            <img
              className="h-full w-full aspect-[14/16] object-cover "
              src={e.image}
