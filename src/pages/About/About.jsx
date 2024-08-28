@@ -16,10 +16,10 @@ const About = () => {
   return (
     <div className="">
       <NavBar />
-      <div className="flex flex-col lg:p-[30px] p-[15px] items-center justify-center space-y-4">
+      <div className="flex flex-col lg:p-[10px] p-[15px] items-center justify-center space-y-4">
 
 
-        <div className="flex lg:flex-row flex-col-reverse space-x-6 mt-16 justify-between items-center lg:p-2 ">
+        <div className="flex lg:flex-row flex-col-reverse lg:space-x-6 mt-16 justify-between items-center lg:p-2">
 
           <div className="flex lg:basis-[50%] lg:h-[75vh] h-[50vh] space-x-5  w-full mt-6 lg:mt-0">
 
@@ -47,15 +47,15 @@ const About = () => {
             </div>
           </div>
 
-          <div className="basis-[50%]">
+          <div className="basis-[50%] lg:mt-0 mt-[20px]">
             <h1 className="text-red-700 font-style font-semibold text-[30px]">
               About Us
             </h1>
             <h2
-              className="text-[40px] font-header text-transparent"
+              className="text-[35px] font-rubik-moonrock text-transparent font-extralight"
               id="about_header"
             >
-              WELCOME! HERE IS WHAT  WE ARE.
+              <span className="stroke-yellow">WELCOME</span> HERE IS WHAT WE ARE.
             </h2>
             <p className="font-grotesk leading-[30px] text-text-paragraph">
               Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fugit,
@@ -67,13 +67,14 @@ const About = () => {
               doloribus aperiam. Laudantium, quibusdam temporibus expedita
               tempora natus sequi! Lorem ipsum dolor sit amet consectetur
               adipisicing elit. Quia alias repudiandae sint, dolore quis culpa
-              repellendus error qui eaque totam asperiores!.
+              repellendus error qui eaque totam asperiores!. Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolor, beatae recusandae maxime eos assumenda veniam incidunt culpa facilis repellendus, similique magnam quaerat odio. Incidunt nihil dolores quaerat dolorum rem, velit nostrum aliquam, eum cum omnis a repellat magni quis tenetur assumenda in repudiandae ab earum temporibus itaque numquam ipsa unde deleniti? Nisi quo obcaecati expedita, quod illum dicta animi recusandae.
             </p>
           </div>
         </div>
 
         <p className="font-grotesk leading-[30px] text-text-paragraph">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio perspiciatis eaque exercitationem ipsam error in repudiandae provident cumque at doloribus quae fugiat eligendi corporis sequi cupiditate maiores, possimus dolore obcaecati repellendus magnam ea blanditiis harum vero reprehenderit. Corporis debitis consequatur ipsa eum! Temporibus assumenda aliquam quo? Eaque, doloribus voluptates aspernatur harum ullam veritatis praesentium provident sed eligendi officiis, numquam nam! Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt soluta accusamus harum voluptas similique, nemo debitis labore, pariatur quis quod reiciendis culpa quia ipsa autem at repudiandae. Repellat, delectus. Cumque cum corrupti nobis mollitia laborum. Obcaecati, optio odit odio amet veritatis architecto quam consectetur officia numquam quia veniam dolores aut dolor minima distinctio recusandae nihil! Cum, amet veniam? Sed quae deleniti excepturi nemo alias quis! Omnis, animi dicta inventore totam provident praesentium est voluptatem beatae repellendus maxime ullam reprehenderit aliquam error sapiente corporis adipisci libero, hic ab tenetur? Doloribus suscipit est dolorum modi voluptas ab maiores expedita ducimus illo ea, dicta repellat. Repudiandae harum facilis eveniet quos dicta, quaerat sunt reiciendis et nam nobis voluptatem ullam qui sapiente, numquam illum, saepe sequi dolore minus consectetur pariatur! Numquam veritatis consequatur, impedit repellendus, nemo minima nam esse voluptas totam, error iure at reprehenderit hic earum unde repudiandae voluptates officia obcaecati dicta. Officiis. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Adipisci at nostrum eum voluptas mollitia architecto et sequi exercitationem repellat amet, illum, ducimus vel aperiam eaque delectus odio cum quaerat consectetur.
+           Doloribus suscipit est dolorum modi voluptas ab maiores expedita ducimus illo ea, dicta repellat. Repudiandae harum facilis eveniet quos dicta, quaerat sunt reiciendis et nam nobis voluptatem ullam qui sapiente, numquam illum, saepe sequi dolore minus consectetur pariatur! Numquam veritatis consequatur, impedit repellendus, nemo minima nam esse voluptas totam, error iure at reprehenderit hic earum unde repudiandae voluptates officia obcaecati dicta. Officiis. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Adipisci at nostrum eum voluptas mollitia architecto et sequi exercitationem repellat amet, illum, ducimus vel aperiam eaque delectus odio cum quaerat consectetur.
+           Lorem ipsum, dolor sit amet consectetur adipisicing elit. Doloribus voluptatum ut alias sit, odit dolorum amet blanditiis temporibus officiis quod modi consequuntur laborum facere deleniti quibusdam tempore culpa reiciendis. Vel dolorem quod consequatur hic sed adipisci corporis fugit excepturi inventore ullam ducimus aperiam totam magni ex, rem labore asperiores nemo. Soluta inventore illum totam aspernatur porro officiis, laudantium ab sequi minima sit eveniet quam animi autem voluptatum amet nam cumque perferendis impedit quaerat assumenda corporis in dolorum. Exercitationem maxime quisquam officiis assumenda recusandae tempora, sit at consectetur, velit vitae repellat odio! Mollitia, unde nulla? Ea doloremque libero porro vero facilis sed ad mollitia hic praesentium soluta! Illum ratione, animi odio aliquam ut nobis mollitia deserunt reiciendis ullam nostrum expedita? Eligendi officiis cumque saepe.
         </p>
       </div>
 
@@ -82,12 +83,12 @@ const About = () => {
 
 
 
-      <div className="bg-primary-main grid">
+      <div className="bg-primary-main flex flex-col ">
 
           {/*  */}
         <div className="flex lg:flex-row flex-col-reverse">
-          <div className=" basis-[50%] flex">
-            <img src={vision} alt="" />
+          <div className=" basis-[50%]  flex h-[65vh]" >
+            <img src={vision} alt="" className="w-full object-cover object-center" />
           </div>
 
           <div className="flex flex-col justify-center  basis-[50%] p-[30px] space-y-14 ">
@@ -103,7 +104,7 @@ const About = () => {
             </p>
           </div>
             <div className="flex justify-between items-end">
-              <p className="text-white lg:text-[50px] text-[30px] font-style">Our Vision</p>
+              <p className="text-white lg:text-[40px] text-[30px] font-style">Our Vision</p>
               <img src={group42} alt="" />
             </div>
 
@@ -115,12 +116,11 @@ const About = () => {
         <div className="flex lg:flex-row flex-col">
           <div className="basis-[50%] flex flex-col items-center justify-center p-[40px] space-y-4">
 
-
             <div className="flex justify-between w-full  items-end">
               <img src={group42} alt="" />
               <h1 className="text-white lg:text-[40px] text-[30px] font-style">Our Mission</h1>
             </div>
-            <ul className="text-white font-rubik space-y-5">
+            <ul className="text-white font-rubik 2xl:text-[24px] space-y-5 list-disc">
                <li>
                To ensure a sustained growth in the number of churches
                     and worshippers within the Diocese
@@ -147,8 +147,6 @@ const About = () => {
                 the  other Dioceses, in order to ensure the success of our
                 common
                </li>
-               <li></li>
-               <li></li>
             </ul>
 
             <div className="w-full flex justify-end">
@@ -156,8 +154,8 @@ const About = () => {
           </div>
               </div>
 
-          <div className="flex basis-[50%]">
-            <img src={mission} alt=""  className="w-full"/>
+              <div className=" basis-[50%] flex " >
+            <img src={mission} alt="" className="w-full object-cover" />
           </div>
 
         </div>
@@ -167,7 +165,7 @@ const About = () => {
           TESTIMONIES FROM OUR YOUTH
         </h1>
       </div>
-      <div className="grid lg:grid-cols-2 gap-5 p-7">
+      <div className="grid lg:grid-cols-2 gap-5 lg:p-7 p-3">
 
         {TestimonyData.map((testimony)=>(
           <div className="flex" key={testimony.id}>

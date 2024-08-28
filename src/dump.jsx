@@ -19,6 +19,10 @@
 
 
 
+Bank Transfer
+Bank Teller
+
+
 
 
 {/* Shape */}

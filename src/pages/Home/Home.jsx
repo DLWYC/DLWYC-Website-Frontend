@@ -13,13 +13,14 @@ const HomePage = () => {
       <NavBar />
 
       {/* Banner */}
-      <div className="lg:p-[50px] p-2 grid lg:grid-cols-2">
-        <div className=" flex justify-center items-end lg:items-center lg:p-[30px] lg:h-full h-[75lvh]">
-          <div className=" w-full text-left space-y-5 p-3">
-            <h1 className="lg:text-[50px] text-[40px] text-primary-main font-rubik font-bold leading-[50px]">
-              Welcome To DLWYC!
+      <div className="lg:p-[30px] p-2 flex lg:flex-row flex-col justify-center items-center">
+        <div className=" flex 2xl:basis-[45%] lg:basis-[60%] justify-center items-end lg:items-center lg:p-[10px] lg:h-full h-fit lg:mt-0 mt-[70px]  ">
+
+          <div className=" text-left grid 2xl:space-y-2 space-y-5 p-3 ">
+            <h1 className="lg:text-[50px] text-[40px] text-primary-main font-rubik-moonrock font-normal leading-[50px]">
+              Welcome To <span className="text-yellow">DLWYC !</span>
             </h1>
-            <p className="font-grotesk text-text-paragraph leading-7 text-[15px] w-[95%]">
+            <p className="font-grotesk text-text-paragraph leading-7 text-[15px] lg:w-[95%]">
               Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sequi
               dolores, facilis molestiae odio perferendis deleniti quas iste
               animi sunt. Tempora libero consequatur commodi fugiat dolorem,
@@ -27,6 +28,7 @@ const HomePage = () => {
               Porro minima cum hic tempore voluptates doloribus laudantium
               cumque autem! Quisquam sit architecto doloremque ipsa, sed
               inventore molestias?
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt praesentium impedit sit cupiditate quibusdam, temporibus, vitae adipisci officia natus eaque sed earum molestiae. Culpa, nihil nam? Natus, quae! Libero dolorem accusamus error minima aliquam cumque. Eos maiores, repudiandae voluptatem commodi voluptatibus eligendi, beatae eaque provident debitis hic illo quaerat ratione?
             </p>
 
             <div className="flex">
@@ -41,8 +43,8 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className=" flex justify-center items-center p-[20px]">
-          <div className="w-full lg:h-[75vh] h-[70lvh] flex  space-x-2 mt-2 lg:mt-14">
+        <div className="2xl:basis-[40%] basis-[50%] w-full  flex justify-center items-center p-[20px]">
+          <div className="w-full 2xl:h-[60vh] lg:h-[75vh] h-[70lvh] flex  space-x-2 mt-2 lg:mt-14">
 
             <div className="left flex flex-col lg:basis-[30%] basis-[50%] space-y-5">
               <div className="top_left  basis-[60%] rounded-l-3xl overflow-hidden"></div>
@@ -108,7 +110,9 @@ const HomePage = () => {
                <div className="p-[20px] grid lg:grid-cols-3 lg:space-x-5 lg:space-y-0 space-y-4">
                     <div className="text-center">
                          <p className="font-san text-reddish font-medium text-[16px]">Archdeaconries</p>
-                         <h1 className="text-[70px] font-bold font-dosis text-primary-main">30</h1>
+                         <h1 className="text-[70px] font-bold font-dosis text-primary-main">
+                         <CountUp end={30} scrollSpyDelay={200} duration={2} enableScrollSpy='True' scrollSpyOnce='True'/>
+                         </h1>
                     </div>
                     <div className="text-center">
                          <p className="font-san text-reddish font-medium text-[16px]">Parishes</p>
@@ -129,13 +133,13 @@ const HomePage = () => {
 
       <div className="p-2 gap-5 grid lg:grid-cols-2 items-center">
       {EventData.map(event=>(
-        <div key={event.id} className={`grid ${event.id === 1 ? 'row-span-2  justify-center items-center' : ''}`}>
-          <EventCard title={event.title} date={event.date} description={event.description} image={event.image} link={'/registration'} id={event.id}  position={`${event.id === 1 ? 'grid lg:space-y-2' : 'lg:flex grid mt-0'}`} imagesize='True'/>
+        <div key={event.id} className={`grid ${event.id === 1 ? 'justify-center items-center' : ''}`}>
+          <EventCard title={event.title} date={event.date} description={event.description} image={event.image} link={'/registration'} id={event.id} />
         </div>
       )).slice(0,3)}
     </div>
     
-    <div className="p-5 grid place-content-center">
+    <div className="lg:p-5 grid place-content-center">
       <a href="/events" className="bg-reddish text-white font-rubik tracking-wide p-eventbutton rounded-full hover:bg-primary-main transition-all"> View All </a>
     </div>
 

@@ -56,22 +56,23 @@ export default function Registration() {
 
     return (
         
-        <div className="grid p-3  lg:grid-cols-2 lg:h-[100dvh] font-rubik">
+        <div className="grid p-3  lg:grid-cols-2 lg:h-[100dvh] h-full lg:place-content-center font-rubik">
 
-                <div className="rounded-lg flex flex-col space-y-2  p-5 lg:basis-[50%] basis-full lg:justify-center relative">
-                    <a href="/">
+                <div className="rounded-lg flex flex-col space-y-2 p-5 lg:basis-[50%] basis-full lg:justify-center relative">
+                    <div className="justify-between items-center lg:flex grid space-y-3">
                     <img className="w-[250px] top-[10px]" src={Logo} alt="Logo" />
-                    </a>
+                    
+                    </div>
                     
 
                     <h1 className="lg:text-[25px] font-normal font-rubik-moonrock text-primary-main"> 2024 <span className="text-red-600">Camp</span> Registration </h1>
                     {/* {success ? (<div className="rounded-xl text-white bg-green-500 p-3">Registration Successful</div>) : (<></>)} */}
                     
-                    <form method="post" className="space-y-5 " >
+                    <form method="post" className="space-y-5 font-rubik " >
                         <div className="space-y-3">
                         <div className="text-[15px] space-y-1">
                             <label className="text-faint-blue fo
-                            nt-normal tracking-[0.6px]">Full Name:</label>
+                            nt-normal tracking-[0.6px]">Full Name:<span className="text-[red]">*</span> </label>
                             <input type="text"
                             className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['fullName'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'} `} name="fullName"
                             placeholder="Enter Your Name" required 
@@ -85,7 +86,7 @@ export default function Registration() {
                         <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
 
                             <div className="text-[15px] space-y-1 basis-[50%]">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Email:</label>
+                                <label className="text-faint-blue font-normal tracking-[0.6px]">Email:<span className="text-[red]">*</span> </label>
                                 <input type="email"
                                 className={`w-full outline-none ring-[0.3px] rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['email'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="email"
                                 placeholder="Enter Your Email" required
@@ -96,7 +97,7 @@ export default function Registration() {
                             </div>
 
                             <div className="space-y-1 basis-[50%]">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Phone Number:</label>
+                                <label className="text-faint-blue font-normal tracking-[0.6px]">Phone Number:<span className="text-[red]">*</span> </label>
                                 <input type="number"
                                 className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['phoneNumber'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="phoneNumber"
                                 placeholder="Enter Phone Number" required
@@ -113,7 +114,7 @@ export default function Registration() {
                         <div className="flex lg:flex-row flex-col lg:space-x-2 text-[15px] space-y-3 lg:space-y-0">
                             
                             <div className="basis-[50%] space-y-1">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Age:</label>
+                                <label className="text-faint-blue font-normal tracking-[0.6px]">Age:<span className="text-[red]">*</span> </label>
                                 {/* <input type="number"
                                 className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['age'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="age"
                                 placeholder="Enter Your Age" required
@@ -129,7 +130,7 @@ export default function Registration() {
                             </div>
 
                             <div className=" basis-[50%] space-y-1">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Gender:</label>
+                                <label className="text-faint-blue font-normal tracking-[0.6px]">Gender:<span className="text-[red]">*</span> </label>
                                 <select className={`w-full outline-none ring-[0.3px] rounded-md p-3 text-[14px] tracking-[0.8px] text-text-primary bg-transparent ${error['gender'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`}  name="gender" id="gender" onInput={e=>setGender((e.target.value))} onChange={removeError} required>
                                     <option value="">Select Gender</option>
                                     <option value="Male">Male</option>
@@ -142,7 +143,7 @@ export default function Registration() {
 
                         <div className="flex flex-col lg:flex-row lg:gap-2 text-[15px] space-y-3 lg:space-y-0">
                             <div className="basis-[50%] space-y-1">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Archdeaconry:</label>
+                                <label className="text-faint-blue font-normal tracking-[0.6px]">Archdeaconry:<span className="text-[red]">*</span> </label>
                                 <select className={`w-full outline-none ring-[0.3px] rounded-md p-3 tracking-[0.8px] text-[14px] text-text-primary bg-transparent ${error['archdeaconry'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`}  name="archdeaconry" id="archdeaconry" onInput={e=>setArchdeaconry((e.target.value))} 
                                 onChange={removeError}required>
                                     <option value="">Select Your Archdeaconry</option>
@@ -180,7 +181,7 @@ export default function Registration() {
                             </div>
 
                             <div className="text-[15px] basis-[50%] space-y-1">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Parish:</label>
+                                <label className="text-faint-blue font-normal tracking-[0.6px]">Parish:<span className="text-[red]">*</span> </label>
                                 <input type="text"
                                 className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['parish'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="parish"
                                 placeholder="Enter Parish" onInput={e=>setParish((e.target.value))} 
@@ -193,7 +194,7 @@ export default function Registration() {
 
                         <div className="text-[15px] space-y-1">
                             <label className="text-faint-blue fo
-                            nt-normal tracking-[0.6px]">Transaction ID:</label>
+                            nt-normal tracking-[0.6px]">Transaction/Payment ID:<span className="text-[red]">*</span> </label>
                             <input type="text"
                             className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['transactionID'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'} `} name="transactionID"
                             placeholder="Enter Your Transaction ID" required 
@@ -203,10 +204,11 @@ export default function Registration() {
                             {error['transactionID'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['transactionID'])}</p>) : (<></>) }
                         </div>
 
-                        <div className=" mt-5">
+                        <div className="mt-5 lg:flex gap-3 lg:space-y-0 space-y-3">
                         <button type="submit" onClick={submitForm} className="w-full outline-none ring-[0.3px] ring-text-primary bg-blue-900 hover:bg-reddish transition-all rounded-md p-3 text-white text-[15px]">
                             Register
                         </button>
+                        <a href="/" className="rounded-[5px] bg-reddish text-white lg:w-full w-full p-3 grid place-content-center hover:bg-blue-900 transition-all">Back</a>
                         </div>
                     </form>
 
@@ -215,7 +217,7 @@ export default function Registration() {
                 
            
            
-           <div className="lg:flex flex-col hidden basis-[50%] space-y-2">
+           <div className="lg:flex flex-col hidden basis-[50%] space-y-2 justify-center items-center">
                     <div className="flex items-center reg_image ">
                         <img className="w-full" src={dlw} alt="" />
                     </div>
