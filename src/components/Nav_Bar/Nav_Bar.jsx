@@ -1,4 +1,4 @@
-import { FaBars } from "react-icons/fa";
+import { FaBars, FaAngleDown } from "react-icons/fa";
 import Logo from "../../assets/main_logo.svg";
 import { FaXmark } from "react-icons/fa6";
 
@@ -47,10 +47,10 @@ const NavBar = () => {
 
             <li
               className="text-center relative cursor-pointer miniNav"
-              onClick={showMiniNav}
+              onClick={showMiniNav} onMouseLeave={removeMiniNav}
             >
-              <p className="p-3">About Us</p>
-              <ul id="miniNav" className="lg:absolute hidden relative" onMouseLeave={removeMiniNav}>
+              <div className="p-3 space-x-2 flex items-center justify-center"><p >About Us</p> <FaAngleDown /> </div>
+              <ul id="miniNav" className="lg:absolute hidden relative" >
                 <li className="grid p-0">
                   <a className="border" href="/about">
                     Chaplaincy
@@ -63,7 +63,7 @@ const NavBar = () => {
                 </li>
                 <li className="grid p-0">
                   <a className="border " href="/about/chairmans">
-                    Our Chairman
+                    Our Archdeaconry Leaders
                   </a>
                 </li>
               </ul>
@@ -74,15 +74,15 @@ const NavBar = () => {
             <li>
               <a href="/events">Event</a>
             </li>
-            {/* <li>
+            <li>
               <a href="/gallery">Gallery</a>
-            </li> */}
+            </li>
             <li>
               <a href="/contact-us">Contact Us</a>
             </li>
-{/*             <li>
+            <li>
               <a href="/registration">Registration</a>
-            </li> */}
+            </li>
           </ul>
         </div>
 

@@ -2,6 +2,7 @@ import NavBar from "../../components/Nav_Bar/Nav_Bar"
 import ProfileCard from "../../components/Cards/Profile"
 import Header from "../../components/Header/Header"
 import ChaplainsData from "../../data/Chaplains"
+import Footer from '../../components/Footer/Footer'
 
 const Chaplains = () =>{
      return(
@@ -19,6 +20,9 @@ const Chaplains = () =>{
                          </div>
                    ))}
                </div>
+
+        <Footer />
+
           </div>
      )
 }
