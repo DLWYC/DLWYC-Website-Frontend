@@ -1,4 +1,4 @@
-import Image from "../assets/logo.png"
+import Image from "../assets/avatar.jpg"
 import Image1 from "../assets/chaplains/chaplain1.jpg"
 
 

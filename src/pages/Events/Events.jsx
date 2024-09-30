@@ -14,7 +14,9 @@ const Events = () => {
             <div className="grid gap-6 lg:grid-cols-2 lg:p-10 p-4 bg-[#eae7fd94]">
                 {EventData.map(event=>(
                   <div className="" key={event.id}>
-                      <EventCard  title={event.title} date={event.date} description={event.description} image={event.image} link={'/registration'} id={event.id} position='lg:flex' />
+                  <a href={`http://localhost:5173/events/${event.id}`}>
+                  <EventCard  title={event.title} date={event.date} description={event.description} image={event.image} link={'/registration'} id={event.id} position='lg:flex'  />
+                  </a>
                   </div>
                 ))}
             </div>

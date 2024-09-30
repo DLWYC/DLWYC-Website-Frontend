@@ -1,240 +1,395 @@
-import { useState } from "react";
+import { useState, useEffect, Fragment } from "react";
 import Logo from "../../assets/main_logo.svg";
-import dlw from '../../assets/registrationpage/dlw.jpeg';
-import axios from 'axios'
+import dlw from "../../assets/registrationpage/dlw.jpeg";
+import axios from "axios";
+import Churches from "../../data/churches";
+import Input from "../../components/Inputs/Inputs";
+import {
+  ageOptions,
+  genderOptions,
+  archdeaconryOptions,
+  camperTypeOptions,
+  denominationOptions,
+} from "../../data/Inputs";
+import { HandleData } from "../../utils/functions";
 import { useNavigate } from "react-router-dom";
-
-
+import { Transition } from "@headlessui/react";
+// import { CheckCircleIcon } from '@heroicons/react/24/outline'
+import { FaExclamationCircle, FaRegTimesCircle } from "react-icons/fa";
 
 export default function Registration() {
-    const [fullName, setFullName] = useState('')
-    const [email, setEmail] = useState('')
-    const [phoneNumber, setPhoneNumber] = useState('')
-    const [gender, setGender] = useState('')
-    const [archdeaconry, setArchdeaconry] = useState('')
-    const [age, setAge] = useState('')
-    const [parish, setParish] = useState('')
-    const [transactionID, setTransactionID] = useState('')
-    const [error, setError] = useState({})
-    const navigate = useNavigate()
+  // ## This it to get the values of the inputs
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [gender, setGender] = useState("");
+  const [age, setAge] = useState("");
+  const [archdeaconry, setArchdeaconry] = useState(null);
+  const [parish, setParish] = useState(null);
+  const [error, setError] = useState({});
+  const navigate = useNavigate();
+  const [camperType, setCamperType] = useState("");
+  const [denomination, setDenomination] = useState("");
+  const [churchList, setChurchList] = useState([]);
+  // const [reference, setReference] = useState('');
+  // const [accessCode, setAccessCode] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [disable, setDisable] = useState();
+  const [regsitrationStatus, setRegsitrationStatus] = useState(true);
+  const [regsitrationTextStatus, setRegsitrationTextStatus] = useState('Register');
+  const [show, setShow] = useState(true);
 
-    const data = {
-        fullName,   
-        email,
-        phoneNumber,
-        age,
-        gender,
-        archdeaconry,
-        parish,
-        transactionID
+  const userInput = {
+    fullName,
+    email,
+    phoneNumber,
+    age,
+    gender,
+    archdeaconry,
+    parish,
+    camperType,
+    denomination,
+  };
+
+
+  // ## Handle Input Changes
+  //   ## Submit Form Data
+  const submitForm = async (e) => {
+    e.preventDefault();
+    window.localStorage.setItem('email', userInput.email)
+    try {
+      const registrationReponse = await axios.post(
+        "http://localhost:5000/api/registration",
+        userInput
+      );
+      console.log(registrationReponse);
+      if (registrationReponse.data.message === "Registration Successful") {
+        navigate("/registration/verify");
+      } else {
+        setRegsitrationStatus(false);
+      }
+
+      // });
+    } catch (err) {
+      console.log(err);
+      setError(err.response.data.errors);
     }
+  };
 
-    console.log(data)
-    const submitForm = async(e) =>{
-        e.preventDefault()
-       try{
-        await axios.post('http://localhost:5000/api/registration', data)
-        .then(() =>{
-            navigate('/registration/success')
-        })
-        .catch(error =>{
-            throw (error.response.data.errors)
-        })
-       }
-       catch(err){
-        setError(err)
+
+  // ## Handle Dropdown Changes
+  useEffect(() => {
+    setDisable(HandleData(userInput));
+  }, [userInput]);
+
+  useEffect(() => {
+    //   ## Filter Parishes by Archdeaconry
+    if (archdeaconry) {
+      const handleArchdeaconryFilter = Churches.filter(
+        (item) => item.archdeaconry === archdeaconry
+      );
+      const churches = handleArchdeaconryFilter.flatMap((churches) =>
+        churches.churches.map((church) => ({
+          value: church.name,
+          label: church.name,
+        }))
+      );
+      setChurchList(churches);
+      setSelectedOption(null);
+      setParish(null);
+    } else {
+      setChurchList([]);
+      setSelectedOption(null);
+      setParish(null);
     }
-}
-    console.log(error)
+  }, [archdeaconry]);
 
-    const removeError = (e) =>{
-        setError({...error, [e.target.name]: ''})
+  // Handle ArchdeaconryType
+  useEffect(() => {
+    if (denomination === "Anglican" && selectedOption) {
+      setParish(selectedOption.value);
+    } else if (denomination === "Non-Anglican") {
+      setParish(null);
+    } else {
+      setParish(null);
     }
+  }, [selectedOption, denomination]);
 
+  // Handle Error Removal
+  const removeError = (e) => {
+    setError({ ...error, [e.target.name]: "" });
+  };
 
-
-
-    return (
-        
-        <div className="grid p-3  lg:grid-cols-2 lg:h-[100dvh] h-full lg:place-content-center font-rubik">
-
-                <div className="rounded-lg flex flex-col space-y-2 p-5 lg:basis-[50%] basis-full lg:justify-center relative">
-                    <div className="justify-between items-center lg:flex grid space-y-3">
-                    <img className="w-[250px] top-[10px]" src={Logo} alt="Logo" />
-                    
-                    </div>
-                    
-
-                    <h1 className="lg:text-[25px] font-normal font-rubik-moonrock text-primary-main"> 2024 <span className="text-red-600">Camp</span> Registration </h1>
-                    {/* {success ? (<div className="rounded-xl text-white bg-green-500 p-3">Registration Successful</div>) : (<></>)} */}
-                    
-                    <form method="post" className="space-y-5 font-rubik " >
-                        <div className="space-y-3">
-                        <div className="text-[15px] space-y-1">
-                            <label className="text-faint-blue fo
-                            nt-normal tracking-[0.6px]">Full Name:<span className="text-[red]">*</span> </label>
-                            <input type="text"
-                            className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['fullName'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'} `} name="fullName"
-                            placeholder="Enter Your Name" required 
-                            onInput={e=>setFullName((e.target.value))}
-                            onChange={removeError}
-                            /> 
-                            {error['fullName'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['fullName'])}</p>) : (<></>) }
-                        </div>
-
-
-                        <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
-
-                            <div className="text-[15px] space-y-1 basis-[50%]">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Email:<span className="text-[red]">*</span> </label>
-                                <input type="email"
-                                className={`w-full outline-none ring-[0.3px] rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['email'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="email"
-                                placeholder="Enter Your Email" required
-                                onInput={e=>setEmail((e.target.value))}
-                                onChange={removeError}
-                                /> 
-                                {error['email'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['email'])}</p>) : (<></>) }
-                            </div>
-
-                            <div className="space-y-1 basis-[50%]">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Phone Number:<span className="text-[red]">*</span> </label>
-                                <input type="number"
-                                className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['phoneNumber'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="phoneNumber"
-                                placeholder="Enter Phone Number" required
-                                onInput={e=>setPhoneNumber((e.target.value))}
-                                onChange={removeError}
-                                /> 
-                                {error['phoneNumber'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['phoneNumber'])}</p>) : (<></>) }
-                            </div>
-                        </div>
-
-
-
-
-                        <div className="flex lg:flex-row flex-col lg:space-x-2 text-[15px] space-y-3 lg:space-y-0">
-                            
-                            <div className="basis-[50%] space-y-1">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Age:<span className="text-[red]">*</span> </label>
-                                {/* <input type="number"
-                                className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['age'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="age"
-                                placeholder="Enter Your Age" required
-                                onInput={e=>setAge((e.target.value))}
-                                onChange={removeError}
-                                />  */}
-                                <select className={`w-full outline-none ring-[0.3px] rounded-md p-3 text-[14px] tracking-[0.8px] text-text-primary bg-transparent ${error['age'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`}  name="age" onInput={e=>setAge((e.target.value))} onChange={removeError} required>
-                                    <option value="">Select Age</option>
-                                    <option value="15-20">15-20</option>
-                                    <option value="21+">21+</option>
-                                </select>
-                                {error['age'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['age'])}</p>) : (<></>) }
-                            </div>
-
-                            <div className=" basis-[50%] space-y-1">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Gender:<span className="text-[red]">*</span> </label>
-                                <select className={`w-full outline-none ring-[0.3px] rounded-md p-3 text-[14px] tracking-[0.8px] text-text-primary bg-transparent ${error['gender'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`}  name="gender" id="gender" onInput={e=>setGender((e.target.value))} onChange={removeError} required>
-                                    <option value="">Select Gender</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                                {error['gender'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['gender'])}</p>) : (<></>) }
-                            </div>
-                        </div>
-                        
-
-                        <div className="flex flex-col lg:flex-row lg:gap-2 text-[15px] space-y-3 lg:space-y-0">
-                            <div className="basis-[50%] space-y-1">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Archdeaconry:<span className="text-[red]">*</span> </label>
-                                <select className={`w-full outline-none ring-[0.3px] rounded-md p-3 tracking-[0.8px] text-[14px] text-text-primary bg-transparent ${error['archdeaconry'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`}  name="archdeaconry" id="archdeaconry" onInput={e=>setArchdeaconry((e.target.value))} 
-                                onChange={removeError}required>
-                                    <option value="">Select Your Archdeaconry</option>
-                                    <option value="Abule Egba">Abule Egba</option>
-                                    <option value="Agege">Agege</option>
-                                    <option value="Amuwo Odofin">Amuwo Odofin</option>
-                                    <option value="Bariga">Bariga</option>
-                                    <option value="Cathedral">Cathedral</option>
-                                    <option value="Egbe">Egbe</option>
-                                    <option value="Festac">Festac</option>
-                                    <option value="Gowon Estate">Gowon Estate</option>
-                                    <option value="Iba">Iba</option>
-                                    <option value="Idimu">Idimu</option>
-                                    <option value="Ijede">Ijede</option>
-                                    <option value="Iju-Ishaga">Iju-Ishaga</option>
-                                    <option value="Ikeja">Ikeja</option>
-                                    <option value="Ikorodu">Ikorodu</option>
-                                    <option value="Ikorodu-North">Ikorodu-North</option>
-                                    <option value="Ikosi-Ketu">Ikosi-Ketu</option>
-                                    <option value="Imota">Imota</option>
-                                    <option value="Ipaja">Ipaja</option>
-                                    <option value="Isolo">Isolo</option>
-                                    <option value="Ogudu">Ogudu</option>
-                                    <option value="Ojo">Ojo</option>
-                                    <option value="Ojo-Alaba">Ojo-Alaba</option>
-                                    <option value="Ojodu">Ojodu</option>
-                                    <option value="Opebi">Opebi</option>
-                                    <option value="Oshodi">Oshodi</option>
-                                    <option value="Oto-Awori'">Oto-Awori</option>
-                                    <option value="Owutu">Owutu</option>
-                                    <option value="Satallite">Satallite</option>
-                                    <option value="Somolu">Somolu</option>
-                                </select>
-                                {error['archdeaconry'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['archdeaconry'])}</p>) : (<></>) }
-                            </div>
-
-                            <div className="text-[15px] basis-[50%] space-y-1">
-                                <label className="text-faint-blue font-normal tracking-[0.6px]">Parish:<span className="text-[red]">*</span> </label>
-                                <input type="text"
-                                className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['parish'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`} name="parish"
-                                placeholder="Enter Parish" onInput={e=>setParish((e.target.value))} 
-                                onChange={removeError} required
-                                /> 
-                                {error['parish'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['parish'])}</p>) : (<></>) }
-                            </div>
-                        </div>
-                        </div>
-
-                        <div className="text-[15px] space-y-1">
-                            <label className="text-faint-blue fo
-                            nt-normal tracking-[0.6px]">Transaction/Payment ID:<span className="text-[red]">*</span> </label>
-                            <input type="text"
-                            className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${error['transactionID'] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'} `} name="transactionID"
-                            placeholder="Enter Your Transaction ID" required 
-                            onInput={e=>setTransactionID((e.target.value))}
-                            onChange={removeError}
-                            /> 
-                            {error['transactionID'] ? (<p className="text-red-500 text-[14px]">{Object.values(error['transactionID'])}</p>) : (<></>) }
-                        </div>
-
-                        <div className="mt-5 lg:flex gap-3 lg:space-y-0 space-y-3">
-                        <button type="submit" onClick={submitForm} className="w-full outline-none ring-[0.3px] ring-text-primary bg-blue-900 hover:bg-reddish transition-all rounded-md p-3 text-white text-[15px]">
-                            Register
-                        </button>
-                        <a href="/" className="rounded-[5px] bg-reddish text-white lg:w-full w-full p-3 grid place-content-center hover:bg-blue-900 transition-all">Back</a>
-                        </div>
-                    </form>
-
-                    
-                </div>
-                
-           
-           
-           <div className="lg:flex flex-col hidden basis-[50%] space-y-2 justify-center items-center">
-                    <div className="flex items-center reg_image ">
-                        <img className="w-full" src={dlw} alt="" />
-                    </div>
-
-                    <div className="text-center p-3 space-y-3 basis-[20%]">
-                        <h1 className="font-medium tracking-wider uppercase text-red-700">
-                        Romans 16:26
-                        </h1>
-                        <p className="text-faint-blue font-normal">
-                        “ But now is made manifest, and by the scriptures of the <br /> prophets, according to the commandment of the everlasting <br />God, made known to all nations for the obedience of faith: “
-                        </p>                        
-                </div>
-
-           </div>
-           
+  return (
+    <div className="grid lg:p-3 p-0 relative h-full lg:grid-cols-2 lg:place-content-center font-rubik  ">
+      <div className="rounded-lg flex  h-full flex-col space-y-2 lg:p-5 p-2 lg:basis-[50%] basis-full lg:justify-center relative  ">
+        <div className="justify-between items-center lg:flex grid space-y-3">
+          <img className="w-[250px] top-[10px]" src={Logo} alt="Logo" />
         </div>
 
-        
-    )
+        <div className="lg:text-[17px] font-normal font-rubik-moonrock text-primary-main flex justify-between">
+          <h1>
+            2024 <span className="text-red-600">Camp</span> Registration{" "}
+          </h1>
+          <p className="text-red-500 font-rubik-moonrock">
+            {" "}
+            <span className="text-primary-main ">Note:</span> All Input Fields
+            Are To Be Filled
+          </p>
+        </div>
+        {/* {success ? (<div className="rounded-xl text-white bg-green-500 p-3">Registration Successful</div>) : (<></>)} */}
+        <form method="post" className="space-y-5 font-rubik ">
+          <div className="space-y-3 ">
+            {/* FirstName */}
+            <div className="text-[15px] space-y-1">
+              <Input
+                // required
+                error={error}
+                // value={}
+                removeError={removeError}
+                onInput={(e) => setFullName(e.target.value)}
+                type="text"
+                placeholder="Enter Full Name"
+                name="fullName"
+                label="Full Name"
+              />
+            </div>
+            {/* FirstName */}
+
+            {/* Email and Phone Number */}
+            <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
+              <Input
+                // required
+                error={error}
+                // value={''}
+                removeError={removeError}
+                onInput={(e) => setEmail(e.target.value)}
+                type="email"
+                placeholder="Enter Email"
+                name="email"
+                label="Email"
+                basis
+              />
+              <Input
+                // required
+                error={error}
+                // value={''}
+                removeError={removeError}
+                onInput={(e) => setPhoneNumber(e.target.value)}
+                type="text"
+                placeholder="Enter Phone Number"
+                name="phoneNumber"
+                label="Phone Number"
+                basis
+              />
+            </div>
+            {/* Email and Phone Number */}
+
+            {/* Age and Gender */}
+            <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
+              <Input
+                // required
+                error={error}
+                // value={''}
+                removeError={removeError}
+                onInput={(e) => setAge(e.target.value)}
+                name="age"
+                label="Age"
+                basis
+                options={ageOptions}
+              />
+              <Input
+                // required
+                error={error}
+                // value={''}
+                removeError={removeError}
+                onInput={(e) => setGender(e.target.value)}
+                name="gender"
+                label="Gender"
+                basis
+                options={genderOptions}
+              />
+            </div>
+            {/* Age and Gender */}
+
+            {/* Camper Type and Anglican Member */}
+            <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
+              <Input
+                // required
+                error={error}
+                // value={''}
+                removeError={removeError}
+                onInput={(e) => setCamperType(e.target.value)}
+                name="camperType"
+                label="Camper Type"
+                basis
+                options={camperTypeOptions}
+              />
+              <Input
+                // required
+                error={error}
+                // value={''}
+                removeError={removeError}
+                onInput={(e) => setDenomination(e.target.value)}
+                name="denomination"
+                label="Denomination"
+                basis
+                options={denominationOptions}
+              />
+            </div>
+            {/* Camper Type and Anglican Member */}
+
+            {/* Archdeaconry and Parish */}
+            <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
+              <Input
+                // required
+                error={error}
+                // value={}
+                removeError={removeError}
+                onInput={(e) => setArchdeaconry(e.target.value)}
+                name="archdeaconry"
+                label="Archdeaconry"
+                basis
+                options={archdeaconryOptions}
+                denomination={denomination}
+              />
+              <Input
+                // required
+                error={error}
+                // value={}
+                removeError={removeError}
+                onChange={setSelectedOption}
+                name="parish"
+                label="Parish"
+                basis
+                options={churchList}
+                value={selectedOption}
+                denomination={denomination}
+              />
+            </div>
+            {/* Archdeaconry and Parish */}
+
+            {/* Transaction/Payment ID: */}
+
+            {/* Registration */}
+            <div className="flex gap-3 text-center justify-center">
+              <p className="text-faint-blue">
+                By Registering, you are indicating that you have <br /> Read and
+                agreed to the{" "}
+                <a href="" className="text-red-500 underline">
+                  Rules & Regulations
+                </a>{" "}
+                for the camp
+              </p>
+            </div>
+            {/* Registration */}
+          </div>
+
+          <div className="mt-5 lg:flex gap-3 lg:space-y-0 space-y-3 relative">
+            {disable === true ? (
+              <button
+                className={`w-full outline-none ring-[0.3px] ring-text-primary bg-gray-200 transition-all rounded-md p-3 text-primary-main text-[15px] cursor-not-allowed `}
+                disabled
+              >
+                Register
+              </button>
+            ) : (
+              <button
+                type="submit"
+                onClick={submitForm}
+                className={`w-full outline-none ring-[0.3px] ring-text-primary bg-blue-900 hover:bg-reddish transition-all rounded-md p-3 text-white text-[15px] `}
+              >
+                {regsitrationTextStatus}
+              </button>
+            )}
+            <a
+              href="/"
+              className="rounded-[5px] bg-reddish text-white lg:w-full w-full p-3 grid place-content-center hover:bg-blue-900 transition-all"
+            >
+              Back
+            </a>
+          </div>
+        </form>
+      </div>
+
+      <div className="lg:flex fixed lg:right-0 w-[50%] h-full flex-col hidden  basis-[50%] space-y-2 justify-center items-center">
+        <div className="flex items-center reg_image ">
+          <img className="w-[full]" src={dlw} alt="" />
+        </div>
+
+        <div className="text-center p-3 space-y-3 basis-[20%]">
+          <h1 className="font-medium tracking-wider uppercase text-red-700">
+            Romans 16:26
+          </h1>
+          <p className="text-faint-blue font-normal">
+            “ But now is made manifest, and by the scriptures of the <br />{" "}
+            prophets, according to the commandment of the everlasting <br />
+            God, made known to all nations for the obedience of faith: “
+          </p>
+        </div>
+      </div>
+
+      {/* Notification */}
+      <>
+        {/* Global notification live region, render this permanently at the end of the document */}
+        {regsitrationStatus === false ? (
+          <div
+            aria-live="assertive"
+            className="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 "
+          >
+            <div className="flex w-full flex-col items-center space-y-4 sm:items-end">
+              {/* Notification panel, dynamically insert this into the live region when it needs to be displayed */}
+              <Transition
+                show={show}
+                as={Fragment}
+                enter="transform ease-out duration-300 transition"
+                enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
+                enterTo="translate-y-0 opacity-100 sm:translate-x-0"
+                leave="transition ease-in duration-100"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+              >
+                <div className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+                  <div className="p-4">
+                    <div className="flex items-start">
+                      <div className="flex-shrink-0">
+                        <FaExclamationCircle
+                          className="h-6 w-6 text-reddish"
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <div className="ml-3 w-0 flex-1 pt-0.5">
+                        <p className="text-sm font-medium text-gray-900">
+                          Error Occured While Registering!
+                        </p>
+                        <p className="mt-1 text-sm text-gray-500">Please Refresh This Page & Try Again.</p>
+                      </div>
+                      <div className="ml-4 flex flex-shrink-0">
+                        <button
+                          type="button"
+                          className="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                          onClick={() => {
+                            setShow(false);
+                          }}
+                        >
+                          <span className="sr-only">Close</span>
+                          <FaRegTimesCircle
+                            className="h-5 w-5"
+                            aria-hidden="true"
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Transition>
+            </div>
+          </div>
+        ) : (
+          <></>
+        )}
+      </>
+      {/* Notification */}
+    </div>
+  );
 }
