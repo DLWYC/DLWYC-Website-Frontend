@@ -52,8 +52,8 @@ const About = () => {
               About Us
             </h1>
             <h2
-              className="text-[35px] font-rubik-moonrock text-transparent font-extralight"
-              id="about_header"
+              className="text-[35px] font-rubik-moonrock text-yellow font-extralight"
+              id=""
             >
               <span className="stroke-yellow">WELCOME</span> HERE IS WHAT WE ARE.
             </h2>
