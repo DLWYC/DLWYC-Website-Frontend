@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 import Logo from "../../assets/main_logo.svg";
 import dlw from "../../assets/registrationpage/dlw.jpeg";
 import axios from "axios";
@@ -13,9 +13,7 @@ import {
 } from "../../data/Inputs";
 import { HandleData } from "../../utils/functions";
 import { useNavigate } from "react-router-dom";
-import { Transition } from "@headlessui/react";
-// import { CheckCircleIcon } from '@heroicons/react/24/outline'
-import { FaExclamationCircle, FaRegTimesCircle } from "react-icons/fa";
+import Alert from "../../components/Alert/Alert";
 
 export default function Registration() {
   // ## This it to get the values of the inputs
@@ -24,20 +22,23 @@ export default function Registration() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [gender, setGender] = useState("");
   const [age, setAge] = useState("");
-  const [archdeaconry, setArchdeaconry] = useState(null);
-  const [parish, setParish] = useState(null);
-  const [error, setError] = useState({});
+  const [archdeaconry, setArchdeaconry] = useState("");
+  const [parish, setParish] = useState("");
+  const [inputError, setInputError] = useState({});
+  const [generalError, setGeneralError] = useState({});
   const navigate = useNavigate();
   const [camperType, setCamperType] = useState("");
-  const [denomination, setDenomination] = useState("");
+  const [denomination, setDenomination] = useState(null);
   const [churchList, setChurchList] = useState([]);
-  // const [reference, setReference] = useState('');
-  // const [accessCode, setAccessCode] = useState('');
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [selectedOption, setSelectedOption] = useState("");
   const [disable, setDisable] = useState();
-  const [regsitrationStatus, setRegsitrationStatus] = useState(true);
-  const [regsitrationTextStatus, setRegsitrationTextStatus] = useState('Register');
-  const [show, setShow] = useState(true);
+  const [registrationStatus, setRegistrationStatus] = useState(true);
+  const [regsitrationTextStatus, setRegsitrationTextStatus] = useState("Register");
+  const [paymentOption, setPaymentOption] = useState("");
+  const [noOfUnpaidCampers, setNoOfUnpaidCampers] = useState([]);
+  const [noOfUnpaidCampersOption, setNoOfUnpaidCampersOption] = useState([]);
+  const [noOfCampersToPayFor, setNoOfCampersToPayFor] = useState("");
+
 
   const userInput = {
     fullName,
@@ -49,39 +50,48 @@ export default function Registration() {
     parish,
     camperType,
     denomination,
+    paymentOption,
+    noOfUnpaidCampersOption,
+    noOfCampersToPayFor
   };
 
-
+  
   // ## Handle Input Changes
   //   ## Submit Form Data
   const submitForm = async (e) => {
     e.preventDefault();
-    window.localStorage.setItem('email', userInput.email)
+    window.localStorage.setItem("email", userInput.email);
     try {
       const registrationReponse = await axios.post(
         "http://localhost:5000/api/registration",
         userInput
       );
-      console.log(registrationReponse);
+      // console.log(registrationReponse);
       if (registrationReponse.data.message === "Registration Successful") {
+        window.localStorage.setItem("paymentUrl", registrationReponse.data.paymentUrl);
         navigate("/registration/verify");
       } else {
-        setRegsitrationStatus(false);
+        setRegistrationStatus(false);
       }
 
       // });
     } catch (err) {
-      console.log(err);
-      setError(err.response.data.errors);
+      if (err.code === "ERR_NETWORK") {
+        setGeneralError({ message: "Network Error" });
+      }
+      if(err.code === "ERR_BAD_REQUEST"){
+        setInputError(err.response.data.errors);
+      }
+      // setGeneralError(err.message);
+      console.log(err, inputError);
     }
   };
-
 
   // ## Handle Dropdown Changes
   useEffect(() => {
     setDisable(HandleData(userInput));
   }, [userInput]);
-
+  
   useEffect(() => {
     //   ## Filter Parishes by Archdeaconry
     if (archdeaconry) {
@@ -104,7 +114,7 @@ export default function Registration() {
     }
   }, [archdeaconry]);
 
-  // Handle ArchdeaconryType
+  // ## Handle ArchdeaconryType
   useEffect(() => {
     if (denomination === "Anglican" && selectedOption) {
       setParish(selectedOption.value);
@@ -115,10 +125,40 @@ export default function Registration() {
     }
   }, [selectedOption, denomination]);
 
-  // Handle Error Removal
+  // ## Handle Error Removal
   const removeError = (e) => {
-    setError({ ...error, [e.target.name]: "" });
+    setInputError({ ...inputError, [e.target.name]: "" });
   };
+  
+  // # Get the payment type status
+  const getPaymentModeValue = async (e) => {
+    const paymentOptions = e.target.value;
+    setPaymentOption(paymentOptions);
+    if (paymentOptions === "Multiple") {
+      const campers = await axios.get(
+        `http://localhost:5000/api/unPaidCampers?parish=` + parish
+      );
+    const camperList = campers.data.map(camper => ({
+      label: camper.fullName,
+      value: camper.uniqueID
+    }))
+    // console.log(camperList, campers)
+    setNoOfUnpaidCampers(camperList);
+    console.log("gotten here")
+  }
+  
+  else{
+    setNoOfUnpaidCampers([])
+    setNoOfUnpaidCampersOption('')
+  }
+};
+
+useEffect(() =>{
+  setNoOfCampersToPayFor(noOfUnpaidCampersOption.length);
+}, [noOfUnpaidCampersOption])
+
+  // ## Get the Number OF Unpaid Campers
+
 
   return (
     <div className="grid lg:p-3 p-0 relative h-full lg:grid-cols-2 lg:place-content-center font-rubik  ">
@@ -144,7 +184,7 @@ export default function Registration() {
             <div className="text-[15px] space-y-1">
               <Input
                 // required
-                error={error}
+                error={inputError}
                 // value={}
                 removeError={removeError}
                 onInput={(e) => setFullName(e.target.value)}
@@ -160,7 +200,7 @@ export default function Registration() {
             <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
               <Input
                 // required
-                error={error}
+                error={inputError}
                 // value={''}
                 removeError={removeError}
                 onInput={(e) => setEmail(e.target.value)}
@@ -172,7 +212,7 @@ export default function Registration() {
               />
               <Input
                 // required
-                error={error}
+                error={inputError}
                 // value={''}
                 removeError={removeError}
                 onInput={(e) => setPhoneNumber(e.target.value)}
@@ -189,7 +229,7 @@ export default function Registration() {
             <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
               <Input
                 // required
-                error={error}
+                error={inputError}
                 // value={''}
                 removeError={removeError}
                 onInput={(e) => setAge(e.target.value)}
@@ -200,7 +240,7 @@ export default function Registration() {
               />
               <Input
                 // required
-                error={error}
+                error={inputError}
                 // value={''}
                 removeError={removeError}
                 onInput={(e) => setGender(e.target.value)}
@@ -216,7 +256,7 @@ export default function Registration() {
             <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
               <Input
                 // required
-                error={error}
+                error={inputError}
                 // value={''}
                 removeError={removeError}
                 onInput={(e) => setCamperType(e.target.value)}
@@ -227,7 +267,7 @@ export default function Registration() {
               />
               <Input
                 // required
-                error={error}
+                error={inputError}
                 // value={''}
                 removeError={removeError}
                 onInput={(e) => setDenomination(e.target.value)}
@@ -240,36 +280,127 @@ export default function Registration() {
             {/* Camper Type and Anglican Member */}
 
             {/* Archdeaconry and Parish */}
-            <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
-              <Input
-                // required
-                error={error}
-                // value={}
-                removeError={removeError}
-                onInput={(e) => setArchdeaconry(e.target.value)}
-                name="archdeaconry"
-                label="Archdeaconry"
-                basis
-                options={archdeaconryOptions}
-                denomination={denomination}
-              />
-              <Input
-                // required
-                error={error}
-                // value={}
-                removeError={removeError}
-                onChange={setSelectedOption}
-                name="parish"
-                label="Parish"
-                basis
-                options={churchList}
-                value={selectedOption}
-                denomination={denomination}
-              />
-            </div>
+            {denomination === null ||
+            denomination === "" ||
+            denomination === "Non-Anglican" ? (
+              ""
+            ) : (
+              <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
+                <Input
+                  // required
+                  error={inputError}
+                  // value={}
+                  removeError={removeError}
+                  onInput={(e) => setArchdeaconry(e.target.value)}
+                  name="archdeaconry"
+                  label="Archdeaconry"
+                  basis
+                  options={archdeaconryOptions}
+                  denomination={denomination}
+                />
+                <Input
+                  // required
+                  error={inputError}
+                  // value={}
+                  removeError={removeError}
+                  onChange={setSelectedOption}
+                  name="parish"
+                  label="Parish"
+                  basis
+                  options={churchList}
+                  value={selectedOption}
+                  denomination={denomination}
+                />
+              </div>
+            )}
             {/* Archdeaconry and Parish */}
 
             {/* Transaction/Payment ID: */}
+            {denomination === null ||
+            denomination === "" ||
+            denomination === "Non-Anglican" ? (
+              ""
+            ) : denomination === "Anglican" && parish == null ? (
+              ""
+            ) : (
+              <div className="flex items-center">
+                <label className="text-faint-blue font-normal tracking-[0.6px]">
+                  Payment Mode<span className="text-[red]">*</span>
+                </label>
+                <div className="flex gap-10 p-3">
+                  <div className="flex items-center space-x-3">
+                    <label htmlFor="single">Single:</label>
+                    <input
+                      type="radio"
+                      name="paymentOptions"
+                      value={"Single"}
+                      id="single"
+                      onClick={getPaymentModeValue}
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <label htmlFor="multiple">Multiple:</label>
+                    <input
+                      type="radio"
+                      name="paymentOptions"
+                      value={"Multiple"}
+                      id="multiple"
+                      readOnly
+                      onClick={getPaymentModeValue}
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-3">
+                    <label htmlFor="paidByChurch">Church Sponsored:</label>
+                    <input
+                      type="radio"
+                      name="paymentOptions"
+                      value={"Church Sponsored"}
+                      id="paidByChurch"
+                      onClick={getPaymentModeValue}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            {/* Transaction/Payment ID: */}
+
+            {/* Number Of Campers to pay for &7 Choices */}
+            {paymentOption === 'Multiple' ? 
+            
+            <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
+                <Input
+                  required
+                  error={inputError}
+                  value={noOfCampersToPayFor}
+                  removeError={removeError}
+                  // onInput={(e) => setNoOfCampersToPayFor(e.target.value)}
+                  name="noOfCampersToPayFor"
+                  label="Number Of Campers To Pay For"
+                  basis
+                  type={'number'}
+                  readOnly
+                />
+                <Input
+                  // required
+                  error={inputError}
+                  // value={}
+                  removeError={removeError}
+                  onChange={setNoOfUnpaidCampersOption}
+                  name="noOfUnpaidCampers"
+                  label="List Of Unpaid Campers"
+                  basis
+                  
+                  options={noOfUnpaidCampers}
+                  value={noOfUnpaidCampersOption}
+                  // denomination={denomination}
+                />
+              </div>
+              :
+              ('')
+            }
+            {/* Number Of Campers to pay for &7 Choices */}
 
             {/* Registration */}
             <div className="flex gap-3 text-center justify-center">
@@ -332,61 +463,25 @@ export default function Registration() {
       {/* Notification */}
       <>
         {/* Global notification live region, render this permanently at the end of the document */}
-        {regsitrationStatus === false ? (
-          <div
-            aria-live="assertive"
-            className="pointer-events-none fixed inset-0 flex items-end px-4 py-6 sm:items-start sm:p-6 "
-          >
-            <div className="flex w-full flex-col items-center space-y-4 sm:items-end">
-              {/* Notification panel, dynamically insert this into the live region when it needs to be displayed */}
-              <Transition
-                show={show}
-                as={Fragment}
-                enter="transform ease-out duration-300 transition"
-                enterFrom="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2"
-                enterTo="translate-y-0 opacity-100 sm:translate-x-0"
-                leave="transition ease-in duration-100"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
-                <div className="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
-                  <div className="p-4">
-                    <div className="flex items-start">
-                      <div className="flex-shrink-0">
-                        <FaExclamationCircle
-                          className="h-6 w-6 text-reddish"
-                          aria-hidden="true"
-                        />
-                      </div>
-                      <div className="ml-3 w-0 flex-1 pt-0.5">
-                        <p className="text-sm font-medium text-gray-900">
-                          Error Occured While Registering!
-                        </p>
-                        <p className="mt-1 text-sm text-gray-500">Please Refresh This Page & Try Again.</p>
-                      </div>
-                      <div className="ml-4 flex flex-shrink-0">
-                        <button
-                          type="button"
-                          className="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                          onClick={() => {
-                            setShow(false);
-                          }}
-                        >
-                          <span className="sr-only">Close</span>
-                          <FaRegTimesCircle
-                            className="h-5 w-5"
-                            aria-hidden="true"
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Transition>
-            </div>
-          </div>
+        {registrationStatus === false ? (
+          <Alert
+            status={true}
+            header={"Regitration Failed!"}
+            text={"Please Try Registering Again."}
+          />
         ) : (
-          <></>
+          ""
+        )}
+        {generalError.message === "Network Error" ? (
+          <Alert
+            status={true}
+            header={"Error Occured!"}
+            text={
+              "An Error Occured While Registering, Please Refresh & Try Again."
+            }
+          />
+        ) : (
+          ""
         )}
       </>
       {/* Notification */}

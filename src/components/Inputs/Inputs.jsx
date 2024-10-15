@@ -52,7 +52,21 @@ const Input = (e) => {
         {e.label}
         <span className="text-[red]">*</span>
       </label>
-      {e.type ? (
+      {e.readOnly ? (
+        <input
+          type={e.type}
+          className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${e.error[e.name] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`}
+          name={e.name}
+          value={e.value}
+          placeholder={e.placeholder}
+          required
+          readOnly
+          onChange={e.removeError}
+          onInput={e.onInput}
+        />
+      )
+      :
+      e.type ? (
         <input
           type={e.type}
           className={`w-full outline-none ring-[0.3px]  rounded-md p-3 text-text-primary placeholder:text-[#AAA] tracking-[0.8px] text-[14px] ${e.error[e.name] ? 'ring-[1px] ring-[red]' : 'ring-text-primary'}`}
@@ -63,7 +77,8 @@ const Input = (e) => {
           onChange={e.removeError}
           onInput={e.onInput}
         />
-      )   : e.name === 'parish' && e.denomination === "Non-Anglican" ? 
+      ) : 
+       e.name === 'parish' && e.denomination === "Non-Anglican" ? 
       
         (
           <Select
@@ -79,6 +94,20 @@ const Input = (e) => {
           value={e.value}
           styles={customStyles} 
           placeholder="Select a parish"
+          className="react-select-container"
+          classNamePrefix="react-select"
+        />
+      )
+       : e.name === "noOfUnpaidCampers" ? (
+        <Select
+          options={e.options}
+          onChange={e.onChange}
+          isSearchable
+          isMulti
+          closeMenuOnSelect={false}
+          value={e.value}
+          styles={customStyles} 
+          placeholder="Select Your Members"
           className="react-select-container"
           classNamePrefix="react-select"
         />
