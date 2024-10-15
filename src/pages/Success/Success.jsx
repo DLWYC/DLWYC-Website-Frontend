@@ -31,18 +31,12 @@ import Alert from "../../components/Alert/Alert"
     const paymentResponse = await axios.post("http://localhost:5000/api/payment", {email: email, paymentUrl: paymentUrl})
     console.log(`This is the response ${paymentResponse.data.paymentUrl}`)
        
-    if (paymentResponse.data.message){
-      // console.log(reference, paymentResponse.data.data.reference)
-      // setReference(paymentResponse.data.data.reference)
-      // setAccessCode(paymentResponse.data.data.access_code)
-      // console.log(accessCode, paymentResponse.data.data.access_code)
-      // window.localStorage.setItem('random', JSON.stringify(accessCode))
+    if (paymentResponse.data.message === "Payment Initialized"){
       window.location.href = paymentResponse.data.paymentUrl
     }
     else if (paymentResponse.data.error === "Payed Already"){
       setRegsitrationStatus(true)
     }
-      // navigate("/");
   };
 
 

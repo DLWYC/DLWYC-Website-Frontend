@@ -69,6 +69,7 @@ export default function Registration() {
       // console.log(registrationReponse);
       if (registrationReponse.data.message === "Registration Successful") {
         window.localStorage.setItem("paymentUrl", registrationReponse.data.paymentUrl);
+        window.localStorage.setItem("ref", registrationReponse.data.reference);
         navigate("/registration/verify");
       } else {
         setRegistrationStatus(false);
