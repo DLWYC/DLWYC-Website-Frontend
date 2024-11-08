@@ -33,12 +33,11 @@ export default function Registration() {
   const [selectedOption, setSelectedOption] = useState("");
   const [disable, setDisable] = useState();
   const [registrationStatus, setRegistrationStatus] = useState(true);
-  const [regsitrationTextStatus, setRegsitrationTextStatus] = useState("Register");
-  const [paymentOption, setPaymentOption] = useState("");
+  const [paymentOption, setPaymentOption] = useState("Single");
   const [noOfUnpaidCampers, setNoOfUnpaidCampers] = useState([]);
   const [noOfUnpaidCampersOption, setNoOfUnpaidCampersOption] = useState([]);
   const [noOfCampersToPayFor, setNoOfCampersToPayFor] = useState("");
-
+  const [alert, setAlert] = useState('')
 
   const userInput = {
     fullName,
@@ -52,47 +51,58 @@ export default function Registration() {
     denomination,
     paymentOption,
     noOfUnpaidCampersOption,
-    noOfCampersToPayFor
+    noOfCampersToPayFor,
   };
 
-  
   // ## Handle Input Changes
   //   ## Submit Form Data
+
+  setTimeout(()=>{
+  setAlert(false)
+  }, 3000)
+
+
+  window.localStorage.setItem('paymentOption', paymentOption)
+
+
+
+
   const submitForm = async (e) => {
     e.preventDefault();
     window.localStorage.setItem("email", userInput.email);
     try {
-      const registrationReponse = await axios.post(
+      const { data } = await axios.post(
         "http://localhost:5000/api/registration",
         userInput
       );
-      // console.log(registrationReponse);
-      if (registrationReponse.data.message === "Registration Successful") {
-        window.localStorage.setItem("paymentUrl", registrationReponse.data.paymentUrl);
-        window.localStorage.setItem("ref", registrationReponse.data.reference);
+      if (data.message === "Registration Successful") {
+        window.localStorage.setItem("paymentUrl", data.paymentUrl);
+        window.localStorage.setItem("ref", data.reference);
         navigate("/registration/verify");
-      } else {
-        setRegistrationStatus(false);
       }
-
-      // });
+      else{
+        setRegistrationStatus(false)
+      }
     } catch (err) {
-      if (err.code === "ERR_NETWORK") {
-        setGeneralError({ message: "Network Error" });
-      }
-      if(err.code === "ERR_BAD_REQUEST"){
+      if (err.response && err.response.data.message === "Input Errors") {
         setInputError(err.response.data.errors);
       }
-      // setGeneralError(err.message);
-      console.log(err, inputError);
+      else {
+        setGeneralError({ message: "Network Error" });
+        setAlert(true)
+
+      }
+      console.log(err);
     }
   };
+
+
 
   // ## Handle Dropdown Changes
   useEffect(() => {
     setDisable(HandleData(userInput));
   }, [userInput]);
-  
+
   useEffect(() => {
     //   ## Filter Parishes by Archdeaconry
     if (archdeaconry) {
@@ -130,7 +140,7 @@ export default function Registration() {
   const removeError = (e) => {
     setInputError({ ...inputError, [e.target.name]: "" });
   };
-  
+
   // # Get the payment type status
   const getPaymentModeValue = async (e) => {
     const paymentOptions = e.target.value;
@@ -139,27 +149,23 @@ export default function Registration() {
       const campers = await axios.get(
         `http://localhost:5000/api/unPaidCampers?parish=` + parish
       );
-    const camperList = campers.data.map(camper => ({
-      label: camper.fullName,
-      value: camper.uniqueID
-    }))
-    // console.log(camperList, campers)
-    setNoOfUnpaidCampers(camperList);
-    console.log("gotten here")
-  }
-  
-  else{
-    setNoOfUnpaidCampers([])
-    setNoOfUnpaidCampersOption('')
-  }
-};
+      const camperList = campers.data.map((camper) => ({
+        label: camper.fullName,
+        value: camper.uniqueID,
+      }));
+      setNoOfUnpaidCampers(camperList);
+    } else {
+      setNoOfUnpaidCampers([]);
+      setNoOfUnpaidCampersOption("");
+    }
+  };
 
-useEffect(() =>{
-  setNoOfCampersToPayFor(noOfUnpaidCampersOption.length);
-}, [noOfUnpaidCampersOption])
+  useEffect(() => {
+    setNoOfCampersToPayFor(noOfUnpaidCampersOption.length);
+  }, [noOfUnpaidCampersOption]);
+
 
   // ## Get the Number OF Unpaid Campers
-
 
   return (
     <div className="grid lg:p-3 p-0 relative h-full lg:grid-cols-2 lg:place-content-center font-rubik  ">
@@ -178,7 +184,7 @@ useEffect(() =>{
             Are To Be Filled
           </p>
         </div>
-        {/* {success ? (<div className="rounded-xl text-white bg-green-500 p-3">Registration Successful</div>) : (<></>)} */}
+
         <form method="post" className="space-y-5 font-rubik ">
           <div className="space-y-3 ">
             {/* FirstName */}
@@ -368,9 +374,11 @@ useEffect(() =>{
             {/* Transaction/Payment ID: */}
 
             {/* Number Of Campers to pay for &7 Choices */}
-            {paymentOption === 'Multiple' ? 
-            
-            <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
+
+            {parish === "" || parish === null ? '' : (
+              <>
+            {paymentOption === "Multiple" ? (
+              <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
                 <Input
                   required
                   error={inputError}
@@ -380,7 +388,7 @@ useEffect(() =>{
                   name="noOfCampersToPayFor"
                   label="Number Of Campers To Pay For"
                   basis
-                  type={'number'}
+                  type={"number"}
                   readOnly
                 />
                 <Input
@@ -392,15 +400,16 @@ useEffect(() =>{
                   name="noOfUnpaidCampers"
                   label="List Of Unpaid Campers"
                   basis
-                  
                   options={noOfUnpaidCampers}
                   value={noOfUnpaidCampersOption}
                   // denomination={denomination}
                 />
               </div>
-              :
-              ('')
-            }
+            ) : (
+              ""
+            )}
+            </>
+            )} 
             {/* Number Of Campers to pay for &7 Choices */}
 
             {/* Registration */}
@@ -410,7 +419,7 @@ useEffect(() =>{
                 agreed to the{" "}
                 <a href="" className="text-red-500 underline">
                   Rules & Regulations
-                </a>{" "}
+                </a>
                 for the camp
               </p>
             </div>
@@ -431,7 +440,7 @@ useEffect(() =>{
                 onClick={submitForm}
                 className={`w-full outline-none ring-[0.3px] ring-text-primary bg-blue-900 hover:bg-reddish transition-all rounded-md p-3 text-white text-[15px] `}
               >
-                {regsitrationTextStatus}
+                Register
               </button>
             )}
             <a
@@ -466,7 +475,7 @@ useEffect(() =>{
         {/* Global notification live region, render this permanently at the end of the document */}
         {registrationStatus === false ? (
           <Alert
-            status={true}
+            status={alert}
             header={"Regitration Failed!"}
             text={"Please Try Registering Again."}
           />
@@ -475,10 +484,10 @@ useEffect(() =>{
         )}
         {generalError.message === "Network Error" ? (
           <Alert
-            status={true}
+            status={alert}
             header={"Error Occured!"}
             text={
-              "An Error Occured While Registering, Please Refresh & Try Again."
+              "Error Connecting with the server. Please Reach out to the Technical Unit"
             }
           />
         ) : (

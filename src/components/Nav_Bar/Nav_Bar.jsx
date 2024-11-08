@@ -81,7 +81,7 @@ const NavBar = () => {
               <a href="/contact-us">Contact Us</a>
             </li>
             <li>
-              {/* <a href="/registration">Registration</a> */}
+              <a href="/registration">Registration</a>
             </li>
           </ul>
         </div>
