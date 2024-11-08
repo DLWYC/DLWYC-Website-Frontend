@@ -6,10 +6,8 @@ import { Link, useSearchParams } from "react-router-dom";
 
 
   const PaymentSuccess = () => {
-  const email = window.localStorage.getItem('email')
-  console.log(email)
   const [response, setResponse] = useState('')
-  const [searchParam, setSearchParam] = useSearchParams()
+  const [searchParam] = useSearchParams()
   
 
   const reference = searchParam.get('reference')

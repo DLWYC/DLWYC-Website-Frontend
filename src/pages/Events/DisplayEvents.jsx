@@ -17,7 +17,7 @@ const DisplayEvents = () => {
     if (eventDetail) {
       setEvents(eventDetail);
     } else {
-      console.log("Event not found");
+      // console.log("Event not found");
       setEvents([]);
     }
   }, [eventId]);

@@ -30,7 +30,7 @@ function App() {
             <Route path='/events' element={<EventsPage />} />
             <Route path='/events/:eventId' element={<DisplayEvent />} />
             <Route path='/gallery' element={<GalleryPage />} />
-            <Route path='/regi' element={<Registration />} />
+            <Route path='/registration' element={<Registration />} />
             <Route path='/registration/verify' element={<Success />} />
             <Route path='/payment/successful' element={<PaymentSuccess />} />
           </Routes>
