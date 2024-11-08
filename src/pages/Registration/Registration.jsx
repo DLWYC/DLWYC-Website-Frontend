@@ -72,7 +72,7 @@ export default function Registration() {
     window.localStorage.setItem("email", userInput.email);
     try {
       const { data } = await axios.post(
-        "http://localhost:5000/api/registration",
+        "https://dlwyc-api.onrender.com/api/registration",
         userInput
       );
       if (data.message === "Registration Successful") {
@@ -147,7 +147,7 @@ export default function Registration() {
     setPaymentOption(paymentOptions);
     if (paymentOptions === "Multiple") {
       const campers = await axios.get(
-        `http://localhost:5000/api/unPaidCampers?parish=` + parish
+        `https://dlwyc-api.onrender.com/api/unPaidCampers?parish=` + parish
       );
       const camperList = campers.data.map((camper) => ({
         label: camper.fullName,

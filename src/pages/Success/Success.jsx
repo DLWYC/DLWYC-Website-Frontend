@@ -25,7 +25,7 @@ const Success = () => {
   const submitForm = async (e) => {
     e.preventDefault();
     const paymentResponse = await axios.post(
-      "http://localhost:5000/api/payment",
+      "https://dlwyc-api.onrender.com/api/payment",
       { email: email, paymentUrl: paymentUrl }
     );
     console.log(`This is the response ${paymentResponse.data.paymentUrl}`);
