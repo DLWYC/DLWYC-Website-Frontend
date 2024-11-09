@@ -62,7 +62,7 @@ export default function Registration() {
 
   setTimeout(()=>{
   setAlert(false)
-  }, 3000)
+  }, 6000)
 
 
   window.localStorage.setItem('paymentOption', paymentOption)
