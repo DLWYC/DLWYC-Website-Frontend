@@ -16,6 +16,9 @@ import { useNavigate } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
 
 export default function Registration() {
+  // ## Set Loading State
+  // const [loadingState, setLoadingState ] = useState("")
+
   // ## This it to get the values of the inputs
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -68,6 +71,7 @@ export default function Registration() {
 
 
   const submitForm = async (e) => {
+    // setLoadingState(true)
     e.preventDefault();
     window.localStorage.setItem("email", userInput.email);
     try {
@@ -84,6 +88,7 @@ export default function Registration() {
         setRegistrationStatus(false)
       }
     } catch (err) {
+      // setLoadingState(false)
       if (err.response && err.response.data.message === "Input Errors") {
         setInputError(err.response.data.errors);
       }
@@ -96,6 +101,7 @@ export default function Registration() {
     }
   };
 
+  // console.log(loadingState)
 
 
   // ## Handle Dropdown Changes
