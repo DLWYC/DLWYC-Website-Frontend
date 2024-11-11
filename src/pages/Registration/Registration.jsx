@@ -14,10 +14,13 @@ import {
 import { HandleData } from "../../utils/functions";
 import { useNavigate } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
+import "ldrs/bouncy";
+
+// Default values shown
 
 export default function Registration() {
   // ## Set Loading State
-  // const [loadingState, setLoadingState ] = useState("")
+  const [loadingState, setLoadingState] = useState("");
 
   // ## This it to get the values of the inputs
   const [fullName, setFullName] = useState("");
@@ -40,7 +43,7 @@ export default function Registration() {
   const [noOfUnpaidCampers, setNoOfUnpaidCampers] = useState([]);
   const [noOfUnpaidCampersOption, setNoOfUnpaidCampersOption] = useState([]);
   const [noOfCampersToPayFor, setNoOfCampersToPayFor] = useState("");
-  const [alert, setAlert] = useState('')
+  const [alert, setAlert] = useState("");
 
   const userInput = {
     fullName,
@@ -60,49 +63,41 @@ export default function Registration() {
   // ## Handle Input Changes
   //   ## Submit Form Data
 
-  setTimeout(()=>{
-  setAlert(false)
-  }, 6000)
+  setTimeout(() => {
+    setAlert(false);
+  }, 6000);
 
-
-  window.localStorage.setItem('paymentOption', paymentOption)
-
-
-
+  window.localStorage.setItem("paymentOption", paymentOption);
 
   const submitForm = async (e) => {
-    // setLoadingState(true)
+    setLoadingState(true);
     e.preventDefault();
     window.localStorage.setItem("email", userInput.email);
     try {
       const { data } = await axios.post(
-        "https://dlwyc-api.onrender.com/api/registration",
+        "https://api.dlwyouth.org/api/registration",
         userInput
       );
       if (data.message === "Registration Successful") {
         window.localStorage.setItem("paymentUrl", data.paymentUrl);
         window.localStorage.setItem("ref", data.reference);
         navigate("/registration/verify");
-      }
-      else{
-        setRegistrationStatus(false)
+      } else {
+        setRegistrationStatus(false);
       }
     } catch (err) {
-      // setLoadingState(false)
+      setLoadingState(false);
       if (err.response && err.response.data.message === "Input Errors") {
         setInputError(err.response.data.errors);
-      }
-      else {
+      } else {
         setGeneralError({ message: "Network Error" });
-        setAlert(true)
-
+        setAlert(true);
       }
       console.log(err);
     }
   };
 
   // console.log(loadingState)
-
 
   // ## Handle Dropdown Changes
   useEffect(() => {
@@ -153,7 +148,7 @@ export default function Registration() {
     setPaymentOption(paymentOptions);
     if (paymentOptions === "Multiple") {
       const campers = await axios.get(
-        `https://dlwyc-api.onrender.com/api/unPaidCampers?parish=` + parish
+        `https://api.dlwyouth.org/api/unPaidCampers?parish=` + parish
       );
       const camperList = campers.data.map((camper) => ({
         label: camper.fullName,
@@ -169,7 +164,6 @@ export default function Registration() {
   useEffect(() => {
     setNoOfCampersToPayFor(noOfUnpaidCampersOption.length);
   }, [noOfUnpaidCampersOption]);
-
 
   // ## Get the Number OF Unpaid Campers
 
@@ -381,41 +375,43 @@ export default function Registration() {
 
             {/* Number Of Campers to pay for &7 Choices */}
 
-            {parish === "" || parish === null ? '' : (
-              <>
-            {paymentOption === "Multiple" ? (
-              <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
-                <Input
-                  required
-                  error={inputError}
-                  value={noOfCampersToPayFor}
-                  removeError={removeError}
-                  // onInput={(e) => setNoOfCampersToPayFor(e.target.value)}
-                  name="noOfCampersToPayFor"
-                  label="Number Of Campers To Pay For"
-                  basis
-                  type={"number"}
-                  readOnly
-                />
-                <Input
-                  // required
-                  error={inputError}
-                  // value={}
-                  removeError={removeError}
-                  onChange={setNoOfUnpaidCampersOption}
-                  name="noOfUnpaidCampers"
-                  label="List Of Unpaid Campers"
-                  basis
-                  options={noOfUnpaidCampers}
-                  value={noOfUnpaidCampersOption}
-                  // denomination={denomination}
-                />
-              </div>
-            ) : (
+            {parish === "" || parish === null ? (
               ""
+            ) : (
+              <>
+                {paymentOption === "Multiple" ? (
+                  <div className="flex lg:flex-row flex-col lg:space-x-2 text space-y-3 lg:space-y-0">
+                    <Input
+                      required
+                      error={inputError}
+                      value={noOfCampersToPayFor}
+                      removeError={removeError}
+                      // onInput={(e) => setNoOfCampersToPayFor(e.target.value)}
+                      name="noOfCampersToPayFor"
+                      label="Number Of Campers To Pay For"
+                      basis
+                      type={"number"}
+                      readOnly
+                    />
+                    <Input
+                      // required
+                      error={inputError}
+                      // value={}
+                      removeError={removeError}
+                      onChange={setNoOfUnpaidCampersOption}
+                      name="noOfUnpaidCampers"
+                      label="List Of Unpaid Campers"
+                      basis
+                      options={noOfUnpaidCampers}
+                      value={noOfUnpaidCampersOption}
+                      // denomination={denomination}
+                    />
+                  </div>
+                ) : (
+                  ""
+                )}
+              </>
             )}
-            </>
-            )} 
             {/* Number Of Campers to pay for &7 Choices */}
 
             {/* Registration */}
@@ -444,9 +440,15 @@ export default function Registration() {
               <button
                 type="submit"
                 onClick={submitForm}
-                className={`w-full outline-none ring-[0.3px] ring-text-primary bg-blue-900 hover:bg-reddish transition-all rounded-md p-3 text-white text-[15px] `}
+                className={`w-full outline-none ring-[0.3px] ring-text-primary ${
+                  loadingState ? "bg-[#85858580] cursor-not-allowed" : "bg-blue-900 hover:bg-reddish"
+                } transition-all rounded-md p-3 text-white text-[15px] `}
               >
-                Register
+                {loadingState ? (
+                  <l-bouncy size="35" speed="0.75" color="#091E54"></l-bouncy>
+                ) : (
+                  " Register "
+                )}
               </button>
             )}
             <a
