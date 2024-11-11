@@ -14,7 +14,7 @@ import { Link, useSearchParams } from "react-router-dom";
   console.log(reference)
 
   useEffect(()=>{
-    axios.get(`https://dlwyc-api.onrender.com/api/payment/${reference}`)
+    axios.get(`https://api.dlwyouth.org/api/payment/${reference}`)
     .then(res =>{
       console.log(res.data.data.customer.email)
       setResponse(res.data.data.status)
