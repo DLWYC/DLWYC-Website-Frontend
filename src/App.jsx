@@ -29,7 +29,7 @@ function App() {
             <Route path='/about/chairmans' element={<ChairmanPage />} />
             <Route path='/events' element={<EventsPage />} />
             <Route path='/events/:eventId' element={<DisplayEvent />} />
-            <Route path='/gallery' element={<GalleryPage />} />
+            {/* <Route path='/gallery' element={<GalleryPage />} /> */}
             <Route path='/registration' element={<Registration />} />
             <Route path='/registration/verify' element={<Success />} />
             <Route path='/payment/successful' element={<PaymentSuccess />} />
