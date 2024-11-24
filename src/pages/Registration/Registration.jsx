@@ -20,7 +20,7 @@ import "ldrs/bouncy";
 
 export default function Registration() {
   // ## Set Loading State
-  const [loadingState, setLoadingState] = useState("");
+  const [loadingState, setLoadingState] = useState(false);
 
   // ## This it to get the values of the inputs
   const [fullName, setFullName] = useState("");
