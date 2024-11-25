@@ -77,9 +77,9 @@ const NavBar = () => {
             <li>
               <a href="/gallery">Gallery</a>
             </li>
-            <li>
+            {/* <li>
               <a href="/contact-us">Contact Us</a>
-            </li>
+            </li> */}
             <li>
               <a href="/registration">Registration</a>
             </li>
