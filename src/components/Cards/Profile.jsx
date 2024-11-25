@@ -3,7 +3,7 @@ function Cards(e) {
        <div className="relative flex flex-col">
          <div className="relative bg-[#0e0d2054]">
            <img
-             className="h-full w-full aspect-[14/16] object-cover "
+             className="h-full w-full aspect-square object-cover "
              src={e.image}
              alt="User"
            />
@@ -12,7 +12,7 @@ function Cards(e) {
              <h3 className="text-lg leading-8 tracking-normal  mt-2 font-medium font-header text-[25px]">
                {e.name}
              </h3>
-             <p className="leading-7 font-style text-[22px] text-yellow">{e.job}</p>
+             <p className="leading-6 font-grotesk text-[17px] text-yellow">{e.job}</p>
    
                
            </div>
