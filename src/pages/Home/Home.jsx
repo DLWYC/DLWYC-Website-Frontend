@@ -43,7 +43,7 @@ const HomePage = () => {
 
             <div className="flex">
               <a
-                href="#chaplain"
+                href="/about"
                 className="p-button rounded-md font-poppins font-bold text-[15px] bg-reddish text-white"
               >
                 Explore

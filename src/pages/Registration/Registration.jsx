@@ -76,6 +76,7 @@ export default function Registration() {
     try {
       const { data } = await axios.post(
         "https://api.dlwyouth.org/api/registration",
+        // "http://localhost:5000/api/registration",
         userInput
       );
       if (data.message === "Registration Successful") {
@@ -93,7 +94,7 @@ export default function Registration() {
         setGeneralError({ message: "Network Error" });
         setAlert(true);
       }
-      console.log(err);
+      console.log(err.response.data.errors);
     }
   };
 
@@ -149,10 +150,12 @@ export default function Registration() {
     if (paymentOptions === "Multiple") {
       const campers = await axios.get(
         `https://api.dlwyouth.org/api/unPaidCampers?parish=` + parish
+        // `http://localhost:5000/api/unPaidCampers?parish=` + parish
       );
       const camperList = campers.data.map((camper) => ({
         label: camper.fullName,
         value: camper.uniqueID,
+        email: camper.email
       }));
       setNoOfUnpaidCampers(camperList);
     } else {
@@ -330,11 +333,11 @@ export default function Registration() {
             ) : denomination === "Anglican" && parish == null ? (
               ""
             ) : (
-              <div className="flex items-center">
+              <div className="lg:flex grid items-center border">
                 <label className="text-faint-blue font-normal tracking-[0.6px]">
                   Payment Mode<span className="text-[red]">*</span>
                 </label>
-                <div className="flex gap-10 p-3">
+                <div className="flex lg:flex-row flex-col lg:gap-10 gap-4 p-3">
                   <div className="flex items-center space-x-3">
                     <label htmlFor="single">Single:</label>
                     <input
@@ -386,7 +389,6 @@ export default function Registration() {
                       error={inputError}
                       value={noOfCampersToPayFor}
                       removeError={removeError}
-                      // onInput={(e) => setNoOfCampersToPayFor(e.target.value)}
                       name="noOfCampersToPayFor"
                       label="Number Of Campers To Pay For"
                       basis
@@ -394,7 +396,6 @@ export default function Registration() {
                       readOnly
                     />
                     <Input
-                      // required
                       error={inputError}
                       // value={}
                       removeError={removeError}

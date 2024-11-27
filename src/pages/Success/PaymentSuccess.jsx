@@ -8,13 +8,15 @@ import { Link, useSearchParams } from "react-router-dom";
   const PaymentSuccess = () => {
   const [response, setResponse] = useState('')
   const [searchParam] = useSearchParams()
+  const paymentOption = localStorage.getItem('paymentOption')
   
 
   const reference = searchParam.get('reference')
   console.log(reference)
 
   useEffect(()=>{
-    axios.get(`https://api.dlwyouth.org/api/payment/${reference}`)
+    axios.get(`https://api.dlwyouth.org/api/payment/${reference}/${paymentOption}`)
+    // axios.get(`http://localhost:5000/api/payment/${reference}/${paymentOption}`)
     .then(res =>{
       console.log(res.data.data.customer.email)
       setResponse(res.data.data.status)
@@ -22,7 +24,7 @@ import { Link, useSearchParams } from "react-router-dom";
     .catch(error=>{
       console.log(error)
      })
-}, [reference])
+}, [reference, paymentOption])
 
      console.log(response)
 

@@ -26,6 +26,7 @@ const Success = () => {
     e.preventDefault();
     const paymentResponse = await axios.post(
       "https://api.dlwyouth.org/api/payment",
+      // "http://localhost:5000/api/payment",
       { email: email, paymentUrl: paymentUrl }
     );
     console.log(`This is the response ${paymentResponse.data.paymentUrl}`);
@@ -70,7 +71,7 @@ const Success = () => {
           <p className="font-grotesk tracking-normal lg:text-[30px]">
             Registration Successful
           </p>
-          <div className="grid lg:grid-cols-2 gap-4 place-content-center">
+          <div className={`grid ${paymentOption === 'Church Sponsored' ? 'lg:grid-cols-1' : 'lg:grid-cols-2 place-content-center'} gap-4 `}>
             <Link
               to={"/"}
               // onClick={removeEmail}
@@ -94,7 +95,7 @@ const Success = () => {
             ) : (
               <button
                 onClick={submitForm}
-                className="bg-primary-main text-white font-rubik tracking-wide lg:px-5 lg:py-4 p-eventbutton rounded-lg hover:bg-yellow transition-all"
+                className="bg-primary-main text-white font-rubik tracking-wide px-[4px] py-[15px] lg:px-5 lg:py-4 p-eventbutton rounded-lg hover:bg-yellow transition-all"
               >
                 Proceed To Payment
               </button>
