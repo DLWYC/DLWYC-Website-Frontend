@@ -6,7 +6,7 @@ const Section = (e) =>{
       >
         <div className="basis-[50%] flex items-center justify-center lg:p-[30px] lg:m-0 mt-8">
           <div
-            className="chaplain relative w-full lg:h-[80lvh] h-[50vh] bg-no-repeat bg-center bg-cover rounded-lg"
+            className="chaplain relative w-full lg:h-[80lvh] aspect-[1.3] bg-no-repeat bg-center bg-cover rounded-lg"
             style={{ backgroundImage: `url(${e.Image})` }}
           ></div>
         </div>
