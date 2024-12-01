@@ -174,7 +174,9 @@ export default function Registration() {
     <div className="grid lg:p-3 p-0 relative h-full lg:grid-cols-2 lg:place-content-center font-rubik  ">
       <div className="rounded-lg flex  h-full flex-col space-y-2 lg:p-5 p-2 lg:basis-[50%] basis-full lg:justify-center relative  ">
         <div className="justify-between items-center lg:flex grid space-y-3">
+        <a href={'/'}>
           <img className="w-[250px] top-[10px]" src={Logo} alt="Logo" />
+        </a>
         </div>
 
         <div className="lg:text-[17px] font-normal font-rubik-moonrock text-primary-main flex justify-between">

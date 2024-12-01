@@ -8,10 +8,14 @@ import mission from "../../assets/aboutpage/mission.jpg";
 import group42 from "../../assets/aboutpage/Group 42.svg";
 import group46 from "../../assets/aboutpage/Group 46.svg";
 import Testimony from "../../components/Cards/Testimony";
+import "swiper/css";
 import TestimonyData from "../../data/Testimonies";
 import Footer from "../../components/Footer/Footer";
+import { Mousewheel, Autoplay } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 const About = () => {
+  const controlledSwiper = null;
   return (
     <div className="">
       <NavBar />
@@ -181,19 +185,50 @@ const About = () => {
           TESTIMONIES FROM OUR YOUTH
         </h1>
       </div>
-      <div className="grid lg:grid-cols-2 gap-5 lg:p-7 p-3">
-        {TestimonyData.map((testimony) => (
-          <div className="flex" key={testimony.id}>
-            <Testimony
-              name={testimony.name}
-              testimony={testimony.testimonial}
-              title={testimony.title}
-              image={testimony.image}
-            />
-          </div>
-        ))}
-
-        <div className="flex basis-[50%]  bg-slate-200"></div>
+      <div className="p-[10px]">
+        <Swiper
+          className="flex items-center justify-center"
+          modules={[Mousewheel, Autoplay]}
+          mousewheel={true}
+          spaceBetween={20}
+          navigation
+          controller={{ control: controlledSwiper }}
+          pagination={{ clickable: true }}
+          scrollbar={{ draggable: true }}
+          onSwiper={(swiper) => console.log(swiper)}
+          onSlideChange={() => console.log("slide change")}
+          breakpoints={{
+            // when window width is >= 640px
+            640: {
+              slidesPerView: 1,
+            },
+            // when window width is >= 768px
+            768: {
+              slidesPerView: 2,
+            },
+            // when window width is >= 1024px
+            1024: {
+              slidesPerView: 2,
+            },
+          }}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
+        >
+          {TestimonyData.map((testimony) => (
+            <SwiperSlide key={testimony.id}>
+              <div className="flex">
+                <Testimony
+                  name={testimony.name}
+                  testimony={testimony.testimonial}
+                  title={testimony.title}
+                  image={testimony.image}
+                />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
 
       <Footer />
