@@ -1,5 +1,6 @@
 import Image from "../assets/avatar.jpg"
 import Image1 from "../assets/chaplains/chaplain1.jpg"
+import Asst from "../assets/chaplains/asstChaplain.jpg"
 import Opebi from "../assets/chaplains/opebi.jpg"
 import Festac from "../assets/chaplains/festac.jpg"
 import IjuIshaga from "../assets/chaplains/iju-ishaga.jpg"
@@ -10,6 +11,12 @@ import Ojodu from "../assets/chaplains/ojodu.jpg"
 import OtoAwori from "../assets/chaplains/oto-awori.jpg"
 import Somolu from "../assets/chaplains/somolu.jpg"
 import AmuwoOdofin from "../assets/chaplains/amuwo-odofin.jpg"
+import Agege from "../assets/chaplains/Agege.jpg"
+import Ikeja from "../assets/chaplains/Ikeja.jpg"
+import Idimu from "../assets/chaplains/Idimu.jpg"
+import Ogudu from "../assets/chaplains/Ogudu.jpg"
+import Bariga from "../assets/chaplains/Bariga.jpg"
+import Iba from "../assets/chaplains/Iba.jpg"
 
 
 const ChaplainsData = [
@@ -18,6 +25,12 @@ const ChaplainsData = [
           name: 'Ven. Ariire Ayo Kolawole',
           image: Image1,
           job: 'Diocesan Chaplain'
+     },
+     {
+          id: 90,
+          name: 'Rev. Dickson Orhewere',
+          image: Asst,
+          job: 'Asst. Diocesan Chaplain'
      },
      {
           id: 2,
@@ -79,42 +92,42 @@ const ChaplainsData = [
           image: Ikotun,
           job: 'Ikotun Archdeaconry'
      },
-     // {
-     //      id: 12,
-     //      name: 'Chaplain Name',
-     //      image: Image,
-     //      job: 'Archdeaconry'
-     // },
-     // {
-     //      id: 13,
-     //      name: 'Chaplain Name',
-     //      image: Image,
-     //      job: 'Archdeaconry'
-     // },
-     // {
-     //      id: 14,
-     //      name: 'Chaplain Name',
-     //      image: Image,
-     //      job: 'Archdeaconry'
-     // },
-     // {
-     //      id: 15,
-     //      name: 'Chaplain Name',
-     //      image: Image,
-     //      job: 'Archdeaconry'
-     // },
-     // {
-     //      id: 16,
-     //      name: 'Chaplain Name',
-     //      image: Image,
-     //      job: 'Archdeaconry'
-     // },
-     // {
-     //      id: 17,
-     //      name: 'Chaplain Name',
-     //      image: Image,
-     //      job: 'Archdeaconry'
-     // },
+     {
+          id: 12,
+          name: 'Rev. Daramola Ebenezer',
+          image: Agege,
+          job: 'Agege Archdeaconry'
+     },
+     {
+          id: 13,
+          name: 'Rev. Samuel Adetona',
+          image: Ikeja,
+          job: 'Ikeja Archdeaconry'
+     },
+     {
+          id: 14,
+          name: 'Rev. David Ogunfowoke',
+          image: Idimu,
+          job: 'Idimu Archdeaconry'
+     },
+     {
+          id: 15,
+          name: 'Rev. Oluseye Olagoke',
+          image: Ogudu,
+          job: 'Ogudu Archdeaconry'
+     },
+     {
+          id: 16,
+          name: 'Rev. Faleye Samuel',
+          image: Bariga,
+          job: 'Bariga Archdeaconry'
+     },
+     {
+          id: 17,
+          name: 'Rev. Adedji Adegbokun',
+          image: Iba,
+          job: 'Iba Archdeaconry'
+     },
      // {
      //      id: 18,
      //      name: 'Chaplain Name',

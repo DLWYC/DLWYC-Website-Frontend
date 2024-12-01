@@ -27,9 +27,9 @@ const DisplayEvents = () => {
      <NavBar />
 
 
-    <div className="flex place-content-center flex-col relative items-center">
+    <div className="flex place-content-center flex-col relative px-[20px] lg:px-[60px]">
     
-    <div className="lg:px-0 lg:flex lg:flex-col mt-28 w-[90%] " key={events.id}>
+    <div className="lg:px-0 lg:flex lg:flex-col mt-28 w-full  " key={events.id}>
               <a
                 href="/events"
                 className="px-3 py-3 lg:w-[15%] w-[50%] text-center text-gray-100 bg-reddish flex items-center justify-center rounded"
@@ -39,25 +39,25 @@ const DisplayEvents = () => {
               </a>
             </div>
 
-      <div className=" flex place-content-center ">
+      <div className=" flex place-content-center  ">
       
-        <div className="mt-6 w-[90%]">
+        <div className="mt-6 w-full">
           <div className="mb-4 md:mb-0 w-full mx-auto relative">
 
             <div className="flex justify-center items-center">
               <img
                 src={events.image}
                 alt={events.image}
-                className="object-contain lg:rounded"
+                className="object-contain lg:rounded aspect-[1.4]"
               />
             </div>
           </div>
 
 
 
-          <div className="flex flex-col lg:flex-row lg:space-x-12">
-            <div className="px-4 lg:px-0 mt-12 leading-[2.2] tracking-[1px] text-gray-600 w-full text-balance break-words ">
-              <p className="pb-6">{events.description}</p>
+          <div className="flex flex-col lg:flex-row ">
+            <div className="mt-12 leading-[2.2] tracking-[1px] text-gray-600 w-full text-balance break-words ">
+              <p className="pb-6 " style={{ whiteSpace: 'pre-wrap' }}>{events.description}</p>
             </div>
           </div>
         </div>

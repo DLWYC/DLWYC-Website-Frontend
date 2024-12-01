@@ -1,7 +1,7 @@
 const Testimony = (e) => {
      return (
-     <div className="flex flex-col basis-[100%] p-6 bg-[#e6e4fcc5] 2xl:h-[40vh] lg:h-[45vh]  space-y-6 justify-between">
-          <p className="lg:text-[18px] text-[15px] font-grotesk font-normal ">
+     <div className="flex flex-col basis-[100%] p-6 bg-[#e6e4fcc5] 2xl:h-[40vh] lg:h-fit  space-y-6 justify-between">
+          <p className="lg:text-[16px] text-[15px] font-grotesk font-normal">
             {e.testimony}
           </p>
           <div className="flex items-center space-x-3 ">

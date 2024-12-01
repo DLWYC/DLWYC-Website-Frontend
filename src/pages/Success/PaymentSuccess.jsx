@@ -15,8 +15,8 @@ import { Link, useSearchParams } from "react-router-dom";
   console.log(reference)
 
   useEffect(()=>{
-    axios.get(`https://api.dlwyouth.org/api/payment/${reference}/${paymentOption}`)
-    // axios.get(`http://localhost:5000/api/payment/${reference}/${paymentOption}`)
+    // axios.get(`https://api.dlwyouth.org/api/payment/${reference}/${paymentOption}`)
+    axios.get(`http://localhost:5000/api/payment/${reference}/${paymentOption}`)
     .then(res =>{
       console.log(res.data.data.customer.email)
       setResponse(res.data.data.status)
