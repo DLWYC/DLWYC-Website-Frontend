@@ -40,7 +40,7 @@ export default function Registration() {
   const [disable, setDisable] = useState();
   const [registrationStatus, setRegistrationStatus] = useState(true);
   const [paymentOption, setPaymentOption] = useState("Single");
-  const [noOfUnpaidCampers, setNoOfUnpaidCampers] = useState([]);
+  // const [noOfUnpaidCampers, setNoOfUnpaidCampers] = useState([]);
   const [noOfUnpaidCampersOption, setNoOfUnpaidCampersOption] = useState([]);
   const [noOfCampersToPayFor, setNoOfCampersToPayFor] = useState("");
   const [alert, setAlert] = useState("");
@@ -80,8 +80,8 @@ export default function Registration() {
         userInput
       );
       if (data.message === "Registration Successful") {
-        window.localStorage.setItem("paymentUrl", data.paymentUrl);
-        window.localStorage.setItem("ref", data.reference);
+        // window.localStorage.setItem("paymentUrl", data.paymentUrl);
+        // window.localStorage.setItem("ref", data.reference);
         navigate("/registration/verify");
       } else {
         setRegistrationStatus(false);
@@ -144,25 +144,25 @@ export default function Registration() {
   };
 
   // # Get the payment type status
-  const getPaymentModeValue = async (e) => {
-    const paymentOptions = e.target.value;
-    setPaymentOption(paymentOptions);
-    if (paymentOptions === "Multiple") {
-      const campers = await axios.get(
-        `https://api.dlwyouth.org/api/unPaidCampers?parish=` + parish
-        // `http://localhost:5000/api/unPaidCampers?parish=` + parish
-      );
-      const camperList = campers.data.map((camper) => ({
-        label: camper.fullName,
-        value: camper.uniqueID,
-        email: camper.email
-      }));
-      setNoOfUnpaidCampers(camperList);
-    } else {
-      setNoOfUnpaidCampers([]);
-      setNoOfUnpaidCampersOption("");
-    }
-  };
+  // const getPaymentModeValue = async (e) => {
+  //   const paymentOptions = e.target.value;
+  //   setPaymentOption(paymentOptions);
+  //   if (paymentOptions === "Multiple") {
+  //     const campers = await axios.get(
+  //       `https://api.dlwyouth.org/api/unPaidCampers?parish=` + parish
+  //       // `http://localhost:5000/api/unPaidCampers?parish=` + parish
+  //     );
+  //     const camperList = campers.data.map((camper) => ({
+  //       label: camper.fullName,
+  //       value: camper.uniqueID,
+  //       email: camper.email
+  //     }));
+  //     setNoOfUnpaidCampers(camperList);
+  //   } else {
+  //     setNoOfUnpaidCampers([]);
+  //     setNoOfUnpaidCampersOption("");
+  //   }
+  // };
 
   useEffect(() => {
     setNoOfCampersToPayFor(noOfUnpaidCampersOption.length);
@@ -328,7 +328,7 @@ export default function Registration() {
             {/* Archdeaconry and Parish */}
 
             {/* Transaction/Payment ID: */}
-            {denomination === null ||
+            {/* {denomination === null ||
             denomination === "" ||
             denomination === "Non-Anglican" ? (
               ""
@@ -375,12 +375,12 @@ export default function Registration() {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
             {/* Transaction/Payment ID: */}
 
             {/* Number Of Campers to pay for &7 Choices */}
 
-            {parish === "" || parish === null ? (
+            {/* {parish === "" || parish === null ? (
               ""
             ) : (
               <>
@@ -414,7 +414,7 @@ export default function Registration() {
                   ""
                 )}
               </>
-            )}
+            )} */}
             {/* Number Of Campers to pay for &7 Choices */}
 
             {/* Registration */}
@@ -448,7 +448,7 @@ export default function Registration() {
                 } transition-all rounded-md p-3 text-white text-[15px] `}
               >
                 {loadingState ? (
-                  <l-bouncy size="35" speed="0.75" color="#091E54"></l-bouncy>
+                  'Registering...'
                 ) : (
                   " Register "
                 )}

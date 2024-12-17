@@ -8,9 +8,9 @@ import Alert from "../../components/Alert/Alert";
 const Success = () => {
   const [regsitrationStatus, setRegsitrationStatus] = useState(false);
   const email = window.localStorage.getItem("email");
-  const paymentUrl = window.localStorage.getItem("paymentUrl");
+  // const paymentUrl = window.localStorage.getItem("paymentUrl");
   const navigate = useNavigate();
-  const paymentOption = window.localStorage.getItem('paymentOption')
+  // const paymentOption = window.localStorage.getItem('paymentOption')
 
 
   useEffect(() => {
@@ -22,21 +22,21 @@ const Success = () => {
 
 
 
-  const submitForm = async (e) => {
-    e.preventDefault();
-    const paymentResponse = await axios.post(
-      "https://api.dlwyouth.org/api/payment",
-      // "http://localhost:5000/api/payment",
-      { email: email, paymentUrl: paymentUrl }
-    );
-    console.log(`This is the response ${paymentResponse.data.paymentUrl}`);
+  // const submitForm = async (e) => {
+  //   e.preventDefault();
+  //   const paymentResponse = await axios.post(
+  //     // "https://api.dlwyouth.org/api/payment",
+  //     // "http://localhost:5000/api/payment",
+  //     { email: email, paymentUrl: paymentUrl }
+  //   );
+  //   console.log(`This is the response ${paymentResponse.data.paymentUrl}`);
 
-    if (paymentResponse.data.message === "Payment Initialized") {
-      window.location.href = paymentResponse.data.paymentUrl;
-    } else if (paymentResponse.data.error === "Payed Already") {
-      setRegsitrationStatus(true);
-    }
-  };
+  //   if (paymentResponse.data.message === "Payment Initialized") {
+  //     window.location.href = paymentResponse.data.paymentUrl;
+  //   } else if (paymentResponse.data.error === "Payed Already") {
+  //     setRegsitrationStatus(true);
+  //   }
+  // };
 
   return (
     <div className="flex items-center justify-center h-screen bg-[rgba(233,233,233,0.75)]">
@@ -71,10 +71,10 @@ const Success = () => {
           <p className="font-grotesk tracking-normal lg:text-[30px]">
             Registration Successful
           </p>
-          <div className={`grid ${paymentOption === 'Church Sponsored' ? 'lg:grid-cols-1' : 'lg:grid-cols-2 place-content-center'} gap-4 `}>
+          {/* <div className={`grid ${paymentOption === 'Church Sponsored' ? 'lg:grid-cols-1' : 'lg:grid-cols-2 place-content-center'} gap-4 `}> */}
+          <div className={`grid lg:grid-cols-1 place-content-center border w-[100%]`}>
             <Link
               to={"/"}
-              // onClick={removeEmail}
               className="bg-[#ce1e24f0] text-white font-rubik tracking-wide lg:px-5 lg:py-4 p-eventbutton rounded-lg hover:bg-[#44d390e8] transition-all"
             >
               Return Home
@@ -82,7 +82,7 @@ const Success = () => {
             
 
             {/* If Ths Chuech is to pay for the person */}
-          {paymentOption === 'Church Sponsored' ? '' : 
+          {/* {paymentOption === 'Church Sponsored' ? '' : 
           <>
 
             {regsitrationStatus === true ? (
@@ -101,7 +101,7 @@ const Success = () => {
               </button>
             )}
           </>
-          }
+          } */}
 
           </div>
         </>
