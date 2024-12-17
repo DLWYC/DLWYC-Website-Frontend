@@ -1307,19 +1307,19 @@ const Churches = [
     churches: [
       {
         id: 280,
-        name: `CHURCH OF THE EPIPHANY, IBA HOUSING EST`,
+        name: `CHRIST CHURCH ANGLICAN, AMUWO-ODOFIN`,
+      }, 
+      {
+        id: 2822,
+        name: `ST. JAMES CHURCH, PEACE ESTATE, AMUWO`,
       }, 
       {
         id: 280,
-        name: `CHURCH OF THE EPIPHANY, IBA HOUSING EST`,
+        name: `ST. PETER'S CHURCH GRA, AMUWO`,
       }, 
       {
         id: 280,
-        name: `CHURCH OF THE EPIPHANY, IBA HOUSING EST`,
-      }, 
-      {
-        id: 280,
-        name: `CHURCH OF THE EPIPHANY, IBA HOUSING EST`,
+        name: `ST. PETER'S CHURCH, AGO OKOTA`,
       }, 
     ],
   },

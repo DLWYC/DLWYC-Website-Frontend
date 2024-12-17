@@ -47,7 +47,7 @@ const customStyles = {
 
 const Input = (e) => {
   return (
-    <div className={`text-[15px] space-y-1 ${e.basis ? "basis-[50%]" : ""} `}>
+    <div className={`text-[15px] space-y-1 ${e.basis ? "basis-[50%]" : "basis-[100%]"} `}>
       <label className="text-faint-blue font-normal tracking-[0.6px]">
         {e.label}
         <span className="text-[red]">*</span>
