@@ -14,7 +14,6 @@ import {
 import { HandleData } from "../../utils/functions";
 import { useNavigate } from "react-router-dom";
 import Alert from "../../components/Alert/Alert";
-import "ldrs/bouncy";
 
 // Default values shown
 
@@ -84,17 +83,25 @@ export default function Registration() {
         // window.localStorage.setItem("ref", data.reference);
         navigate("/registration/verify");
       } else {
+        setGeneralError({ message: 'Registration Failed' })
         setRegistrationStatus(false);
+        console.log('first')
       }
     } catch (err) {
       setLoadingState(false);
       if (err.response && err.response.data.message === "Input Errors") {
         setInputError(err.response.data.errors);
-      } else {
+        console.log(err.response.data.errors)
+        console.log('second')
+      } 
+      else {
         setGeneralError({ message: "Network Error" });
+        console.log('fourth')
         setAlert(true);
       }
-      console.log(err.response.data.errors);
+      // console.log(err.response.data.errors);
+      console.log('gend')
+      // console.log(err.response.data.errors);
     }
   };
 
@@ -489,6 +496,17 @@ export default function Registration() {
             status={alert}
             header={"Regitration Failed!"}
             text={"Please Try Registering Again."}
+          />
+        ) : (
+          ""
+        )}
+        {generalError.message === "Registration Failed" ? (
+          <Alert
+            status={alert}
+            header={"Registration Failed!"}
+            text={
+              "Error Trying to Register This User. Please Reach out to the Technical Unit"
+            }
           />
         ) : (
           ""
