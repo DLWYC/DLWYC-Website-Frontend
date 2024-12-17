@@ -42,7 +42,6 @@ const RegistrationUnit = () => {
     <div className=" p-4 ">
       {/* The Main Section - TOP SECTION */}
       <div className=" relative top-auto w-full flex flex-col items-center font-grotesk bg-white z-[20] border-b p-2 ">
-        
         {/* search & title */}
         <div className="w-full flex flex-col space-y-1  ">
           <b className="uppercase  p-1 lg:text-[30px] text-[20px] font-rubik-moonrock tracking-wider text-primary-main ">
@@ -50,14 +49,13 @@ const RegistrationUnit = () => {
           </b>
 
           <div className="text-[15px] lg:p-1 p-2 w-full ">
-
             <div className="flex gap-3 items-center">
-            <label
-              htmlFor="search"
-              className="text-reddish font-[500] text-[17px] tracking-[0.5px] lg:basis-[12%] basis-[15%]"
-            >
-              Search By:
-            </label>
+              <label
+                htmlFor="search"
+                className="text-reddish font-[500] text-[17px] tracking-[0.5px] lg:basis-[12%] basis-[15%]"
+              >
+                Search By:
+              </label>
               <input
                 onInput={(e) => setSearchUser(e.target.value)}
                 type="text"
@@ -96,7 +94,10 @@ const RegistrationUnit = () => {
         className="relative grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-2 p-[20px] font-grotesk bg-[#40404011]"
       >
         {/* All Together */}
-        {searchUser == "" || searchUser.length == 0
+
+        {Attendees.length == 0
+          ? "No Registered Users Found"
+          : searchUser == "" || searchUser.length == 0
           ? Attendees.map((person) => (
               <InfoCard
                 uniqueId={person.uniqueID}
