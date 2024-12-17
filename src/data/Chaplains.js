@@ -14,9 +14,9 @@ import AmuwoOdofin from "../assets/chaplains/amuwo-odofin.jpg"
 import Agege from "../assets/chaplains/agege.jpg"
 import Ikeja from "../assets/chaplains/ikeja.jpg"
 import Idimu from "../assets/chaplains/Idimu.jpg"
-import Ogudu from "../assets/chaplains/ogudu.jpg"
-import Bariga from "../assets/chaplains/bariga.jpg"
-import Iba from "../assets/chaplains/iba.jpg"
+import Ogudu from "../assets/chaplains/Ogudu.jpg"
+import Bariga from "../assets/chaplains/Bariga.jpg"
+import Iba from "../assets/chaplains/Iba.jpg"
 
 
 const ChaplainsData = [
