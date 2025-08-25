@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import HomePage from './pages/Home/Home'
 import EventsPage from './pages/Events/Events'
 import DisplayEvent from './pages/Events/DisplayEvents'
@@ -22,8 +22,15 @@ import PaymentSuccess from './pages/Success/PaymentSuccess'
 // Dashboard
 import Dashboard from './pages/Dashboard/Dashboard'
 import Login from './pages/Login/Login'
+import Glogin from './pages/Login/Glogin'
+import Signup from './pages/Login/SignUp'
+import UDashboard from './pages/Dashboard/UDashboard'
 // Pages
 
+function ProtectedRoute({ children }) {
+  const token = localStorage.getItem("token");
+  return token ? children : <Navigate to="/" />;
+}
 
 function App() {
 
@@ -47,8 +54,18 @@ function App() {
 
 
             {/* Dashboard */}
+            <Route path= '/glogin'element={<Glogin />} />
+            <Route path='/signup' element={<Signup />} />
             <Route path='/login' element={<Login />} />
             <Route path='/dashboard' element={<Dashboard />} />
+            <Route
+            path="/udashboard"
+          element={
+            <ProtectedRoute>
+              <UDashboard />
+            </ProtectedRoute>
+          }
+        />
 
 
           </Routes>
