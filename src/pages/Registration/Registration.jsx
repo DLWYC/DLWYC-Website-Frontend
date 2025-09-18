@@ -335,7 +335,7 @@ export default function Registration() {
             {/* Archdeaconry and Parish */}
 
             {/* Transaction/Payment ID: */}
-            {/* {denomination === null ||
+             {denomination === null ||
             denomination === "" ||
             denomination === "Non-Anglican" ? (
               ""
@@ -382,12 +382,12 @@ export default function Registration() {
                   </div>
                 </div>
               </div>
-            )} */}
-            {/* Transaction/Payment ID: */}
+            )} 
+         
 
             {/* Number Of Campers to pay for &7 Choices */}
 
-            {/* {parish === "" || parish === null ? (
+             {parish === "" || parish === null ? (
               ""
             ) : (
               <>
@@ -421,7 +421,7 @@ export default function Registration() {
                   ""
                 )}
               </>
-            )} */}
+            )} 
             {/* Number Of Campers to pay for &7 Choices */}
 
             {/* Registration */}
