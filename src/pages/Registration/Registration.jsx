@@ -151,25 +151,25 @@ export default function Registration() {
   };
 
   // # Get the payment type status
-  // const getPaymentModeValue = async (e) => {
-  //   const paymentOptions = e.target.value;
-  //   setPaymentOption(paymentOptions);
-  //   if (paymentOptions === "Multiple") {
-  //     const campers = await axios.get(
-  //       `https://api.dlwyouth.org/api/unPaidCampers?parish=` + parish
-  //       // `http://localhost:5000/api/unPaidCampers?parish=` + parish
-  //     );
-  //     const camperList = campers.data.map((camper) => ({
-  //       label: camper.fullName,
-  //       value: camper.uniqueID,
-  //       email: camper.email
-  //     }));
-  //     setNoOfUnpaidCampers(camperList);
-  //   } else {
-  //     setNoOfUnpaidCampers([]);
-  //     setNoOfUnpaidCampersOption("");
-  //   }
-  // };
+  const getPaymentModeValue = async (e) => {
+    const paymentOptions = e.target.value;
+    setPaymentOption(paymentOptions);
+    if (paymentOptions === "Multiple") {
+      const campers = await axios.get(
+        `https://api.dlwyouth.org/api/unPaidCampers?parish=` + parish
+        // `http://localhost:5000/api/unPaidCampers?parish=` + parish
+      );
+      const camperList = campers.data.map((camper) => ({
+        label: camper.fullName,
+        value: camper.uniqueID,
+        email: camper.email
+      }));
+      setNoOfUnpaidCampers(camperList);
+    } else {
+      setNoOfUnpaidCampers([]);
+      setNoOfUnpaidCampersOption("");
+    }
+  };
 
   useEffect(() => {
     setNoOfCampersToPayFor(noOfUnpaidCampersOption.length);
