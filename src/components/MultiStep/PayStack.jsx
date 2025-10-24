@@ -22,7 +22,7 @@ const PAYMENT_STATUS = {
 
 function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayment }) {
   const numberOfPaymentSess = values?.numberOfPayment ?? 0 
-  const single = 100
+  const single = 7500
   
   const PAYMENT_AMOUNTS = {
     single: single,
