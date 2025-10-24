@@ -40,10 +40,10 @@ const Alert = (e) =>{
                         />
                       </div>
                       <div className="ml-3 w-0 flex-1 pt-0.5">
-                        <p className="text-sm font-medium text-gray-900">
+                        <p className="text-[15px] font-medium text-gray-900">
                           {e.header}
                         </p>
-                        <p className="mt-1 text-sm text-gray-500">{e.text}</p>
+                        <p className="mt-1 text-[15px] text-gray-500">{e.text}</p>
                       </div>
                       <div className="ml-4 flex flex-shrink-0">
                       

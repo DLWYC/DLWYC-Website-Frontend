@@ -64,7 +64,7 @@ export const InfoCard = (e) => {
                     markAttendee(e)
                   }
                 }}
-                className={`relative -mr-px inline-flex w-0 flex-1 border-none items-center justify-center gap-x-3  py-4 text-sm font-semibold text-gray-900  ${
+                className={`relative -mr-px inline-flex w-0 flex-1 border-none items-center justify-center gap-x-3  py-4 text-[15px] font-semibold text-gray-900  ${
                   checkStatus == true
                     ? "cursor-not-allowed text-white"
                     : "bg-[white] hover:bg-reddish hover:text-white transition-all"
