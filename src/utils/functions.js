@@ -1,4 +1,4 @@
-const HandleData = (e) => {
+  const HandleData = (e) => {
   if (
     e.fullName !== "" &&
     e.email !== "" &&

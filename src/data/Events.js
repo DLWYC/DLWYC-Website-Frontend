@@ -32,11 +32,11 @@ https://t.me/+BRInUOmceIVjNDk8`,
     link: "/home",
   },
 
-    {
-      id: 2,
-      date: "December 18-21, 2022",
-      title: "Diocesan Youth Camp 2024",
-      description: `IT'S TIME TO GET READY! 
+  {
+    id: 2,
+    date: "December 18-21, 2022",
+    title: "Diocesan Youth Camp 2024",
+    description: `IT'S TIME TO GET READY! 
 
 Calling all youths! Get set for an unforgettable experience at the Diocesan Youth Camp 2024!
 
@@ -68,9 +68,9 @@ https://t.me/+BRInUOmceIVjNDk8
 WhatsApp channel: https://whatsapp.com/channel/0029VaXShf25kg6ynhpsIk1d
 
 YouTube: https://youtube.com/@dlwyouth9725?si=yhqQGJvuzKQphviP`,
-      image: Event2,
-      link: "/home",
-    },
+    image: Event2,
+    link: "/home",
+  },
 
   //   {
   //     id: 3,
