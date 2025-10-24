@@ -442,7 +442,7 @@ const Churches = [
   },
   {
     id: 11,
-    archdeaconry: "Satelite",
+    archdeaconry: "Satellite",
     churches: [
       {
         id: 96,

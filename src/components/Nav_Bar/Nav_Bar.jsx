@@ -6,7 +6,7 @@ const NavBar = () => {
   const changeNav = () => {
     window.addEventListener("scroll", () => {
       let navBar = document.querySelector("nav");
-      navBar.classList.toggle("stickyNav", window.scrollY > 40);
+    navBar.classList.toggle("stickyNav", window.scrollY > 40);
     });
   };
 
@@ -77,11 +77,8 @@ const NavBar = () => {
             <li>
               <a href="/gallery">Gallery</a>
             </li>
-            {/* <li>
-              <a href="/contact-us">Contact Us</a>
-            </li> */}
             <li>
-              <a href="/registration">Registration</a>
+              <a href= "/userlogin">Login</a>
             </li>
           </ul>
         </div>
