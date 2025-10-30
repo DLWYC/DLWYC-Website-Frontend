@@ -3,7 +3,7 @@ FROM node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --legacy-peer-deps
-COPY .env* ./
+COPY .env ./
 COPY . .
 RUN npm run build
 
