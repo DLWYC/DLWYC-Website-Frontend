@@ -54,11 +54,12 @@ function UserProfile(){
   };
 
 
+  
+
   const fileInputRef = useRef(null);
   const documentInputRef = useRef(null);
   const [selectedDocumentType, setSelectedDocumentType] = useState('');
   
-  console.log("Profile:", userData)
   const mainComponent = () =>{
       switch(activeTab){
         // #### {##################### This is the First TAB #####################3}
@@ -112,6 +113,7 @@ function UserProfile(){
                   field="fullName"
                   isEditing={isEditing}
                   editData={editData}
+                  setEditData={setEditData}
                 />
                 <ProfileField
                   label="Email Address"
@@ -120,6 +122,7 @@ function UserProfile(){
                   type="email"
                   isEditing={isEditing}
                   editData={editData}
+                  setEditData={setEditData}
                 />
                 <ProfileField
                   label="Phone Number"
@@ -128,6 +131,7 @@ function UserProfile(){
                   type="tel"
                   isEditing={isEditing}
                   editData={editData}
+                  setEditData={setEditData}
                 />
                 <ProfileField
                   label="Gender"
@@ -135,6 +139,7 @@ function UserProfile(){
                   field="gender"
                   isEditing={isEditing}
                   editData={editData}
+                  setEditData={setEditData}
                 />
                 <ProfileField
                   label="Age"
@@ -142,6 +147,7 @@ function UserProfile(){
                   field="age"
                   isEditing={isEditing}
                   editData={editData}
+                  setEditData={setEditData}
                 />
                 <ProfileField
                   label="Archdeaconry"
@@ -149,6 +155,7 @@ function UserProfile(){
                   field="archdeaconry"
                   isEditing={isEditing}
                   editData={editData}
+                  setEditData={setEditData}
                 />
                 <ProfileField
                   label="Parish"
@@ -156,6 +163,7 @@ function UserProfile(){
                   field="parish"
                   isEditing={isEditing}
                   editData={editData}
+                  setEditData={setEditData}
                 />
               </div>
 
@@ -186,7 +194,7 @@ function UserProfile(){
           <div className="space-y-6 font-rubik">
             <h2 className="text-xl font-semibold text-gray-900">Change Password</h2>
 
-            <div className="space-y-6">
+            <div className="space-y-6 ">
               <div className="space-y-4">
                 <div>
                   <label className="block text-[15px] font-medium text-gray-700 mb-2">New Password</label>
@@ -232,7 +240,7 @@ function UserProfile(){
   return(
     <div className="flex font-rubik">
     {/* Side Nav */}
- <div className="basis-[40%] bg-white ">
+ <div className="basis-[40%] bg-white hidden border border-red-500 ">
           <div className="p-3 border-b border-gray-200">
             <h1 className="text-xl font-semibold text-gray-900">Account Profile</h1>
           </div>

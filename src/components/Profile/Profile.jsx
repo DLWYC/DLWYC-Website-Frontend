@@ -7,17 +7,28 @@ import {
 } from "@/components/ui/select"
 import Churches from "@/data/churches"
 import { useEffect, useState } from "react";
+import {handleInputChange} from '@/utils/functions'
 
-const ProfileField = ({ label, value, field, type = 'text', isTextarea = false, isEditing, editData }) => {
+const ProfileField = ({ label, value, field, type = 'text', isTextarea = false, isEditing, editData, setEditData }) => {
      const [selectedArchdeaconry, setSelectedArchdeaconry] = useState('');
 const [filteredChurches, setFilteredChurches] = useState(Churches);
 
-useEffect(()=>{
-     // const filtered = filteredChurches.find(archdeaconry => archdeaconry.archdeaconry ==  selectedArchdeaconry )
-     //      setFilteredChurches(filtered)
-}, [])
 
-     // {console.log("THis s", filteredChurc/hes)}
+
+
+const handleInputChange = (field, value) => {
+  setEditData(prev => ({
+    ...prev,
+    [field]: value
+  }));
+};
+
+
+// useEffect(()=>{
+//      // const filtered = filteredChurches.find(-archdeaconry => archdeaconry.archdeaconry ==  selectedArchdeaconry )
+//      //      setFilteredChurches(filtered)
+// }, [])
+
 
     if (isEditing) {
       return (
