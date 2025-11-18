@@ -13,14 +13,18 @@ import { Route as UsersignupRouteImport } from './routes/usersignup'
 import { Route as UserloginRouteImport } from './routes/userlogin'
 import { Route as UserdashboardRouteImport } from './routes/userdashboard'
 import { Route as SuperadminRouteImport } from './routes/superadmin'
+import { Route as RegistrationunitRouteImport } from './routes/registrationunit'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as ForgotPasswordRouteImport } from './routes/forgotPassword'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UserdashboardIndexRouteImport } from './routes/userdashboard/index'
 import { Route as SuperadminIndexRouteImport } from './routes/superadmin/index'
+import { Route as RegistrationunitIndexRouteImport } from './routes/registrationunit/index'
 import { Route as EventsIndexRouteImport } from './routes/events/index'
 import { Route as AboutIndexRouteImport } from './routes/about/index'
 import { Route as UserdashboardProfileRouteImport } from './routes/userdashboard/profile'
 import { Route as UserdashboardPaymentsRouteImport } from './routes/userdashboard/payments'
+import { Route as UserdashboardHostelallocationRouteImport } from './routes/userdashboard/hostelallocation'
 import { Route as UserdashboardEventhistoryRouteImport } from './routes/userdashboard/eventhistory'
 import { Route as SuperadminEventsRouteImport } from './routes/superadmin/events'
 import { Route as EventsIdRouteImport } from './routes/events/$id'
@@ -48,9 +52,19 @@ const SuperadminRoute = SuperadminRouteImport.update({
   path: '/superadmin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RegistrationunitRoute = RegistrationunitRouteImport.update({
+  id: '/registrationunit',
+  path: '/registrationunit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgotPassword',
+  path: '/forgotPassword',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -67,6 +81,11 @@ const SuperadminIndexRoute = SuperadminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => SuperadminRoute,
+} as any)
+const RegistrationunitIndexRoute = RegistrationunitIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RegistrationunitRoute,
 } as any)
 const EventsIndexRoute = EventsIndexRouteImport.update({
   id: '/events/',
@@ -88,6 +107,12 @@ const UserdashboardPaymentsRoute = UserdashboardPaymentsRouteImport.update({
   path: '/payments',
   getParentRoute: () => UserdashboardRoute,
 } as any)
+const UserdashboardHostelallocationRoute =
+  UserdashboardHostelallocationRouteImport.update({
+    id: '/hostelallocation',
+    path: '/hostelallocation',
+    getParentRoute: () => UserdashboardRoute,
+  } as any)
 const UserdashboardEventhistoryRoute =
   UserdashboardEventhistoryRouteImport.update({
     id: '/eventhistory',
@@ -122,7 +147,9 @@ const UserdashboardEventIdRoute = UserdashboardEventIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forgotPassword': typeof ForgotPasswordRoute
   '/gallery': typeof GalleryRoute
+  '/registrationunit': typeof RegistrationunitRouteWithChildren
   '/superadmin': typeof SuperadminRouteWithChildren
   '/userdashboard': typeof UserdashboardRouteWithChildren
   '/userlogin': typeof UserloginRoute
@@ -132,16 +159,19 @@ export interface FileRoutesByFullPath {
   '/events/$id': typeof EventsIdRoute
   '/superadmin/events': typeof SuperadminEventsRoute
   '/userdashboard/eventhistory': typeof UserdashboardEventhistoryRoute
+  '/userdashboard/hostelallocation': typeof UserdashboardHostelallocationRoute
   '/userdashboard/payments': typeof UserdashboardPaymentsRoute
   '/userdashboard/profile': typeof UserdashboardProfileRoute
   '/about': typeof AboutIndexRoute
   '/events': typeof EventsIndexRoute
+  '/registrationunit/': typeof RegistrationunitIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/userdashboard/': typeof UserdashboardIndexRoute
   '/userdashboard/event/$id': typeof UserdashboardEventIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgotPassword': typeof ForgotPasswordRoute
   '/gallery': typeof GalleryRoute
   '/userlogin': typeof UserloginRoute
   '/usersignup': typeof UsersignupRoute
@@ -150,10 +180,12 @@ export interface FileRoutesByTo {
   '/events/$id': typeof EventsIdRoute
   '/superadmin/events': typeof SuperadminEventsRoute
   '/userdashboard/eventhistory': typeof UserdashboardEventhistoryRoute
+  '/userdashboard/hostelallocation': typeof UserdashboardHostelallocationRoute
   '/userdashboard/payments': typeof UserdashboardPaymentsRoute
   '/userdashboard/profile': typeof UserdashboardProfileRoute
   '/about': typeof AboutIndexRoute
   '/events': typeof EventsIndexRoute
+  '/registrationunit': typeof RegistrationunitIndexRoute
   '/superadmin': typeof SuperadminIndexRoute
   '/userdashboard': typeof UserdashboardIndexRoute
   '/userdashboard/event/$id': typeof UserdashboardEventIdRoute
@@ -161,7 +193,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/forgotPassword': typeof ForgotPasswordRoute
   '/gallery': typeof GalleryRoute
+  '/registrationunit': typeof RegistrationunitRouteWithChildren
   '/superadmin': typeof SuperadminRouteWithChildren
   '/userdashboard': typeof UserdashboardRouteWithChildren
   '/userlogin': typeof UserloginRoute
@@ -171,10 +205,12 @@ export interface FileRoutesById {
   '/events/$id': typeof EventsIdRoute
   '/superadmin/events': typeof SuperadminEventsRoute
   '/userdashboard/eventhistory': typeof UserdashboardEventhistoryRoute
+  '/userdashboard/hostelallocation': typeof UserdashboardHostelallocationRoute
   '/userdashboard/payments': typeof UserdashboardPaymentsRoute
   '/userdashboard/profile': typeof UserdashboardProfileRoute
   '/about/': typeof AboutIndexRoute
   '/events/': typeof EventsIndexRoute
+  '/registrationunit/': typeof RegistrationunitIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/userdashboard/': typeof UserdashboardIndexRoute
   '/userdashboard/event/$id': typeof UserdashboardEventIdRoute
@@ -183,7 +219,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/forgotPassword'
     | '/gallery'
+    | '/registrationunit'
     | '/superadmin'
     | '/userdashboard'
     | '/userlogin'
@@ -193,16 +231,19 @@ export interface FileRouteTypes {
     | '/events/$id'
     | '/superadmin/events'
     | '/userdashboard/eventhistory'
+    | '/userdashboard/hostelallocation'
     | '/userdashboard/payments'
     | '/userdashboard/profile'
     | '/about'
     | '/events'
+    | '/registrationunit/'
     | '/superadmin/'
     | '/userdashboard/'
     | '/userdashboard/event/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/forgotPassword'
     | '/gallery'
     | '/userlogin'
     | '/usersignup'
@@ -211,17 +252,21 @@ export interface FileRouteTypes {
     | '/events/$id'
     | '/superadmin/events'
     | '/userdashboard/eventhistory'
+    | '/userdashboard/hostelallocation'
     | '/userdashboard/payments'
     | '/userdashboard/profile'
     | '/about'
     | '/events'
+    | '/registrationunit'
     | '/superadmin'
     | '/userdashboard'
     | '/userdashboard/event/$id'
   id:
     | '__root__'
     | '/'
+    | '/forgotPassword'
     | '/gallery'
+    | '/registrationunit'
     | '/superadmin'
     | '/userdashboard'
     | '/userlogin'
@@ -231,10 +276,12 @@ export interface FileRouteTypes {
     | '/events/$id'
     | '/superadmin/events'
     | '/userdashboard/eventhistory'
+    | '/userdashboard/hostelallocation'
     | '/userdashboard/payments'
     | '/userdashboard/profile'
     | '/about/'
     | '/events/'
+    | '/registrationunit/'
     | '/superadmin/'
     | '/userdashboard/'
     | '/userdashboard/event/$id'
@@ -242,7 +289,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   GalleryRoute: typeof GalleryRoute
+  RegistrationunitRoute: typeof RegistrationunitRouteWithChildren
   SuperadminRoute: typeof SuperadminRouteWithChildren
   UserdashboardRoute: typeof UserdashboardRouteWithChildren
   UserloginRoute: typeof UserloginRoute
@@ -284,11 +333,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperadminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/registrationunit': {
+      id: '/registrationunit'
+      path: '/registrationunit'
+      fullPath: '/registrationunit'
+      preLoaderRoute: typeof RegistrationunitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gallery': {
       id: '/gallery'
       path: '/gallery'
       fullPath: '/gallery'
       preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgotPassword': {
+      id: '/forgotPassword'
+      path: '/forgotPassword'
+      fullPath: '/forgotPassword'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -311,6 +374,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/superadmin/'
       preLoaderRoute: typeof SuperadminIndexRouteImport
       parentRoute: typeof SuperadminRoute
+    }
+    '/registrationunit/': {
+      id: '/registrationunit/'
+      path: '/'
+      fullPath: '/registrationunit/'
+      preLoaderRoute: typeof RegistrationunitIndexRouteImport
+      parentRoute: typeof RegistrationunitRoute
     }
     '/events/': {
       id: '/events/'
@@ -338,6 +408,13 @@ declare module '@tanstack/react-router' {
       path: '/payments'
       fullPath: '/userdashboard/payments'
       preLoaderRoute: typeof UserdashboardPaymentsRouteImport
+      parentRoute: typeof UserdashboardRoute
+    }
+    '/userdashboard/hostelallocation': {
+      id: '/userdashboard/hostelallocation'
+      path: '/hostelallocation'
+      fullPath: '/userdashboard/hostelallocation'
+      preLoaderRoute: typeof UserdashboardHostelallocationRouteImport
       parentRoute: typeof UserdashboardRoute
     }
     '/userdashboard/eventhistory': {
@@ -385,6 +462,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface RegistrationunitRouteChildren {
+  RegistrationunitIndexRoute: typeof RegistrationunitIndexRoute
+}
+
+const RegistrationunitRouteChildren: RegistrationunitRouteChildren = {
+  RegistrationunitIndexRoute: RegistrationunitIndexRoute,
+}
+
+const RegistrationunitRouteWithChildren =
+  RegistrationunitRoute._addFileChildren(RegistrationunitRouteChildren)
+
 interface SuperadminRouteChildren {
   SuperadminEventsRoute: typeof SuperadminEventsRoute
   SuperadminIndexRoute: typeof SuperadminIndexRoute
@@ -401,6 +489,7 @@ const SuperadminRouteWithChildren = SuperadminRoute._addFileChildren(
 
 interface UserdashboardRouteChildren {
   UserdashboardEventhistoryRoute: typeof UserdashboardEventhistoryRoute
+  UserdashboardHostelallocationRoute: typeof UserdashboardHostelallocationRoute
   UserdashboardPaymentsRoute: typeof UserdashboardPaymentsRoute
   UserdashboardProfileRoute: typeof UserdashboardProfileRoute
   UserdashboardIndexRoute: typeof UserdashboardIndexRoute
@@ -409,6 +498,7 @@ interface UserdashboardRouteChildren {
 
 const UserdashboardRouteChildren: UserdashboardRouteChildren = {
   UserdashboardEventhistoryRoute: UserdashboardEventhistoryRoute,
+  UserdashboardHostelallocationRoute: UserdashboardHostelallocationRoute,
   UserdashboardPaymentsRoute: UserdashboardPaymentsRoute,
   UserdashboardProfileRoute: UserdashboardProfileRoute,
   UserdashboardIndexRoute: UserdashboardIndexRoute,
@@ -421,7 +511,9 @@ const UserdashboardRouteWithChildren = UserdashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   GalleryRoute: GalleryRoute,
+  RegistrationunitRoute: RegistrationunitRouteWithChildren,
   SuperadminRoute: SuperadminRouteWithChildren,
   UserdashboardRoute: UserdashboardRouteWithChildren,
   UserloginRoute: UserloginRoute,

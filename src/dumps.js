@@ -1,3 +1,1203 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { Home, User, CheckCircle, XCircle, Clock, AlertCircle, RefreshCw, ChevronRight, ChevronLeft } from 'lucide-react';
+
+// API Base URL - Change this to your backend URL
+const API_BASE_URL = 'http://localhost:5000/api';
+
+// Multi-Step Progress Indicator Component
+const StepIndicator = ({ steps, currentStep }) => {
+  return (
+    <div className="flex items-center justify-center mb-8">
+      {steps.map((step, index) => (
+        <React.Fragment key={index}>
+          <div className="flex flex-col items-center">
+            <div
+              className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all ${
+                index < currentStep
+                  ? 'bg-green-600 text-white'
+                  : index === currentStep
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-gray-300 text-gray-600'
+              }`}
+            >
+              {index < currentStep ? <CheckCircle className="w-6 h-6" /> : index + 1}
+            </div>
+            <p className={`text-sm mt-2 font-medium ${
+              index === currentStep ? 'text-indigo-600' : 'text-gray-600'
+            }`}>
+              {step.title}
+            </p>
+          </div>
+          {index < steps.length - 1 && (
+            <div
+              className={`w-16 h-1 mx-2 mb-6 transition-all ${
+                index < currentStep ? 'bg-green-600' : 'bg-gray-300'
+              }`}
+            />
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
+// Step 1: Gender Selection Component
+const GenderSelection = ({ selectedGender, onGenderSelect, loading }) => {
+  const genderOptions = [
+    { value: 'MALE', label: 'Male', icon: '👨', description: 'Male hostels available' },
+    { value: 'FEMALE', label: 'Female', icon: '👩', description: 'Female hostels available' },
+    { value: 'OTHER', label: 'Other', icon: '🧑', description: 'Inclusive hostels available' }
+  ];
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Select Your Gender</h2>
+        <p className="text-gray-600">This will determine which hostels are available for allocation</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {genderOptions.map((option) => (
+          <button
+            key={option.value}
+            onClick={() => onGenderSelect(option.value)}
+            disabled={loading}
+            className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${
+              selectedGender === option.value
+                ? 'border-indigo-600 bg-indigo-50 shadow-lg transform scale-105'
+                : 'border-gray-200 hover:border-indigo-300 bg-white hover:shadow-md'
+            } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          >
+            {selectedGender === option.value && (
+              <div className="absolute top-3 right-3">
+                <CheckCircle className="w-6 h-6 text-indigo-600" />
+              </div>
+            )}
+            <div className="text-4xl mb-3 text-center">{option.icon}</div>
+            <div className="text-center">
+              <h3 className="font-bold text-lg text-gray-800 mb-1">{option.label}</h3>
+              <p className="text-sm text-gray-600">{option.description}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Step 2: Available Hostels Display
+const HostelsDisplay = ({ availableHostels, loading }) => {
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <RefreshCw className="w-8 h-8 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  if (!availableHostels || availableHostels.hostels.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <AlertCircle className="w-16 h-16 text-yellow-600 mx-auto mb-4" />
+        <p className="text-gray-600">No hostels available at the moment</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Available Hostels</h2>
+        <p className="text-gray-600">Review the available hostels before allocation</p>
+      </div>
+
+      <div className="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl p-6 mb-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-600 mb-1">Total Hostels Available</p>
+            <p className="text-3xl font-bold text-indigo-600">{availableHostels.available_count}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-600 mb-1">Total Spaces</p>
+            <p className="text-3xl font-bold text-green-600">{availableHostels.total_spaces}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {availableHostels.hostels.map((hostel) => (
+          <div key={hostel.hostel_id} className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-center">
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-800 text-lg">{hostel.name}</h3>
+                <p className="text-sm text-gray-600 mt-1">ID: {hostel.hostel_id}</p>
+                {hostel.building_block && (
+                  <p className="text-sm text-gray-500 mt-1">Building: {hostel.building_block}</p>
+                )}
+                {hostel.facilities && hostel.facilities.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {hostel.facilities.map((facility, idx) => (
+                      <span key={idx} className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
+                        {facility}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="text-right ml-4">
+                <p className="text-sm text-gray-500">Available</p>
+                <p className="text-2xl font-bold text-indigo-600">{hostel.available_spaces}</p>
+                <p className="text-xs text-gray-400">of {hostel.total_capacity}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+        <div>
+          <p className="text-yellow-800 text-sm font-medium">Random Allocation</p>
+          <p className="text-yellow-700 text-sm">
+            A hostel will be randomly assigned to you from the available options based on space availability.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Step 3: Allocation Result
+const AllocationResult = ({ allocation, loading, onConfirm, onCancel }) => {
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <RefreshCw className="w-12 h-12 animate-spin text-indigo-600 mb-4" />
+        <p className="text-gray-600">Processing your allocation...</p>
+      </div>
+    );
+  }
+
+  if (!allocation) {
+    return (
+      <div className="text-center py-12">
+        <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+        <p className="text-gray-600">No allocation data available</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+          {allocation.status === 'CONFIRMED' ? (
+            <CheckCircle className="w-10 h-10 text-green-600" />
+          ) : (
+            <Clock className="w-10 h-10 text-yellow-600" />
+          )}
+        </div>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          {allocation.status === 'CONFIRMED' ? 'Allocation Confirmed!' : 'Hostel Allocated'}
+        </h2>
+        <p className="text-gray-600">
+          {allocation.status === 'CONFIRMED' 
+            ? 'Your hostel has been successfully confirmed' 
+            : 'Please review and confirm your allocation'}
+        </p>
+      </div>
+
+      <div className="bg-gradient-to-br from-indigo-600 to-blue-600 rounded-xl p-6 text-white shadow-xl">
+        <div className="flex items-center gap-3 mb-4">
+          <Home className="w-8 h-8" />
+          <h3 className="text-2xl font-bold">{allocation.hostel_name}</h3>
+        </div>
+        <div className="grid grid-cols-2 gap-4 mt-6">
+          <div>
+            <p className="text-indigo-200 text-sm">Allocation ID</p>
+            <p className="font-mono text-sm font-semibold">{allocation.allocation_id}</p>
+          </div>
+          <div>
+            <p className="text-indigo-200 text-sm">Hostel ID</p>
+            <p className="font-mono text-sm font-semibold">{allocation.hostel_id}</p>
+          </div>
+          {allocation.building_block && (
+            <div>
+              <p className="text-indigo-200 text-sm">Building</p>
+              <p className="font-semibold">{allocation.building_block}</p>
+            </div>
+          )}
+          <div>
+            <p className="text-indigo-200 text-sm">Allocated At</p>
+            <p className="text-sm font-semibold">{formatDate(allocation.allocated_at)}</p>
+          </div>
+        </div>
+      </div>
+
+      {allocation.status === 'PENDING_CONFIRMATION' && allocation.expires_at && (
+        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <Clock className="w-6 h-6 text-yellow-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="text-yellow-800 font-semibold mb-1">⏰ Time Sensitive</p>
+              <p className="text-yellow-700 text-sm mb-2">
+                You have 48 hours to confirm this allocation. After that, it will expire and the space will be released.
+              </p>
+              <p className="text-yellow-800 text-sm font-medium">
+                Expires: {formatDate(allocation.expires_at)}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {allocation.status === 'CONFIRMED' && (
+        <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
+            <div>
+              <p className="text-green-800 font-semibold mb-1">✓ Confirmed</p>
+              <p className="text-green-700 text-sm">
+                Your hostel allocation has been confirmed. Please check your email for further instructions and next steps.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Main Dashboard Component
+const HostelAllocationDashboard = () => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [user, setUser] = useState({
+    id: 'U12345',
+    name: 'John Doe',
+    email: 'john.doe@university.edu',
+    gender: null,
+    allocationStatus: 'NOT_STARTED'
+  });
+
+  const [allocation, setAllocation] = useState(null);
+  const [availableHostels, setAvailableHostels] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    checkExistingAllocation();
+  }, []);
+
+  const checkExistingAllocation = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/allocations/status/${user.id}`);
+      const data = await response.json();
+
+      if (data.success && data.status !== 'NOT_STARTED') {
+        setUser(prev => ({ ...prev, allocationStatus: data.status }));
+        if (data.allocation) {
+          setAllocation({
+            allocation_id: data.allocation.allocation_id,
+            hostel_id: data.allocation.hostel.hostel_id,
+            hostel_name: data.allocation.hostel.name,
+            building_block: data.allocation.hostel.building_block,
+            allocated_at: data.allocation.allocated_at,
+            expires_at: data.allocation.expires_at,
+            confirmed_at: data.allocation.confirmed_at,
+            status: data.allocation.status === 'CONFIRMED' ? 'CONFIRMED' : 'PENDING_CONFIRMATION'
+          });
+          setCurrentStep(2);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking allocation:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAvailableHostels = async (gender) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/hostels/available?gender=${gender}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setAvailableHostels(data);
+      } else {
+        setError(data.error || 'Failed to fetch available hostels');
+      }
+    } catch (error) {
+      console.error('Error fetching hostels:', error);
+      setError('Failed to connect to server. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenderSelect = (gender) => {
+    setUser({ ...user, gender });
+    setError(null);
+    fetchAvailableHostels(gender);
+  };
+
+  const requestAllocation = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/allocations/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          gender: user.gender
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setAllocation(data.allocation);
+        setUser({ ...user, allocationStatus: 'ALLOCATED' });
+        setCurrentStep(2);
+      } else {
+        setError(data.message || data.error || 'Allocation failed');
+      }
+    } catch (error) {
+      console.error('Error requesting allocation:', error);
+      setError('Failed to connect to server. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const confirmAllocation = async () => {
+    setLoading(true);
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/allocations/confirm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          allocation_id: allocation.allocation_id
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setAllocation({ ...allocation, status: 'CONFIRMED' });
+        setUser({ ...user, allocationStatus: 'CONFIRMED' });
+      } else {
+        setError(data.error || 'Failed to confirm allocation');
+      }
+    } catch (error) {
+      console.error('Error confirming allocation:', error);
+      setError('Failed to connect to server. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelAllocation = async () => {
+    setLoading(true);
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/allocations/cancel`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          allocation_id: allocation.allocation_id
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setAllocation(null);
+        setUser({ ...user, allocationStatus: 'NOT_STARTED', gender: null });
+        setAvailableHostels(null);
+        setCurrentStep(0);
+      } else {
+        setError(data.error || 'Failed to cancel allocation');
+      }
+    } catch (error) {
+      console.error('Error cancelling allocation:', error);
+      setError('Failed to connect to server. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const steps = useMemo(() => {
+    const baseSteps = [
+      {
+        title: 'Select Gender',
+        component: (
+          <GenderSelection
+            selectedGender={user.gender}
+            onGenderSelect={handleGenderSelect}
+            loading={loading}
+          />
+        ),
+      },
+      {
+        title: 'Review Hostels',
+        component: (
+          <HostelsDisplay
+            availableHostels={availableHostels}
+            loading={loading}
+          />
+        ),
+      },
+      {
+        title: 'Allocation Result',
+        component: (
+          <AllocationResult
+            allocation={allocation}
+            loading={loading}
+            onConfirm={confirmAllocation}
+            onCancel={cancelAllocation}
+          />
+        ),
+      },
+    ];
+
+    return baseSteps;
+  }, [user.gender, availableHostels, allocation, loading]);
+
+  const handleNext = () => {
+    if (currentStep === 0 && !user.gender) {
+      setError('Please select your gender to continue');
+      return;
+    }
+    if (currentStep === 0 && user.gender && !availableHostels) {
+      return;
+    }
+    if (currentStep === 1 && !allocation) {
+      requestAllocation();
+      return;
+    }
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+      setError(null);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+      setError(null);
+    }
+  };
+
+  const canGoNext = () => {
+    if (currentStep === 0) return user.gender && availableHostels;
+    if (currentStep === 1) return availableHostels;
+    if (currentStep === 2) return allocation;
+    return false;
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <div className="flex items-center gap-3 mb-2">
+            <Home className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-3xl font-bold text-gray-800">Hostel Allocation System</h1>
+          </div>
+          <p className="text-gray-600">Secure your hostel accommodation in 3 easy steps</p>
+        </div>
+
+        {/* User Info Card */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <User className="w-6 h-6 text-gray-600" />
+            <h2 className="text-xl font-semibold text-gray-800">Student Information</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <p className="text-sm text-gray-500">Name</p>
+              <p className="font-medium text-gray-800">{user.name}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Student ID</p>
+              <p className="font-medium text-gray-800">{user.id}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Email</p>
+              <p className="font-medium text-gray-800">{user.email}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Status</p>
+              <div className="flex items-center gap-2">
+                {user.allocationStatus === 'CONFIRMED' ? (
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                ) : user.allocationStatus === 'ALLOCATED' ? (
+                  <Clock className="w-4 h-4 text-yellow-600" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-gray-400" />
+                )}
+                <span className={`font-medium text-sm ${
+                  user.allocationStatus === 'CONFIRMED' ? 'text-green-600' :
+                  user.allocationStatus === 'ALLOCATED' ? 'text-yellow-600' :
+                  'text-gray-600'
+                }`}>
+                  {user.allocationStatus.replace('_', ' ')}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content Card */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+          {/* Step Indicator */}
+          <StepIndicator steps={steps} currentStep={currentStep} />
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start gap-3">
+              <XCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-semibold text-red-800">Error</p>
+                <p className="text-red-700">{error}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Current Step Content */}
+          <div className="min-h-[400px]">
+            {steps[currentStep].component}
+          </div>
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className="flex justify-between items-center">
+          <button
+            onClick={handlePrev}
+            disabled={currentStep === 0 || loading}
+            className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5" />
+            Back
+          </button>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Step {currentStep + 1} of {steps.length}
+            </p>
+          </div>
+
+          {currentStep === 2 && allocation?.status === 'PENDING_CONFIRMATION' ? (
+            <div className="flex gap-3">
+              <button
+                onClick={cancelAllocation}
+                disabled={loading}
+                className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <XCircle className="w-5 h-5" />
+                Cancel
+              </button>
+              <button
+                onClick={confirmAllocation}
+                disabled={loading}
+                className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    Confirming...
+                  </>
+                ) : (
+                  <>
+                    Confirm
+                    <CheckCircle className="w-5 h-5" />
+                  </>
+                )}
+              </button>
+            </div>
+          ) : currentStep === 2 && allocation?.status === 'CONFIRMED' ? (
+            <button
+              onClick={() => window.location.reload()}
+              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
+            >
+              Complete
+              <CheckCircle className="w-5 h-5" />
+            </button>
+          ) : (
+            <button
+              onClick={handleNext}
+              disabled={!canGoNext() || loading}
+              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? (
+                <>
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  Processing...
+                </>
+              ) : currentStep === 1 ? (
+                <>
+                  Request Allocation
+                  <Home className="w-5 h-5" />
+                </>
+              ) : (
+                <>
+                  Continue
+                  <ChevronRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default HostelAllocationDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState, useEffect } from 'react';
+import { Home, User, CheckCircle, XCircle, Clock, AlertCircle, RefreshCw } from 'lucide-react';
+
+const HostelAllocationDashboard = () => {
+  const [user, setUser] = useState({
+    id: 'U12345',
+    name: 'John Doe',
+    email: 'john.doe@university.edu',
+    gender: null,
+    allocationStatus: 'NOT_STARTED'
+  });
+
+  const [allocation, setAllocation] = useState(null);
+  const [availableHostels, setAvailableHostels] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  // Simulate API call to check existing allocation on mount
+  useEffect(() => {
+    checkExistingAllocation();
+  }, []);
+
+  const checkExistingAllocation = async () => {
+    setLoading(true);
+    // Simulate API call
+    setTimeout(() => {
+      // Simulating no existing allocation
+      setLoading(false);
+    }, 800);
+  };
+
+  const fetchAvailableHostels = async (gender) => {
+    setLoading(true);
+    setError(null);
+    
+    // Simulate API call to backend
+    setTimeout(() => {
+      // Mock response based on gender
+      const mockHostels = {
+        MALE: {
+          available_count: 3,
+          total_spaces: 45,
+          hostels: [
+            { hostel_id: 'H001', name: 'Block A - Male', available_spaces: 15 },
+            { hostel_id: 'H002', name: 'Block B - Male', available_spaces: 20 },
+            { hostel_id: 'H003', name: 'Block C - Male', available_spaces: 10 }
+          ]
+        },
+        FEMALE: {
+          available_count: 2,
+          total_spaces: 35,
+          hostels: [
+            { hostel_id: 'H004', name: 'Block D - Female', available_spaces: 20 },
+            { hostel_id: 'H005', name: 'Block E - Female', available_spaces: 15 }
+          ]
+        },
+        OTHER: {
+          available_count: 1,
+          total_spaces: 10,
+          hostels: [
+            { hostel_id: 'H006', name: 'Block F - Inclusive', available_spaces: 10 }
+          ]
+        }
+      };
+
+      setAvailableHostels(mockHostels[gender] || null);
+      setLoading(false);
+    }, 1000);
+  };
+
+  const handleGenderSelect = (gender) => {
+    setUser({ ...user, gender });
+    setError(null);
+    setAllocation(null);
+    fetchAvailableHostels(gender);
+  };
+
+  const requestAllocation = async () => {
+    if (!user.gender) {
+      setError('Please select your gender first');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    // Simulate API call to request allocation
+    setTimeout(() => {
+      // Simulate random allocation
+      if (availableHostels && availableHostels.hostels.length > 0) {
+        const randomIndex = Math.floor(Math.random() * availableHostels.hostels.length);
+        const selectedHostel = availableHostels.hostels[randomIndex];
+        
+        const newAllocation = {
+          allocation_id: 'A' + Math.random().toString(36).substr(2, 9),
+          hostel_id: selectedHostel.hostel_id,
+          hostel_name: selectedHostel.name,
+          allocated_at: new Date().toISOString(),
+          expires_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(),
+          status: 'PENDING_CONFIRMATION'
+        };
+
+        setAllocation(newAllocation);
+        setUser({ ...user, allocationStatus: 'ALLOCATED' });
+        setShowConfirmation(true);
+      } else {
+        setError('No hostels available for your gender. Please contact administration.');
+      }
+      setLoading(false);
+    }, 1500);
+  };
+
+  const confirmAllocation = async () => {
+    setLoading(true);
+    
+    // Simulate API call to confirm allocation
+    setTimeout(() => {
+      setAllocation({ ...allocation, status: 'CONFIRMED' });
+      setUser({ ...user, allocationStatus: 'CONFIRMED' });
+      setShowConfirmation(false);
+      setLoading(false);
+    }, 1000);
+  };
+
+  const cancelAllocation = () => {
+    setAllocation(null);
+    setUser({ ...user, allocationStatus: 'NOT_STARTED' });
+    setShowConfirmation(false);
+    setAvailableHostels(null);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex items-center gap-3 mb-2">
+            <Home className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-3xl font-bold text-gray-800">Hostel Allocation</h1>
+          </div>
+          <p className="text-gray-600">Secure your hostel accommodation</p>
+        </div>
+
+        {/* User Info Card */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <User className="w-6 h-6 text-gray-600" />
+            <h2 className="text-xl font-semibold text-gray-800">Student Information</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-500">Name</p>
+              <p className="font-medium text-gray-800">{user.name}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Student ID</p>
+              <p className="font-medium text-gray-800">{user.id}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Email</p>
+              <p className="font-medium text-gray-800">{user.email}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-500">Status</p>
+              <div className="flex items-center gap-2">
+                {user.allocationStatus === 'CONFIRMED' ? (
+                  <CheckCircle className="w-4 h-4 text-green-600" />
+                ) : user.allocationStatus === 'ALLOCATED' ? (
+                  <Clock className="w-4 h-4 text-yellow-600" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-gray-400" />
+                )}
+                <span className={`font-medium ${
+                  user.allocationStatus === 'CONFIRMED' ? 'text-green-600' :
+                  user.allocationStatus === 'ALLOCATED' ? 'text-yellow-600' :
+                  'text-gray-600'
+                }`}>
+                  {user.allocationStatus.replace('_', ' ')}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Gender Selection */}
+        {!allocation && (
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Select Your Gender</h2>
+            <p className="text-gray-600 mb-4">
+              This will determine which hostels are available for allocation
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {['MALE', 'FEMALE', 'OTHER'].map((gender) => (
+                <button
+                  key={gender}
+                  onClick={() => handleGenderSelect(gender)}
+                  disabled={loading}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    user.gender === gender
+                      ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                      : 'border-gray-200 hover:border-indigo-300 text-gray-700'
+                  } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                >
+                  <div className="font-semibold">{gender}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Available Hostels Info */}
+        {availableHostels && !allocation && (
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Available Hostels</h2>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <p className="text-blue-800">
+                <strong>{availableHostels.available_count}</strong> hostel(s) available with{' '}
+                <strong>{availableHostels.total_spaces}</strong> total spaces for {user.gender} students
+              </p>
+            </div>
+            <div className="space-y-3">
+              {availableHostels.hostels.map((hostel) => (
+                <div key={hostel.hostel_id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <p className="font-medium text-gray-800">{hostel.name}</p>
+                    <p className="text-sm text-gray-600">ID: {hostel.hostel_id}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Available Spaces</p>
+                    <p className="font-bold text-indigo-600">{hostel.available_spaces}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex items-start gap-3">
+            <XCircle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-semibold text-red-800">Error</p>
+              <p className="text-red-700">{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Allocation Result */}
+        {allocation && (
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              {allocation.status === 'CONFIRMED' ? (
+                <CheckCircle className="w-8 h-8 text-green-600" />
+              ) : (
+                <Clock className="w-8 h-8 text-yellow-600" />
+              )}
+              <h2 className="text-xl font-semibold text-gray-800">
+                {allocation.status === 'CONFIRMED' ? 'Allocation Confirmed!' : 'Hostel Allocated'}
+              </h2>
+            </div>
+
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg p-6 mb-4">
+              <h3 className="text-2xl font-bold text-indigo-900 mb-2">{allocation.hostel_name}</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div>
+                  <p className="text-sm text-gray-600">Allocation ID</p>
+                  <p className="font-mono text-sm text-gray-800">{allocation.allocation_id}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Hostel ID</p>
+                  <p className="font-mono text-sm text-gray-800">{allocation.hostel_id}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Allocated At</p>
+                  <p className="text-sm text-gray-800">{formatDate(allocation.allocated_at)}</p>
+                </div>
+                {allocation.status === 'PENDING_CONFIRMATION' && (
+                  <div>
+                    <p className="text-sm text-gray-600">Expires At</p>
+                    <p className="text-sm text-red-600 font-semibold">{formatDate(allocation.expires_at)}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {allocation.status === 'PENDING_CONFIRMATION' && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+                <p className="text-yellow-800 text-sm">
+                  ⚠️ You have 48 hours to confirm this allocation. After that, it will expire and the space will be released.
+                </p>
+              </div>
+            )}
+
+            {allocation.status === 'CONFIRMED' && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                <p className="text-green-800 text-sm">
+                  ✓ Your hostel allocation has been confirmed. Please check your email for further instructions.
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="bg-white rounded-lg shadow-lg p-6">
+          {!allocation && user.gender && availableHostels && (
+            <button
+              onClick={requestAllocation}
+              disabled={loading}
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Home className="w-5 h-5" />
+                  Request Hostel Allocation
+                </>
+              )}
+            </button>
+          )}
+
+          {allocation && allocation.status === 'PENDING_CONFIRMATION' && (
+            <div className="flex flex-col md:flex-row gap-4">
+              <button
+                onClick={confirmAllocation}
+                disabled={loading}
+                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    Confirming...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-5 h-5" />
+                    Confirm Allocation
+                  </>
+                )}
+              </button>
+              <button
+                onClick={cancelAllocation}
+                disabled={loading}
+                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                <XCircle className="w-5 h-5" />
+                Cancel
+              </button>
+            </div>
+          )}
+
+          {allocation && allocation.status === 'CONFIRMED' && (
+            <div className="text-center">
+              <p className="text-gray-600 mb-4">
+                Need help? Contact the hostel administration office.
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="text-indigo-600 hover:text-indigo-700 font-semibold"
+              >
+                Back to Dashboard
+              </button>
+            </div>
+          )}
+
+          {!user.gender && (
+            <div className="text-center text-gray-500">
+              Please select your gender to view available hostels
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default HostelAllocationDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import { useState } from 'react';
 import { 
   Calendar, 

@@ -41,7 +41,7 @@ function RouteComponent() {
       }
       catch(error){
         console.log("This is error at Login", error)
-        toast.error(error?.error || "Login Failed🤧")
+        toast.error(error?.error || error?.data || "Login Failed🤧")
       }
       
       console.log("herer", email)
@@ -106,12 +106,20 @@ return (
           />
         </div> */}
 
+
+
         <p className="text-[15px] mt-4 text-center">
           Don’t have an account?{" "}
           <Link to="/usersignup" className="text-blue-600 hover:underline">
             Sign Up
           </Link>
         </p>
+
+        <div className="text-center py-2">
+           <Link to="/forgotPassword" className="text-red-600 underline">
+                  Forgot Password?
+                </Link>
+        </div>
         </div>
       </div>
     </>
