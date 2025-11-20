@@ -1,6 +1,3 @@
-
-
-
 import { PaystackButton } from 'react-paystack';
 import Male from "/male.png";
 import Female from "/female.png";
@@ -8,10 +5,8 @@ import { Wallet, Loader2 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useState, useCallback } from 'react';
-import { useNavigate, } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { useQueryClient } from '@tanstack/react-query';
-
-// Constants
 
 const PAYMENT_STATUS = {
   PENDING: 'pending',
@@ -23,35 +18,33 @@ const PAYMENT_STATUS = {
 function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayment }) {
   const numberOfPaymentSess = values?.numberOfPayment ?? 0 
   const single = 100
-  // const single = 7500
+  // const single = 7500 // Production amount
   
   const PAYMENT_AMOUNTS = {
     single: single,
-    multiple: single  * (numberOfPaymentSess + 1)
+    multiple: single * (numberOfPaymentSess + 1)
   };
+  
   const [paymentStatus, setPaymentStatus] = useState(PAYMENT_STATUS.PENDING);
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
   const backendURL = import.meta.env.VITE_BACKEND_URL;
-  const queryClient = useQueryClient()
-
-
-
-
+  const queryClient = useQueryClient();
 
   // Generate unique reference for this payment attempt
   const paymentReference = `TXN_${userDetails?.uniqueId?.replace(/[^a-zA-Z0-9]/g, '')}_${Date.now()}`;
-  const amount = paymentOption == 'single' ? PAYMENT_AMOUNTS.single : PAYMENT_AMOUNTS.multiple;
-  console.log("Values", values, 'numberOfPayemnt', numberOfPaymentSess, "Amounr", amount, PAYMENT_AMOUNTS.single, PAYMENT_AMOUNTS.multiple)
+  const amount = paymentOption === 'single' ? PAYMENT_AMOUNTS.single : PAYMENT_AMOUNTS.multiple;
+  
+  console.log("Values", values, 'numberOfPayment', numberOfPaymentSess, "Amount", amount, PAYMENT_AMOUNTS.single, PAYMENT_AMOUNTS.multiple)
 
-  // Verify payment with backend (backend should call Paystack)
+  // Verify payment with backend
   const verifyPaymentWithBackend = useCallback(async (reference) => {
     try {
       const response = await axios.post(`${backendURL}/api/payment/verify-payment`, {
         reference,
         userId: userDetails?.uniqueId
       });
-      console.log("verify Payment",response)
+      console.log("verify Payment", response);
       return response.data.data;
     } catch (error) {
       console.error('Payment verification failed:', error);
@@ -59,12 +52,10 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
     }
   }, [backendURL, userDetails?.uniqueId]);  
 
-
-
   // Register user event after successful payment
   const registerUserEvent = useCallback(async (paymentData) => {
-     console.log("Data T Be Submittted", paymentData)
-     const registrationData = {
+    console.log("Data To Be Submitted", paymentData);
+    const registrationData = {
       ...values,
       ...paymentData,
       paymentOption,
@@ -73,13 +64,15 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
 
     try {
       const response = await axios.post(`${backendURL}/api/userRegisteredEvents`, registrationData);
-      // Generate Codes Upon Registration
-      if(paymentOption == 'multiple'){
-        // ##### Generate Code First
+      
+      // Generate Codes Upon Registration for multiple payment
+      if (paymentOption === 'multiple') {
+        console.log('Generating codes for multiple payment...')
+        
         const codesGenerated = await axios.post(`${backendURL}/api/payment/generate-code`, {
           "numberOfPersons": numberOfPaymentSess
         });
-        // ##Save THe Code
+        
         const saveCode = await axios.post(`${backendURL}/api/payment/save-codes`, {
           "payerId": userDetails?.uniqueId,
           "payerArchdeaconry": userDetails?.archdeaconry,
@@ -88,10 +81,9 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
           "codes": codesGenerated?.data?.data
         });
 
-        console.log("This arer ths Codes", codesGenerated, "Saved Code", saveCode)
-      }
-      else{
-        console.log("No Code Genereated")
+        console.log("Codes generated and saved", codesGenerated, saveCode);
+      } else {
+        console.log("Single payment - no codes generated");
       }
 
       return response.data;
@@ -99,14 +91,9 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
       console.error('Event registration failed:', error);
       throw new Error(error.response?.data?.errors?.error || 'Registration failed');
     }
-  }, [values, paymentOption, userDetails?.uniqueId, backendURL]);
+  }, [values, paymentOption, userDetails, backendURL, numberOfPaymentSess]);
 
-
-
-
-
-
-  //#######    HANDLES SUCCESSFUL PAYMENT
+  // Handle successful payment
   const handlePaymentSuccess = useCallback(async (paystackResponse) => {
     if (isProcessing) return;
     
@@ -118,7 +105,8 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
       
       // Verify payment with backend
       const verificationResult = await verifyPaymentWithBackend(paystackResponse.reference);
-      console.log("This is the verification Restul", verificationResult)
+      console.log("Verification Result", verificationResult);
+      
       if (verificationResult.status !== 'success') {
         throw new Error('Payment verification failed');
       }
@@ -130,15 +118,22 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
         modeOfPayment: verificationResult.channel,
         paymentTime: verificationResult.paid_at,
         paymentID: verificationResult.id,
-        amountOfPeople: paymentOption == 'multiple' ? numberOfPaymentSess : "1"
+        amountOfPeople: paymentOption === 'multiple' ? String(numberOfPaymentSess + 1) : "1"
       });
 
-      console.log(queryClient.getQueriesData({}))
-      await queryClient.invalidateQueries({ queryKey: ['allEvent', userDetails?.uniqueID] });
-     await queryClient.invalidateQueries({ queryKey: ['userRegisteredEvents', userDetails?.uniqueId] });
+      // Invalidate queries to refresh data
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['allEvent'] }),
+        queryClient.invalidateQueries({ queryKey: ['userRegisteredEvents'] }),
+        queryClient.invalidateQueries({ queryKey: ['userPaymentRecord'] })
+      ]);
 
       toast.success('Payment successful! Registration completed.');
-      navigate({ to: '/userdashboard' });
+      
+      // Navigate after a short delay
+      setTimeout(() => {
+        navigate({ to: '/userdashboard' });
+      }, 1500);
 
     } catch (error) {
       console.error('Payment processing error:', error);
@@ -147,13 +142,9 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
     } finally {
       setIsProcessing(false);
     }
-  }, [isProcessing, verifyPaymentWithBackend, registerUserEvent, navigate]);
+  }, [isProcessing, verifyPaymentWithBackend, registerUserEvent, navigate, queryClient, paymentOption, numberOfPaymentSess]);
 
-
-
-
-
-  //######## Handle payment gateway closure (cancelled/failed)
+  // Handle payment gateway closure (cancelled/failed)
   const handlePaymentClose = useCallback(async () => {
     if (isProcessing) return;
     
@@ -167,23 +158,22 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
       if (verificationResult.status === 'success') {
         // Payment was successful, treat as success
         await handlePaymentSuccess({ reference: paymentReference });
-      } else if (verificationResult.status === 'abandoned'){
+      } else if (verificationResult.status === 'abandoned') {
         setPaymentStatus(PAYMENT_STATUS.ABANDONED);
-        toast.warning('Payment was cancelled or incomplete. Please try again.');
-        navigate({ to: '/userdashboard' });
-      }
-       else {
-       throw new Error(PAYMENT_STATUS.FAILED)
+        toast.warning('Payment was cancelled. You can try again.');
+        // Don't navigate away, let user try again
+      } else {
+        throw new Error('Payment failed');
       } 
     } catch (error) {
-      console.error('Payment verification error:', error);
+      console.error('Payment closure error:', error);
       setPaymentStatus(PAYMENT_STATUS.FAILED);
-      toast.error('Unable to verify payment status. Please contact support if payment was deducted.');
-      navigate({ to: '/userdashboard' });
+      toast.error('Payment was not completed. Please try again.');
+      // Don't navigate away, let user try again
     } finally {
       setIsProcessing(false);
     }
-  }, [isProcessing, verifyPaymentWithBackend, paymentReference, handlePaymentSuccess, navigate]);
+  }, [isProcessing, verifyPaymentWithBackend, paymentReference, handlePaymentSuccess]);
 
   // Component props for PaystackButton
   const componentProps = {
@@ -204,6 +194,7 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
       userId: userDetails?.uniqueId,
       fullName: userDetails?.fullName,
       paymentOption: paymentOption,
+      numberOfPayment: numberOfPaymentSess
     },
     onSuccess: handlePaymentSuccess,
     onClose: handlePaymentClose,
@@ -212,7 +203,7 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
   // Validation
   if (!userDetails?.email || !userDetails?.uniqueId) {
     return (
-      <div className="text-center text-red-500">
+      <div className="text-center text-red-500 p-4">
         <p>Missing user details. Please refresh and try again.</p>
       </div>
     );
@@ -255,11 +246,16 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
             Reference ID: <span className="ml-3 font-[500] text-reddish">{paymentReference}</span>
           </p>
           <p className="text-[14px]">
-            Amount: <span className="ml-3 font-[500] text-reddish">₦{amount}</span>
+            Amount: <span className="ml-3 font-[500] text-reddish">₦{amount.toLocaleString()}</span>
           </p>
           <p className="text-[14px]">
             Payment Type: <span className="ml-3 font-[500] text-reddish capitalize">{paymentOption}</span>
           </p>
+          {paymentOption === 'multiple' && (
+            <p className="text-[14px]">
+              Number of People: <span className="ml-3 font-[500] text-reddish">{numberOfPaymentSess + 1}</span>
+            </p>
+          )}
         </div>
 
         {/* Payment Button */}
@@ -269,10 +265,30 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
           {...componentProps} 
         />
         
+        {/* Status Messages */}
         {paymentStatus === PAYMENT_STATUS.FAILED && (
-          <p className="text-red-500 text-[15px] text-center">
-              
-          </p>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-red-600 text-[14px] text-center font-medium">
+              Payment failed. Please try again.
+            </p>
+          </div>
+        )}
+        
+        {paymentStatus === PAYMENT_STATUS.ABANDONED && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-yellow-700 text-[14px] text-center font-medium">
+              Payment was cancelled. Click the button above to try again.
+            </p>
+          </div>
+        )}
+        
+        {isProcessing && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p className="text-blue-600 text-[14px] text-center font-medium flex items-center justify-center gap-2">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Processing your payment...
+            </p>
+          </div>
         )}
       </div>
     </div>
