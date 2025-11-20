@@ -18,7 +18,7 @@ function SingleEvent() {
 
 useEffect(() => {
 const events = queryClient.getQueryData(['allEvent', userData?.uniqueId, userRegisteredEvents])
-const event = events?.find((event) => event._id === id);
+const event = events?.find((event) => event?._id === id);
 setCachedEvent(event)
   }, [queryClient]);
 
