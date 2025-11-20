@@ -115,7 +115,7 @@ const {
   queryKey: ['allEvent', user?.uniqueId, userRegisteredEvents], // Add userRegisteredEvents to the key
   queryFn: async () => {
     const response = await axios.get(`${backendUrl}/api/admin/events`);
-    const allEventsData = response.data.data;
+    const allEventsData = response?.data?.data;
 
     const registrationMap = new Map();
     
