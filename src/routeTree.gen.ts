@@ -30,7 +30,8 @@ import { Route as SuperadminEventsRouteImport } from './routes/superadmin/events
 import { Route as EventsIdRouteImport } from './routes/events/$id'
 import { Route as AboutChaplainsRouteImport } from './routes/about/chaplains'
 import { Route as AboutChairmansRouteImport } from './routes/about/chairmans'
-import { Route as UserdashboardEventIdRouteImport } from './routes/userdashboard/event/$id'
+import { Route as UserdashboardEventIndexRouteImport } from './routes/userdashboard/event/index'
+import { Route as UserdashboardEventVerifyPaymentRouteImport } from './routes/userdashboard/event/verifyPayment'
 
 const UsersignupRoute = UsersignupRouteImport.update({
   id: '/usersignup',
@@ -139,11 +140,17 @@ const AboutChairmansRoute = AboutChairmansRouteImport.update({
   path: '/about/chairmans',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UserdashboardEventIdRoute = UserdashboardEventIdRouteImport.update({
-  id: '/event/$id',
-  path: '/event/$id',
+const UserdashboardEventIndexRoute = UserdashboardEventIndexRouteImport.update({
+  id: '/event/',
+  path: '/event/',
   getParentRoute: () => UserdashboardRoute,
 } as any)
+const UserdashboardEventVerifyPaymentRoute =
+  UserdashboardEventVerifyPaymentRouteImport.update({
+    id: '/event/verifyPayment',
+    path: '/event/verifyPayment',
+    getParentRoute: () => UserdashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -167,7 +174,8 @@ export interface FileRoutesByFullPath {
   '/registrationunit/': typeof RegistrationunitIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/userdashboard/': typeof UserdashboardIndexRoute
-  '/userdashboard/event/$id': typeof UserdashboardEventIdRoute
+  '/userdashboard/event/verifyPayment': typeof UserdashboardEventVerifyPaymentRoute
+  '/userdashboard/event': typeof UserdashboardEventIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -188,7 +196,8 @@ export interface FileRoutesByTo {
   '/registrationunit': typeof RegistrationunitIndexRoute
   '/superadmin': typeof SuperadminIndexRoute
   '/userdashboard': typeof UserdashboardIndexRoute
-  '/userdashboard/event/$id': typeof UserdashboardEventIdRoute
+  '/userdashboard/event/verifyPayment': typeof UserdashboardEventVerifyPaymentRoute
+  '/userdashboard/event': typeof UserdashboardEventIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -213,7 +222,8 @@ export interface FileRoutesById {
   '/registrationunit/': typeof RegistrationunitIndexRoute
   '/superadmin/': typeof SuperadminIndexRoute
   '/userdashboard/': typeof UserdashboardIndexRoute
-  '/userdashboard/event/$id': typeof UserdashboardEventIdRoute
+  '/userdashboard/event/verifyPayment': typeof UserdashboardEventVerifyPaymentRoute
+  '/userdashboard/event/': typeof UserdashboardEventIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -239,7 +249,8 @@ export interface FileRouteTypes {
     | '/registrationunit/'
     | '/superadmin/'
     | '/userdashboard/'
-    | '/userdashboard/event/$id'
+    | '/userdashboard/event/verifyPayment'
+    | '/userdashboard/event'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -260,7 +271,8 @@ export interface FileRouteTypes {
     | '/registrationunit'
     | '/superadmin'
     | '/userdashboard'
-    | '/userdashboard/event/$id'
+    | '/userdashboard/event/verifyPayment'
+    | '/userdashboard/event'
   id:
     | '__root__'
     | '/'
@@ -284,7 +296,8 @@ export interface FileRouteTypes {
     | '/registrationunit/'
     | '/superadmin/'
     | '/userdashboard/'
-    | '/userdashboard/event/$id'
+    | '/userdashboard/event/verifyPayment'
+    | '/userdashboard/event/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -452,11 +465,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutChairmansRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/userdashboard/event/$id': {
-      id: '/userdashboard/event/$id'
-      path: '/event/$id'
-      fullPath: '/userdashboard/event/$id'
-      preLoaderRoute: typeof UserdashboardEventIdRouteImport
+    '/userdashboard/event/': {
+      id: '/userdashboard/event/'
+      path: '/event'
+      fullPath: '/userdashboard/event'
+      preLoaderRoute: typeof UserdashboardEventIndexRouteImport
+      parentRoute: typeof UserdashboardRoute
+    }
+    '/userdashboard/event/verifyPayment': {
+      id: '/userdashboard/event/verifyPayment'
+      path: '/event/verifyPayment'
+      fullPath: '/userdashboard/event/verifyPayment'
+      preLoaderRoute: typeof UserdashboardEventVerifyPaymentRouteImport
       parentRoute: typeof UserdashboardRoute
     }
   }
@@ -493,7 +513,8 @@ interface UserdashboardRouteChildren {
   UserdashboardPaymentsRoute: typeof UserdashboardPaymentsRoute
   UserdashboardProfileRoute: typeof UserdashboardProfileRoute
   UserdashboardIndexRoute: typeof UserdashboardIndexRoute
-  UserdashboardEventIdRoute: typeof UserdashboardEventIdRoute
+  UserdashboardEventVerifyPaymentRoute: typeof UserdashboardEventVerifyPaymentRoute
+  UserdashboardEventIndexRoute: typeof UserdashboardEventIndexRoute
 }
 
 const UserdashboardRouteChildren: UserdashboardRouteChildren = {
@@ -502,7 +523,8 @@ const UserdashboardRouteChildren: UserdashboardRouteChildren = {
   UserdashboardPaymentsRoute: UserdashboardPaymentsRoute,
   UserdashboardProfileRoute: UserdashboardProfileRoute,
   UserdashboardIndexRoute: UserdashboardIndexRoute,
-  UserdashboardEventIdRoute: UserdashboardEventIdRoute,
+  UserdashboardEventVerifyPaymentRoute: UserdashboardEventVerifyPaymentRoute,
+  UserdashboardEventIndexRoute: UserdashboardEventIndexRoute,
 }
 
 const UserdashboardRouteWithChildren = UserdashboardRoute._addFileChildren(

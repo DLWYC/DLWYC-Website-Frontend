@@ -21,14 +21,14 @@ const PAYMENT_STATUS = {
   ABANDONED: 'abandoned'
 };
 
-function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayment }) {
-  const numberOfPaymentSess = values?.numberOfPayment ?? 0 
+function PayStack({ userDetails, values, setValues, paymentOption, numberfPeopleToBePayedFor }) {
+  const numberfPeopleToBePayedForSess = values?.numberfPeopleToBePayedFor ?? 0
   const single = 100
   // const single = 7500
-  
+
   const PAYMENT_AMOUNTS = {
     single: single,
-    multiple: single  * (numberOfPaymentSess + 1)
+    multiple: single * (numberfPeopleToBePayedForSess + 1)
   };
   const [paymentStatus, setPaymentStatus] = useState(PAYMENT_STATUS.PENDING);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -43,7 +43,7 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
   // Generate unique reference for this payment attempt
   const paymentReference = `TXN_${userDetails?.uniqueId?.replace(/[^a-zA-Z0-9]/g, '')}_${Date.now()}`;
   const amount = paymentOption == 'single' ? PAYMENT_AMOUNTS.single : PAYMENT_AMOUNTS.multiple;
-  console.log("Values", values, 'numberOfPayemnt', numberOfPaymentSess, "Amounr", amount, PAYMENT_AMOUNTS.single, PAYMENT_AMOUNTS.multiple)
+  console.log("Values", values, 'numberOfPayemnt', numberfPeopleToBePayedForSess, "Amounr", amount, PAYMENT_AMOUNTS.single, PAYMENT_AMOUNTS.multiple)
 
   // Verify payment with backend (backend should call Paystack)
   const verifyPaymentWithBackend = useCallback(async (reference) => {
@@ -52,20 +52,20 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
         reference,
         userId: userDetails?.uniqueId
       });
-      console.log("verify Payment",response)
+      console.log("verify Payment", response)
       return response.data.data;
     } catch (error) {
       console.error('Payment verification failed:', error);
       throw new Error(error.response?.data?.message || 'Payment verification failed');
     }
-  }, [backendURL, userDetails?.uniqueId]);  
+  }, [backendURL, userDetails?.uniqueId]);
 
 
 
   // Register user event after successful payment
   const registerUserEvent = useCallback(async (paymentData) => {
-     console.log("Data T Be Submittted", paymentData)
-     const registrationData = {
+    console.log("Data T Be Submittted", paymentData)
+    const registrationData = {
       ...values,
       ...paymentData,
       paymentOption,
@@ -75,10 +75,10 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
     try {
       const response = await axios.post(`${backendURL}/api/userRegisteredEvents`, registrationData);
       // Generate Codes Upon Registration
-      if(paymentOption == 'multiple'){
+      if (paymentOption == 'multiple') {
         // ##### Generate Code First
         const codesGenerated = await axios.post(`${backendURL}/api/payment/generate-code`, {
-          "numberOfPersons": numberOfPaymentSess
+          "numberOfPersons": numberfPeopleToBePayedForSess
         });
         // ##Save THe Code
         const saveCode = await axios.post(`${backendURL}/api/payment/save-codes`, {
@@ -91,7 +91,7 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
 
         console.log("This arer ths Codes", codesGenerated, "Saved Code", saveCode)
       }
-      else{
+      else {
         console.log("No Code Genereated")
       }
 
@@ -110,13 +110,13 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
   //#######    HANDLES SUCCESSFUL PAYMENT
   const handlePaymentSuccess = useCallback(async (paystackResponse) => {
     if (isProcessing) return;
-    
+
     setIsProcessing(true);
     setPaymentStatus(PAYMENT_STATUS.SUCCESS);
 
     try {
       console.log('Payment successful:', paystackResponse);
-      
+
       // Verify payment with backend
       const verificationResult = await verifyPaymentWithBackend(paystackResponse.reference);
       console.log("This is the verification Restul", verificationResult)
@@ -131,12 +131,12 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
         modeOfPayment: verificationResult.channel,
         paymentTime: verificationResult.paid_at,
         paymentID: verificationResult.id,
-        amountOfPeople: paymentOption == 'multiple' ? numberOfPaymentSess : "1"
+        amountOfPeople: paymentOption == 'multiple' ? numberfPeopleToBePayedForSess : "1"
       });
 
       console.log(queryClient.getQueriesData({}))
       await queryClient.invalidateQueries({ queryKey: ['allEvent', userDetails?.uniqueID] });
-     await queryClient.invalidateQueries({ queryKey: ['userRegisteredEvents', userDetails?.uniqueId] });
+      await queryClient.invalidateQueries({ queryKey: ['userRegisteredEvents', userDetails?.uniqueId] });
 
       toast.success('Payment successful! Registration completed.');
       navigate({ to: '/userdashboard' });
@@ -157,25 +157,25 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
   //######## Handle payment gateway closure (cancelled/failed)
   const handlePaymentClose = useCallback(async () => {
     if (isProcessing) return;
-    
+
     setIsProcessing(true);
     console.log('Payment gateway closed');
 
     try {
       // Check if payment was actually completed despite gateway closure
       const verificationResult = await verifyPaymentWithBackend(paymentReference);
-      
+
       if (verificationResult.status === 'success') {
         // Payment was successful, treat as success
         await handlePaymentSuccess({ reference: paymentReference });
-      } else if (verificationResult.status === 'abandoned'){
+      } else if (verificationResult.status === 'abandoned') {
         setPaymentStatus(PAYMENT_STATUS.ABANDONED);
         toast.warning('Payment was cancelled or incomplete. Please try again.');
         navigate({ to: '/userdashboard' });
       }
-       else {
-       throw new Error(PAYMENT_STATUS.FAILED)
-      } 
+      else {
+        throw new Error(PAYMENT_STATUS.FAILED)
+      }
     } catch (error) {
       console.error('Payment verification error:', error);
       setPaymentStatus(PAYMENT_STATUS.FAILED);
@@ -223,17 +223,17 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
     <div className="lg:flex grid items-center gap-4">
       {/* User Avatar */}
       <div className="lg:basis-[50%] basis-[100%] grid place-content-center">
-        <img 
-          src={userDetails?.gender === 'Male' ? Male : Female} 
+        <img
+          src={userDetails?.gender === 'Male' ? Male : Female}
           alt={`${userDetails?.gender} avatar`}
           className="w-[300px] object-contain"
         />
       </div>
-      
+
       {/* Payment Details */}
       <div className="grid items-center lg:basis-[50%] basis-[100%] gap-4">
         <h2 className="flex items-center text-[20px] py-3">
-          <Wallet className="mr-3 w-[30px]" /> 
+          <Wallet className="mr-3 w-[30px]" />
           Your Payment Details
         </h2>
 
@@ -249,7 +249,7 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
             Unique ID: <span className="ml-3 font-[500] text-primary-main">{userDetails?.uniqueId}</span>
           </p>
         </div>
-        
+
         {/* Payment Information */}
         <div className="mb-4 space-y-3">
           <p className="text-[14px]">
@@ -264,15 +264,15 @@ function PayStack({ userDetails, values, setValues, paymentOption, numberOfPayme
         </div>
 
         {/* Payment Button */}
-        <PaystackButton 
+        <PaystackButton
           className="bg-primary-main [padding:var(--spacing-button)] rounded-sm hover:bg-text-header text-white transition ease-in-out delay-20 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isProcessing}
-          {...componentProps} 
+          {...componentProps}
         />
-        
+
         {paymentStatus === PAYMENT_STATUS.FAILED && (
           <p className="text-red-500 text-[15px] text-center">
-              
+
           </p>
         )}
       </div>
@@ -315,7 +315,7 @@ function SingleEvent() {
     } else {
       setCachedEvent(null)
     }
-    
+
     setLoading(false)
   }, [queryClient, id, userData?.uniqueId, userRegisteredEvents])
 
@@ -347,7 +347,7 @@ function SingleEvent() {
       {/* <p className='text-[18px] border border-red-500'>
         Register For: <span className='text-primary-main font-bold'>{cachedEvent.eventTitle}</span>
       </p> */}
-      
+
       <div className="flex items-center basis-[50%]">
         <MultiSteps userData={userData} eventDetails={cachedEvent} />
       </div>
@@ -421,27 +421,24 @@ const StepIndicator = ({ steps, currentStep }) => {
         <React.Fragment key={index}>
           <div className="flex flex-col items-center">
             <div
-              className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all ${
-                index < currentStep
+              className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all ${index < currentStep
                   ? 'bg-green-600 text-white'
                   : index === currentStep
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-gray-300 text-gray-600'
-              }`}
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-300 text-gray-600'
+                }`}
             >
               {index < currentStep ? <CheckCircle className="w-6 h-6" /> : index + 1}
             </div>
-            <p className={`text-sm mt-2 font-medium ${
-              index === currentStep ? 'text-indigo-600' : 'text-gray-600'
-            }`}>
+            <p className={`text-sm mt-2 font-medium ${index === currentStep ? 'text-indigo-600' : 'text-gray-600'
+              }`}>
               {step.title}
             </p>
           </div>
           {index < steps.length - 1 && (
             <div
-              className={`w-16 h-1 mx-2 mb-6 transition-all ${
-                index < currentStep ? 'bg-green-600' : 'bg-gray-300'
-              }`}
+              className={`w-16 h-1 mx-2 mb-6 transition-all ${index < currentStep ? 'bg-green-600' : 'bg-gray-300'
+                }`}
             />
           )}
         </React.Fragment>
@@ -471,11 +468,10 @@ const GenderSelection = ({ selectedGender, onGenderSelect, loading }) => {
             key={option.value}
             onClick={() => onGenderSelect(option.value)}
             disabled={loading}
-            className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${
-              selectedGender === option.value
+            className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${selectedGender === option.value
                 ? 'border-indigo-600 bg-indigo-50 shadow-lg transform scale-105'
                 : 'border-gray-200 hover:border-indigo-300 bg-white hover:shadow-md'
-            } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+              } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           >
             {selectedGender === option.value && (
               <div className="absolute top-3 right-3">
@@ -620,8 +616,8 @@ const AllocationResult = ({ allocation, loading, onConfirm, onCancel }) => {
           {allocation.status === 'CONFIRMED' ? 'Allocation Confirmed!' : 'Hostel Allocated'}
         </h2>
         <p className="text-gray-600">
-          {allocation.status === 'CONFIRMED' 
-            ? 'Your hostel has been successfully confirmed' 
+          {allocation.status === 'CONFIRMED'
+            ? 'Your hostel has been successfully confirmed'
             : 'Please review and confirm your allocation'}
         </p>
       </div>
@@ -739,7 +735,7 @@ const HostelAllocationDashboard = () => {
   const fetchAvailableHostels = async (gender) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/hostels/available?gender=${gender}`);
       const data = await response.json();
@@ -798,7 +794,7 @@ const HostelAllocationDashboard = () => {
 
   const confirmAllocation = async () => {
     setLoading(true);
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/allocations/confirm`, {
         method: 'POST',
@@ -829,7 +825,7 @@ const HostelAllocationDashboard = () => {
 
   const cancelAllocation = async () => {
     setLoading(true);
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/allocations/cancel`, {
         method: 'POST',
@@ -970,11 +966,10 @@ const HostelAllocationDashboard = () => {
                 ) : (
                   <AlertCircle className="w-4 h-4 text-gray-400" />
                 )}
-                <span className={`font-medium text-sm ${
-                  user.allocationStatus === 'CONFIRMED' ? 'text-green-600' :
-                  user.allocationStatus === 'ALLOCATED' ? 'text-yellow-600' :
-                  'text-gray-600'
-                }`}>
+                <span className={`font-medium text-sm ${user.allocationStatus === 'CONFIRMED' ? 'text-green-600' :
+                    user.allocationStatus === 'ALLOCATED' ? 'text-yellow-600' :
+                      'text-gray-600'
+                  }`}>
                   {user.allocationStatus.replace('_', ' ')}
                 </span>
               </div>
@@ -1168,7 +1163,7 @@ const HostelAllocationDashboard = () => {
   const fetchAvailableHostels = async (gender) => {
     setLoading(true);
     setError(null);
-    
+
     // Simulate API call to backend
     setTimeout(() => {
       // Mock response based on gender
@@ -1226,7 +1221,7 @@ const HostelAllocationDashboard = () => {
       if (availableHostels && availableHostels.hostels.length > 0) {
         const randomIndex = Math.floor(Math.random() * availableHostels.hostels.length);
         const selectedHostel = availableHostels.hostels[randomIndex];
-        
+
         const newAllocation = {
           allocation_id: 'A' + Math.random().toString(36).substr(2, 9),
           hostel_id: selectedHostel.hostel_id,
@@ -1248,7 +1243,7 @@ const HostelAllocationDashboard = () => {
 
   const confirmAllocation = async () => {
     setLoading(true);
-    
+
     // Simulate API call to confirm allocation
     setTimeout(() => {
       setAllocation({ ...allocation, status: 'CONFIRMED' });
@@ -1316,11 +1311,10 @@ const HostelAllocationDashboard = () => {
                 ) : (
                   <AlertCircle className="w-4 h-4 text-gray-400" />
                 )}
-                <span className={`font-medium ${
-                  user.allocationStatus === 'CONFIRMED' ? 'text-green-600' :
-                  user.allocationStatus === 'ALLOCATED' ? 'text-yellow-600' :
-                  'text-gray-600'
-                }`}>
+                <span className={`font-medium ${user.allocationStatus === 'CONFIRMED' ? 'text-green-600' :
+                    user.allocationStatus === 'ALLOCATED' ? 'text-yellow-600' :
+                      'text-gray-600'
+                  }`}>
                   {user.allocationStatus.replace('_', ' ')}
                 </span>
               </div>
@@ -1341,11 +1335,10 @@ const HostelAllocationDashboard = () => {
                   key={gender}
                   onClick={() => handleGenderSelect(gender)}
                   disabled={loading}
-                  className={`p-4 rounded-lg border-2 transition-all ${
-                    user.gender === gender
+                  className={`p-4 rounded-lg border-2 transition-all ${user.gender === gender
                       ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
                       : 'border-gray-200 hover:border-indigo-300 text-gray-700'
-                  } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                    } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                 >
                   <div className="font-semibold">{gender}</div>
                 </button>
@@ -1608,14 +1601,14 @@ export default HostelAllocationDashboard;
 
 
 import { useState } from 'react';
-import { 
-  Calendar, 
-  Users, 
-  TrendingUp, 
-  Bell, 
-  Plus, 
-  Edit2, 
-  Trash2, 
+import {
+  Calendar,
+  Users,
+  TrendingUp,
+  Bell,
+  Plus,
+  Edit2,
+  Trash2,
   Eye,
   BarChart3,
   Activity,
@@ -1683,8 +1676,8 @@ export default function SuperAdminDashboard() {
     }
 
     if (editingEvent) {
-      setEvents(events.map(evt => 
-        evt.id === editingEvent.id 
+      setEvents(events.map(evt =>
+        evt.id === editingEvent.id
           ? { ...formData, id: evt.id, registrations: evt.registrations, status: evt.status }
           : evt
       ));
@@ -1806,7 +1799,7 @@ export default function SuperAdminDashboard() {
               })}
             </div>
 
-            
+
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl shadow-lg">
@@ -2035,19 +2028,19 @@ function generateUniqueSevenCharCodes(numberOfPersons) {
   const codes = new Set(); // Use Set to ensure uniqueness
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; // 36 possible characters
   const codeLength = 7;
-  
+
   while (codes.size < numberOfPersons) {
     let code = '';
-    
+
     // Generate exactly 7 random characters
     for (let i = 0; i < codeLength; i++) {
       const randomIndex = Math.floor(Math.random() * characters.length);
       code += characters.charAt(randomIndex);
     }
-    
+
     codes.add(code); // Set automatically handles duplicates
   }
-  
+
   return Array.from(codes);
 }
 
@@ -2055,7 +2048,7 @@ function generateUniqueSevenCharCodes(numberOfPersons) {
 
 // Usage:
 const codes = generateUniqueSevenCharCodes(5);
-console.log(codes); 
+console.log(codes);
 // Output: ['A1B2C3D', 'X9Y8Z7W', 'M4N5P6Q', 'R2S3T4U', 'V7W8X9Y']
 console.log(`Generated ${codes.length} unique codes`);
 
@@ -2063,22 +2056,22 @@ console.log(`Generated ${codes.length} unique codes`);
 function generateUniqueSevenCharCodesOptimized(numberOfPersons) {
   const codes = new Set();
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  
+
   // Check if request is theoretically possible
   const maxPossibleCodes = Math.pow(36, 7); // 36^7 = ~78 billion codes
   if (numberOfPersons > maxPossibleCodes) {
     throw new Error(`Cannot generate ${numberOfPersons} unique codes. Maximum possible: ${maxPossibleCodes}`);
   }
-  
+
   while (codes.size < numberOfPersons) {
     // More efficient string building
-    const code = Array.from({ length: 7 }, () => 
+    const code = Array.from({ length: 7 }, () =>
       characters[Math.floor(Math.random() * characters.length)]
     ).join('');
-    
+
     codes.add(code);
   }
-  
+
   return Array.from(codes);
 }
 
@@ -2087,14 +2080,14 @@ function generateUniqueSevenCharCodesWithProgress(numberOfPersons, progressCallb
   const codes = new Set();
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let lastReportedProgress = 0;
-  
+
   while (codes.size < numberOfPersons) {
-    const code = Array.from({ length: 7 }, () => 
+    const code = Array.from({ length: 7 }, () =>
       characters[Math.floor(Math.random() * characters.length)]
     ).join('');
-    
+
     codes.add(code);
-    
+
     // Report progress every 10% or every 1000 codes (whichever is smaller)
     const progress = Math.floor((codes.size / numberOfPersons) * 100);
     if (progress > lastReportedProgress && (progress % 10 === 0 || codes.size % 1000 === 0)) {
@@ -2102,12 +2095,12 @@ function generateUniqueSevenCharCodesWithProgress(numberOfPersons, progressCallb
       lastReportedProgress = progress;
     }
   }
-  
+
   return Array.from(codes);
 }
 
 // Usage with progress:
-const codesWithProgress = generateUniqueSevenCharCodesWithProgress(10000, 
+const codesWithProgress = generateUniqueSevenCharCodesWithProgress(10000,
   (current, total, percent) => {
     console.log(`Progress: ${current}/${total} (${percent}%)`);
   }
@@ -2117,23 +2110,23 @@ const codesWithProgress = generateUniqueSevenCharCodesWithProgress(10000,
 async function generateUniqueSevenCharCodesAsync(numberOfPersons, batchSize = 1000) {
   const codes = new Set();
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  
+
   while (codes.size < numberOfPersons) {
     // Process in batches to avoid blocking the main thread
     const currentBatchSize = Math.min(batchSize, numberOfPersons - codes.size);
-    
+
     for (let i = 0; i < currentBatchSize; i++) {
-      const code = Array.from({ length: 7 }, () => 
+      const code = Array.from({ length: 7 }, () =>
         characters[Math.floor(Math.random() * characters.length)]
       ).join('');
-      
+
       codes.add(code);
     }
-    
+
     // Yield control back to the event loop
     await new Promise(resolve => setTimeout(resolve, 0));
   }
-  
+
   return Array.from(codes);
 }
 
@@ -2145,15 +2138,15 @@ function generateUniqueSevenCharCodesWithExisting(numberOfPersons, existingCodes
   const codes = new Set(existingCodes); // Start with existing codes
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   const originalSize = codes.size;
-  
+
   while (codes.size < originalSize + numberOfPersons) {
-    const code = Array.from({ length: 7 }, () => 
+    const code = Array.from({ length: 7 }, () =>
       characters[Math.floor(Math.random() * characters.length)]
     ).join('');
-    
+
     codes.add(code);
   }
-  
+
   // Return only the new codes
   return Array.from(codes).slice(originalSize);
 }
@@ -2169,22 +2162,22 @@ import { useState, useCallback } from 'react';
 function useSevenCharCodeGenerator() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedCount, setGeneratedCount] = useState(0);
-  
+
   const generateCodes = useCallback(async (numberOfPersons) => {
     setIsGenerating(true);
     setGeneratedCount(0);
-    
+
     try {
       const codes = new Set();
       const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      
+
       while (codes.size < numberOfPersons) {
-        const code = Array.from({ length: 7 }, () => 
+        const code = Array.from({ length: 7 }, () =>
           characters[Math.floor(Math.random() * characters.length)]
         ).join('');
-        
+
         codes.add(code);
-        
+
         // Update progress
         if (codes.size % 100 === 0 || codes.size === numberOfPersons) {
           setGeneratedCount(codes.size);
@@ -2192,13 +2185,13 @@ function useSevenCharCodeGenerator() {
           await new Promise(resolve => setTimeout(resolve, 0));
         }
       }
-      
+
       return Array.from(codes);
     } finally {
       setIsGenerating(false);
     }
   }, []);
-  
+
   return { generateCodes, isGenerating, generatedCount };
 }
 
@@ -2212,19 +2205,19 @@ function useSevenCharCodeGenerator() {
 // ==================== PERFORMANCE TESTING ====================
 function testCodeGeneration() {
   console.log('Testing 7-character code generation...');
-  
+
   // Test small batch
   console.time('Generate 100 codes');
   const small = generateUniqueSevenCharCodes(100);
   console.timeEnd('Generate 100 codes');
   console.log(`Generated ${small.length} unique codes`);
-  
+
   // Test medium batch
   console.time('Generate 10,000 codes');
   const medium = generateUniqueSevenCharCodes(10000);
   console.timeEnd('Generate 10,000 codes');
   console.log(`Generated ${medium.length} unique codes`);
-  
+
   // Verify uniqueness
   const uniqueCheck = new Set(medium);
   console.log(`Uniqueness check: ${uniqueCheck.size === medium.length ? 'PASS' : 'FAIL'}`);
@@ -2234,8 +2227,8 @@ function testCodeGeneration() {
 // testCodeGeneration();
 
 // ==================== SIMPLE ONE-LINER VERSION ====================
-const generateSevenCharCodes = (count) => 
-  Array.from(new Set(Array.from({ length: count * 2 }, () => 
+const generateSevenCharCodes = (count) =>
+  Array.from(new Set(Array.from({ length: count * 2 }, () =>
     Math.random().toString(36).substring(2, 9).toUpperCase()
   ))).slice(0, count);
 
@@ -2824,8 +2817,8 @@ return (
                   <button
                     onClick={() => setActiveTab(item.id)}
                     className={`w-full flex items-center gap-3 px-3 py-2 text-left rounded-lg transition-colors duration-200 ${activeTab === item.id
-                        ? 'text-white'
-                        : 'text-gray-700 hover:bg-gray-50'
+                      ? 'text-white'
+                      : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     style={activeTab === item.id ? { backgroundColor: '#091e54' } : {}}
                   >

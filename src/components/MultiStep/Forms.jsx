@@ -6,10 +6,11 @@ import { toast } from "react-toastify";
 
 
 const Form = ({ className, array, text, values, setValues, setPaymentCodeStatus, selectedOption }) => {
+  console.log("Form Component Props", { className, array, text, values, selectedOption });
   const navigate = useNavigate();
   const [paymentCode, setpaymentCode] = useState()
   const [payersId, setpayersId] = useState()
-  const [numberOfPayment, setNumberOfPayment] = useState(0)
+  const [numberfPeopleToBePayedFor, setnumberfPeopleToBePayedFor] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   
 
@@ -62,11 +63,11 @@ const Form = ({ className, array, text, values, setValues, setPaymentCodeStatus,
       : 
       setValues({
         ...values,
-        "numberOfPayment": numberOfPayment,
+        "numberfPeopleToBePayedFor": numberfPeopleToBePayedFor,
       })
 
       
-    }, [paymentCode, numberOfPayment, payersId])
+    }, [paymentCode, numberfPeopleToBePayedFor, payersId])
     
     console.log("Forms Values", values, "payers Id", payersId)
 // 
@@ -105,8 +106,8 @@ const Form = ({ className, array, text, values, setValues, setPaymentCodeStatus,
           {selectedOption == 'multiple' ? (
             <div className="">
                <div className="lg:flex  items-center">
-        <label htmlFor="numberOfPayment" className="mr-2 font-500 text-[14px] text-[#060f3b]">Input Number: <span className="text-red-500">*</span></label>
-        <Input type="number" name="numberOfPayment" id="numberOfPayment" placeholder="0" className="border border-gray-600  lg:w-[50%] rounded-none mr-2" onChange={(e)=>setNumberOfPayment(Number(e.target.value))}/>
+        <label htmlFor="numberfPeopleToBePayedFor" className="mr-2 font-500 text-[14px] text-[#060f3b]">Input Number: <span className="text-red-500">*</span></label>
+        <Input type="number" name="numberfPeopleToBePayedFor" id="numberfPeopleToBePayedFor" placeholder="0" className="border border-gray-600  lg:w-[50%] rounded-none mr-2" onChange={(e)=>setnumberfPeopleToBePayedFor(Number(e.target.value))}/>
         </div>
             </div>
           ) : (
