@@ -37,16 +37,16 @@ function RouteComponent() {
   // Register user event after successful payment
 const registerUserEvent = useCallback(async (paymentData) => {
   
+  // Validate required data upfront
+  if (!userData?.uniqueId) {
+    throw new Error('User ID is required for registration');
+  }
+
+  if (!paymentData?.eventId || !paymentData?.eventTitle) {
+    throw new Error('Event information is incomplete');
+  }
   
   try {
-    // Validate required data upfront
-    // if (!userData?.uniqueId) {
-    //   throw new Error('User ID is required for registration');
-    // }
-  
-    if (!paymentData?.eventId || !paymentData?.eventTitle) {
-      throw new Error('Event information is incomplete');
-    }
 
     const registrationData = {
       ...paymentData,
@@ -184,11 +184,11 @@ const verifyPayment = useCallback(async () => {
 
 useEffect(() => {
   // Only verify once and if we have a reference
-  if (!hasVerified.current && reference) {
+  if (!hasVerified.current && reference && userData?.uniqueId) {
     hasVerified.current = true;
     verifyPayment();
   }
-}, [reference, verifyPayment])
+}, [reference, verifyPayment, userData?.uniqueId])
 
 
 
