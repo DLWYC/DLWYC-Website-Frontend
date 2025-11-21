@@ -40,14 +40,14 @@ const registerUserEvent = useCallback(async (paymentData) => {
   
   try {
     // Validate required data upfront
-    if (!userData?.uniqueId) {
-      throw new Error('User ID is required for registration');
-    }
+    // if (!userData?.uniqueId) {
+    //   throw new Error('User ID is required for registration');
+    // }
   
     if (!paymentData?.eventId || !paymentData?.eventTitle) {
       throw new Error('Event information is incomplete');
     }
-    
+
     const registrationData = {
       ...paymentData,
       userId: userData.uniqueId
