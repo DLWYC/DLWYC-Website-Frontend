@@ -32,20 +32,22 @@ function RouteComponent() {
   };
   const [status, setStatus] = useState(PAYMENT_STATUS.VERIFYING);
 
+  console.log("Register User Event Called with:", userData);
+
   // Register user event after successful payment
 const registerUserEvent = useCallback(async (paymentData) => {
   
-    console.log("Register User Event Called with:", userData, paymentData);
-  // Validate required data upfront
-  if (!userData?.uniqueId) {
-    throw new Error('User ID is required for registration');
-  }
-
-  if (!paymentData?.eventId || !paymentData?.eventTitle) {
-    throw new Error('Event information is incomplete');
-  }
   
   try {
+    // Validate required data upfront
+    if (!userData?.uniqueId) {
+      throw new Error('User ID is required for registration');
+    }
+  
+    if (!paymentData?.eventId || !paymentData?.eventTitle) {
+      throw new Error('Event information is incomplete');
+    }
+    
     const registrationData = {
       ...paymentData,
       userId: userData.uniqueId
