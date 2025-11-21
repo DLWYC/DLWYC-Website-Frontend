@@ -6,6 +6,8 @@ import { formStep } from '@/data/Forms';
 import PayStack from './PayStack';
 import  Confirmation from './Confirmation'
 import { ScrollArea } from "@/components/ui/scroll-area"
+import {  useSearch } from '@tanstack/react-router';
+
 
 
 // Custom MultiStep component that mimics react-multistep
@@ -144,6 +146,7 @@ const MultiSteps = ({userData, eventDetails}) => {
 
   const steps = useMemo(() => {
   const baseSteps = [
+    // Step 1: Payment Selection
     {
       title: 'Payment Type',
       component: <PaymentSelection 
@@ -151,6 +154,10 @@ const MultiSteps = ({userData, eventDetails}) => {
         setSelectedOption={setSelectedOption}
       />,
     },
+    // Step 1: Payment Selection
+
+
+    // Step 2: Form Details
     {
       title: 'Confirm Details',
       component: <Form 
@@ -161,9 +168,13 @@ const MultiSteps = ({userData, eventDetails}) => {
         selectedOption={selectedOption}
       />,
     },
+    // Step 2: Form Details
   ];
 
-  // Logic for showing steps based on payment mode and code status
+
+  // Step 3: Payment Step based on selection and code status
+  console.log("Selected Option and Code Status", selectedOption);
+
   if (selectedOption === 'single') {
     // For single payment mode
     if (paymentCodeStatus === "Valid Code") {
@@ -173,8 +184,6 @@ const MultiSteps = ({userData, eventDetails}) => {
         component: <Confirmation values={values} modeOfPayment={"Code"}    />,
       });
     } else {
-      // Show Proceed To Payment step by default or when code is invalid
-      // This covers: empty string, undefined, "Invalid Code", or any other status
       baseSteps.push({
         title: 'Proceed To Payment',
         component: <PayStack 
@@ -202,7 +211,7 @@ const MultiSteps = ({userData, eventDetails}) => {
 
   return (
        <div className="p-6 rounded-xl  w-full mx-auto">
-       {console.log("All Gathered: ", paymentCodeStatus)}
+
       <MultiStep
         steps={steps}
         stepCustomStyle={{
