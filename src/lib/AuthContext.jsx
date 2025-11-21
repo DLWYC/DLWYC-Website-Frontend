@@ -46,6 +46,7 @@ export function AuthProvider({children}){
         if(!userDashboardData){
           throw new Error("Dailed To Fetch User Data")
         }
+        console.log("#################### User Dashboard Data ####################", userDashboardData.data.data)
         return userDashboardData.data.data
       }
       catch(err){
