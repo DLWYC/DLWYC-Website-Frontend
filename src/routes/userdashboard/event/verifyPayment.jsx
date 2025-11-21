@@ -35,6 +35,7 @@ function RouteComponent() {
   // Register user event after successful payment
 const registerUserEvent = useCallback(async (paymentData) => {
   
+    console.log("Register User Event Called with:", userData, paymentData);
   // Validate required data upfront
   if (!userData?.uniqueId) {
     throw new Error('User ID is required for registration');

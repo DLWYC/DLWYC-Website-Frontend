@@ -54,7 +54,7 @@ function PayStack({ userDetails, values, setValues, paymentOption }) {
           eventId: values?.eventId,
           eventTitle: values?.eventTitle
         },
-        callback_url: `${window.location.origin}/userdashboard/event/verifyPayment?eventId=${values?.eventID}`, // Where Paystack redirects after payment
+        callback_url: `${window.location.origin}/userdashboard/event/verifyPayment?eventId=${values?.eventId}`, // Where Paystack redirects after payment
       };
 
       console.log('Initializing payment with:', payStackData);
