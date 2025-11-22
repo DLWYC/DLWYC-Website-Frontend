@@ -18,8 +18,7 @@ const PAYMENT_STATUS = {
 function PayStack({ userDetails, values, setValues, paymentOption }) {
     console.log("PayStack Component Props", { userDetails, values, paymentOption });
   const numberfPeopleToBePayedFor = values?.numberfPeopleToBePayedFor ?? 0;
-  const single = 100;
-  // const single = 7500 // Production amount
+  const single = 7500 // Production amount
   
   const PAYMENT_AMOUNTS = {
     single: single,

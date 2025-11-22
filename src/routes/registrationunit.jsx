@@ -6,9 +6,6 @@ import { toast } from 'react-toastify';
 import RegistrationUnitTopNav from '@/components/AppTopNav/RegitrationUnitTopNav';
 
 
-
-
-
 export const Route = createFileRoute('/registrationunit')({
   component: RegsitrationUnit,
 })

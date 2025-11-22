@@ -97,16 +97,6 @@ return (
 
         </div>
 
-        {/* Google OAuth */}
-        {/* <div className="mt-4 flex ">
-          <GoogleLogin
-            onSuccess={handleGoogleLogin}
-            // flow: 'auth-code',
-            onError={() => alert("Google Login Failed")}
-          />
-        </div> */}
-
-
 
         <p className="text-[15px] mt-4 text-center">
           Don’t have an account?{" "}
@@ -114,12 +104,6 @@ return (
             Sign Up
           </Link>
         </p>
-
-        <div className="text-center py-2">
-           <Link to="/forgotPassword" className="text-red-600 underline">
-                  Forgot Password?
-                </Link>
-        </div>
         </div>
       </div>
     </>
