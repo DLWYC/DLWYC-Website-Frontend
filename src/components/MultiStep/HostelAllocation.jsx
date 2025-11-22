@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
-import { Home, User, CheckCircle, XCircle, Clock, AlertCircle, RefreshCw, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Home, CheckCircle, XCircle, Clock, AlertCircle, RefreshCw, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useAuth } from "../../lib/AuthContext"
 import UserProfileImage from '@/components/UserProfileImage/UserProfileImage'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'react-toastify';
-
 
 // API Configuration
 const api = axios.create({
@@ -18,11 +17,6 @@ const api = axios.create({
 });
 
 // Constants
-const GENDER_OPTIONS = [
-  { value: 'Male', label: 'Male', icon: '👨', description: 'Male hostels available' },
-  { value: 'Female', label: 'Female', icon: '👩', description: 'Female hostels available' },
-];
-
 const ALLOCATION_STATUS = {
   NOT_STARTED: 'NOT_STARTED',
   PENDING: 'PENDING',
@@ -42,6 +36,28 @@ const formatDate = (dateString) => {
   });
 };
 
+// Access Denied Component
+const AccessDenied = React.memo(({ message, onGoBack }) => (
+  <div className="flex flex-col items-center justify-center py-12 px-4">
+    <div className="bg-red-50 border-2 border-red-300 rounded-xl p-8 max-w-md w-full">
+      <div className="flex flex-col items-center text-center">
+        <XCircle className="w-16 h-16 text-red-600 mb-4" />
+        <h2 className="text-2xl font-bold text-red-800 mb-3">Access Denied</h2>
+        <p className="text-red-700 mb-6">{message}</p>
+        <button
+          onClick={onGoBack}
+          className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          Go Back to Dashboard
+        </button>
+      </div>
+    </div>
+  </div>
+));
+
+AccessDenied.displayName = 'AccessDenied';
+
 // Step Indicator Component
 const StepIndicator = React.memo(({ steps, currentStep }) => (
   <div className="flex items-center justify-center mb-8">
@@ -49,7 +65,7 @@ const StepIndicator = React.memo(({ steps, currentStep }) => (
       <React.Fragment key={index}>
         <div className="flex flex-col items-center">
           <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold transition-all ${
-            index < currentStep ? 'bg-green-success text-white' :
+            index < currentStep ? 'bg-green-500 text-white' :
             index === currentStep ? 'bg-primary-main text-white' :
             'bg-gray-300 text-gray-600'
           }`}>
@@ -63,7 +79,7 @@ const StepIndicator = React.memo(({ steps, currentStep }) => (
         </div>
         {index < steps.length - 1 && (
           <div className={`w-16 h-1 mx-2 mb-6 transition-all ${
-            index < currentStep ? 'bg-reddish' : 'bg-gray-300'
+            index < currentStep ? 'bg-green-500' : 'bg-gray-300'
           }`} />
         )}
       </React.Fragment>
@@ -73,43 +89,38 @@ const StepIndicator = React.memo(({ steps, currentStep }) => (
 
 StepIndicator.displayName = 'StepIndicator';
 
-// Gender Selection Component
-const GenderSelection = React.memo(({ selectedGender, onGenderSelect, loading }) => (
-  <div className="space-y-6">
-    <div className="text-center mb-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">Select Your Gender</h2>
-      <p className="text-gray-600">This will determine which hostels are available for allocation</p>
-    </div>
+// Gender Confirmation Component
+const GenderConfirmation = React.memo(({ userGender, loading }) => {
+  const genderIcon = userGender?.toLowerCase() === 'male' ? '👨' : '👩';
 
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {GENDER_OPTIONS.map((option) => (
-        <button
-          key={option.value}
-          onClick={() => onGenderSelect(option.value)}
-          disabled={loading}
-          className={`relative p-6 rounded-xl border-2 transition-all duration-300 ${
-            selectedGender === option.value
-              ? 'border-primary-main bg-primary-main shadow-lg transform scale-105'
-              : 'border-gray-200 hover:border-primary-main bg-white hover:shadow-md'
-          } ${loading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-        >
-          {selectedGender === option.value && (
-            <div className="absolute top-3 right-3">
-              <CheckCircle className="w-6 h-6 text-white" />
+  return (
+    <div className="space-y-6">
+      <div className="text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">Confirm Your Gender</h2>
+         <div className="flex items-center justify-center gap-2">
+              <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+              <p className="text-yellow-800 text-sm">
+                Your gender is taken from your profile and cannot be changed here. If this is incorrect, please contact the ICT department.
+              </p>
             </div>
-          )}
-          <div className="text-4xl mb-3 text-center">{option.icon}</div>
-          <div className="text-center">
-            <h3 className={`font-bold text-lg ${selectedGender === option.value ? 'text-white' : 'text-gray-800'} mb-1`}>{option.label}</h3>
-            <p className={`text-sm ${selectedGender === option.value ? 'text-white' : 'text-gray-600'}`}>{option.description}</p>
-          </div>
-        </button>
-      ))}
-    </div>
-  </div>
-));
+      </div>
 
-GenderSelection.displayName = 'GenderSelection';
+      <div className="max-w-md mx-auto">
+        <div className={`relative p-8 rounded-xl border-2 bg-primary-main bg-opacity-10 border-opacity-50`}>
+          <div className="text-6xl mb-4 text-center">{genderIcon}</div>
+          <div className="text-center">
+            <h3 className="font-bold text-2xl text-white mb-2">{userGender}</h3>
+            <p className="text-white">
+              You will be shown {userGender?.toLowerCase()} hostels only
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+});
+
+GenderConfirmation.displayName = 'GenderConfirmation';
 
 // Loading Spinner Component
 const LoadingSpinner = React.memo(({ message = "Loading..." }) => (
@@ -128,7 +139,7 @@ const HostelCard = React.memo(({ hostel }) => (
       <div className="flex-1">
         <h3 className="font-bold text-gray-800 text-lg">{hostel.name}</h3>
         <p className="text-sm text-gray-600 mt-1">Room Number: {hostel.hostel_id}</p>
-        <p className="text-sm text-reddish mt-1">Floor: {hostel.floor}</p>
+        <p className="text-sm text-red-600 mt-1">Floor: {hostel.floor}</p>
         {hostel.building_block && (
           <p className="text-sm text-gray-500 mt-1">Building: {hostel.building_block}</p>
         )}
@@ -172,33 +183,31 @@ const HostelsDisplay = React.memo(({ availableHostels, loading }) => {
     <div className="space-y-6">
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">Available Hostels</h2>
-        <p className="text-reddish text-sm flex items-center justify-center mt-2 gap-2">
-           <AlertCircle className="w-5 h-5 flex-shrink-0" /> A hostel will be randomly assigned to you from the available options based on space availability.
-          </p>
+        <p className="text-red-600 text-sm flex items-center justify-center mt-2 gap-2">
+          <AlertCircle className="w-5 h-5 flex-shrink-0" /> A hostel will be randomly assigned to you from the available options based on space availability.
+        </p>
       </div>
 
       <div className="bg-primary-main border border-indigo-200 text-white rounded-xl p-6 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm  mb-1">Total Hostels Available</p>
-            <p className="text-3xl font-bold ">{availableHostels.available_count}</p>
+            <p className="text-sm mb-1">Total Hostels Available</p>
+            <p className="text-3xl font-bold">{availableHostels.available_count}</p>
           </div>
           <div>
-            <p className="text-sm  mb-1">Total Spaces</p>
-            <p className="text-3xl font-bold ">{availableHostels.total_spaces}</p>
+            <p className="text-sm mb-1">Total Spaces</p>
+            <p className="text-3xl font-bold">{availableHostels.total_spaces}</p>
           </div>
         </div>
       </div>
 
-     <ScrollArea className="h-[230px]">
-
-      <div className=" grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 justify-center">
-        {availableHostels.hostels.map((hostel) => (
-          <HostelCard key={hostel.hostel_id} hostel={hostel} />
-        ))}
-      </div>
-     </ScrollArea>
-
+      <ScrollArea className="h-[230px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 justify-center">
+          {availableHostels.hostels.map((hostel) => (
+            <HostelCard key={hostel.hostel_id} hostel={hostel} />
+          ))}
+        </div>
+      </ScrollArea>
     </div>
   );
 });
@@ -226,9 +235,9 @@ const AllocationResult = React.memo(({ allocation, loading }) => {
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-success-100 rounded-full mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
           {isConfirmed ? (
-            <CheckCircle className="w-10 h-10 text-green-success" />
+            <CheckCircle className="w-10 h-10 text-green-600" />
           ) : (
             <Clock className="w-10 h-10 text-yellow-600" />
           )}
@@ -288,12 +297,12 @@ const AllocationResult = React.memo(({ allocation, loading }) => {
       )}
 
       {isConfirmed && (
-        <div className="bg-green-success-50 border-2 border-green-success-300 rounded-lg p-4">
+        <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <CheckCircle className="w-6 h-6 text-green-success flex-shrink-0" />
+            <CheckCircle className="w-6 h-6 text-green-600 flex-shrink-0" />
             <div>
-              <p className="text-green-success-800 font-semibold mb-1">✓ Confirmed</p>
-              <p className="text-green-success-700 text-sm">
+              <p className="text-green-800 font-semibold mb-1">✓ Confirmed</p>
+              <p className="text-green-700 text-sm">
                 Your hostel allocation has been confirmed. Please check your email for further instructions and next steps.
               </p>
             </div>
@@ -330,33 +339,63 @@ ErrorAlert.displayName = 'ErrorAlert';
 
 // Main Dashboard Component
 const HostelAllocationDashboard = () => {
-  // State Management
-  const {userData} = useAuth()
+  const { userData, userRegisteredEvents } = useAuth();
   const navigate = useNavigate();
 
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [hasAccess, setHasAccess] = useState(false);
+  const [checkingAccess, setCheckingAccess] = useState(true);
   
   const [user, setUser] = useState(userData);
-
-  console.log("userData in Hostel Allocation", user)
-  
   const [allocation, setAllocation] = useState(null);
   const [availableHostels, setAvailableHostels] = useState(null);
 
-     const allocationSuccess = () => {
-          toast.success("Hostel allocation confirmed successfully!");
-     navigate({ to: '/userdashboard' });
-     }
+  // Check if user has paid for any event
+  useEffect(() => {
+    const checkEventRegistration = () => {
+      setCheckingAccess(true);
+      
+      // Check if user has at least one successful payment
+      const hasSuccessfulPayment = userRegisteredEvents?.some(
+        event => event.paymentStatus === 'success'
+      );
 
+      if (!hasSuccessfulPayment) {
+        setHasAccess(false);
+        setCheckingAccess(false);
+        return;
+      }
 
-  // API Calls with useCallback for optimization
+      // Check if user has gender in profile
+      if (!userData?.gender) {
+        setHasAccess(false);
+        setError('Gender information is missing from your profile. Please contact support.');
+        setCheckingAccess(false);
+        return;
+      }
+
+      setHasAccess(true);
+      setCheckingAccess(false);
+    };
+
+    checkEventRegistration();
+  }, [userData, userRegisteredEvents]);
+
+  const allocationSuccess = () => {
+    toast.success("Hostel allocation confirmed successfully!");
+    navigate({ to: '/userdashboard' });
+  };
+
+  // API Calls
   const checkExistingAllocation = useCallback(async () => {
+    if (!hasAccess) return;
+    
     setLoading(true);
     try {
       const { data } = await api.get(`/api/allocations/getAllocationStatus/${user.uniqueId}`);
-     console.log("Allocation Status Data", data)
+      
       if (data.success && data.status !== ALLOCATION_STATUS.NOT_STARTED) {
         setUser(prev => ({ ...prev, allocationStatus: data.status }));
         
@@ -380,17 +419,21 @@ const HostelAllocationDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [user.id]);
+  }, [user?.uniqueId, hasAccess]);
 
-  const fetchAvailableHostels = useCallback(async (gender) => {
+  const fetchAvailableHostels = useCallback(async () => {
+    if (!hasAccess || !user?.gender) return;
+    
     setLoading(true);
     setError(null);
     
     try {
-      const { data } = await api.get(`/api/hostels/getAvailableHostels/${gender}`);
-      console.log("Available Hostels Data", data)
+      // Use the gender from user profile - no user selection allowed
+      const { data } = await api.get(`/api/hostels/getAvailableHostels/${user.gender}`);
+      
       if (data.success) {
         setAvailableHostels(data);
+        setCurrentStep(1);
       } else {
         setError(data.error || 'Failed to fetch available hostels');
       }
@@ -400,16 +443,18 @@ const HostelAllocationDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.gender, hasAccess]);
 
   const requestAllocation = useCallback(async () => {
+    if (!hasAccess) return;
+    
     setLoading(true);
     setError(null);
 
     try {
       const { data } = await api.post('/api/allocations/requestAllocation', {
         uniqueId: user.uniqueId,
-        gender: user.gender
+        gender: user.gender // Use gender from profile, not user selection
       });
 
       if (data.success) {
@@ -425,9 +470,11 @@ const HostelAllocationDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [user.id, user.gender]);
+  }, [user?.uniqueId, user?.gender, hasAccess]);
 
   const confirmAllocation = useCallback(async () => {
+    if (!hasAccess) return;
+    
     setLoading(true);
     
     try {
@@ -448,9 +495,11 @@ const HostelAllocationDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [user.id, allocation?.allocation_id]);
+  }, [user?.uniqueId, allocation?.allocation_id, hasAccess]);
 
   const cancelAllocation = useCallback(async () => {
+    if (!hasAccess) return;
+    
     setLoading(true);
     
     try {
@@ -463,8 +512,7 @@ const HostelAllocationDashboard = () => {
         setAllocation(null);
         setUser(prev => ({ 
           ...prev, 
-          allocationStatus: ALLOCATION_STATUS.NOT_STARTED,
-          gender: null 
+          allocationStatus: ALLOCATION_STATUS.NOT_STARTED
         }));
         setAvailableHostels(null);
         setCurrentStep(0);
@@ -477,21 +525,11 @@ const HostelAllocationDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [user.id, allocation?.allocation_id]);
-
-  // Event Handlers
-  const handleGenderSelect = useCallback((gender) => {
-    setUser(prev => ({ ...prev, gender }));
-    setError(null);
-    fetchAvailableHostels(gender);
-  }, [fetchAvailableHostels]);
+  }, [user?.uniqueId, allocation?.allocation_id, hasAccess]);
 
   const handleNext = useCallback(() => {
-    if (currentStep === 0 && !user.gender) {
-      setError('Please select your gender to continue');
-      return;
-    }
-    if (currentStep === 0 && user.gender && !availableHostels) {
+    if (currentStep === 0) {
+      fetchAvailableHostels();
       return;
     }
     if (currentStep === 1 && !allocation) {
@@ -502,7 +540,7 @@ const HostelAllocationDashboard = () => {
       setCurrentStep(prev => prev + 1);
       setError(null);
     }
-  }, [currentStep, user.gender, availableHostels, allocation, requestAllocation]);
+  }, [currentStep, allocation, fetchAvailableHostels, requestAllocation]);
 
   const handlePrev = useCallback(() => {
     if (currentStep > 0) {
@@ -512,20 +550,18 @@ const HostelAllocationDashboard = () => {
   }, [currentStep]);
 
   const canGoNext = useMemo(() => {
-    if (currentStep === 0) return user.gender && availableHostels;
+    if (currentStep === 0) return user?.gender && hasAccess;
     if (currentStep === 1) return availableHostels;
     if (currentStep === 2) return allocation;
     return false;
-  }, [currentStep, user.gender, availableHostels, allocation]);
+  }, [currentStep, user?.gender, availableHostels, allocation, hasAccess]);
 
-  // Steps Configuration
   const steps = useMemo(() => [
     {
-      title: 'Select Gender',
+      title: 'Confirm Gender',
       component: (
-        <GenderSelection
-          selectedGender={user.gender}
-          onGenderSelect={handleGenderSelect}
+        <GenderConfirmation
+          userGender={user?.gender}
           loading={loading}
         />
       ),
@@ -548,14 +584,34 @@ const HostelAllocationDashboard = () => {
         />
       ),
     },
-  ], [user.gender, availableHostels, allocation, loading, handleGenderSelect]);
+  ], [user?.gender, availableHostels, allocation, loading]);
 
-  // Effects
   useEffect(() => {
-    checkExistingAllocation();
-  }, [checkExistingAllocation]);
+    if (hasAccess) {
+      checkExistingAllocation();
+    }
+  }, [hasAccess, checkExistingAllocation]);
 
-  // Render Action Buttons
+  // Render Access Denied if user hasn't registered for any event
+  if (checkingAccess) {
+    return (
+      <div className="pb-9 mt-3 font-rubik">
+        <LoadingSpinner message="Checking access permissions..." />
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="pb-9 mt-3 font-rubik">
+        <AccessDenied
+          message="You must register and pay for at least one event before you can access hostel allocation."
+          onGoBack={() => navigate({ to: '/userdashboard' })}
+        />
+      </div>
+    );
+  }
+
   const renderActionButtons = () => {
     const isPendingConfirmation = currentStep === 2 && allocation?.status === 'PENDING_CONFIRMATION';
     const isConfirmed = currentStep === 2 && allocation?.status === 'CONFIRMED';
@@ -574,7 +630,7 @@ const HostelAllocationDashboard = () => {
           <button
             onClick={confirmAllocation}
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-3 bg-green-success text-white rounded-lg font-semibold hover:bg-green-success-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (
               <>
@@ -595,8 +651,8 @@ const HostelAllocationDashboard = () => {
     if (isConfirmed) {
       return (
         <button
-          onClick={() => allocationSuccess()}
-          className="flex items-center gap-2 px-6 py-3 bg-primary-main text-white rounded-lg font-semibold hover:bg-primary-main transition-colors"
+          onClick={allocationSuccess}
+          className="flex items-center gap-2 px-6 py-3 bg-primary-main text-white rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
         >
           Complete
           <CheckCircle className="w-5 h-5" />
@@ -608,7 +664,7 @@ const HostelAllocationDashboard = () => {
       <button
         onClick={handleNext}
         disabled={!canGoNext || loading}
-        className="flex items-center gap-2 px-6 py-3 bg-primary-main text-white rounded-lg font-semibold hover:bg-primary-main disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center gap-2 px-6 py-3 bg-primary-main text-white rounded-lg font-semibold hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         {loading ? (
           <>
@@ -632,91 +688,81 @@ const HostelAllocationDashboard = () => {
 
   return (
     <div className="pb-9 mt-3 font-rubik">
-      <div className=" ">
-
-        {/* Header */}
-        <div className="p-6 ">
-          <div className="flex items-center gap-3 mb-2">
-            <Home className="w-8 h-8 text-primary-main" />
-            <h1 className="text-3xl font-bold text-primary-main">Hostel Allocation System</h1>
-          </div>
-          <p className="text-gray-600">Secure your hostel accommodation in 3 easy steps</p>
+      <div className="p-6">
+        <div className="flex items-center gap-3 mb-2">
+          <Home className="w-8 h-8 text-primary-main" />
+          <h1 className="text-3xl font-bold text-primary-main">Hostel Allocation System</h1>
         </div>
+        <p className="text-gray-600">Secure your hostel accommodation in 3 easy steps</p>
+      </div>
 
-
-        {/* User Info Card */}
-        <div className="bg-white p-6 mb-6">
-          {/*  */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center flex-wrap">
-            <div className="flex items-center gap-4">
-            <UserProfileImage imageWidth={60} className={`lg:flex hidden`} />
-            <div >
+      <div className="bg-white p-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-center flex-wrap">
+          <div className="flex items-center gap-4">
+            <UserProfileImage imageWidth={60} className="lg:flex hidden" />
+            <div>
               <p className="text-sm text-gray-500">Full Name</p>
-              <p className="font-medium text-gray-800">{user.fullName}</p>
+              <p className="font-medium text-gray-800">{user?.fullName}</p>
             </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Unique ID</p>
-              <p className="font-medium text-gray-800">{user.uniqueId}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Email</p>
-              <p className="font-medium text-gray-800">{user.email}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Status</p>
-              <div className="flex items-center gap-2">
-                {user.allocationStatus === ALLOCATION_STATUS.CONFIRMED ? (
-                  <CheckCircle className="w-4 h-4 text-green-success" />
-                ) : user.allocationStatus === ALLOCATION_STATUS.ALLOCATED ? (
-                  <Clock className="w-4 h-4 text-yellow-600" />
-                ) : (
-                    <div className="text-gray-400 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 " />
-                  <p className='text-sm'>NOT STARTED</p>
-                    </div>
-                )}
-                <span className={`font-medium text-sm ${
-                  user.allocationStatus === ALLOCATION_STATUS.CONFIRMED ? 'text-green-success font-bold' :
-                  user.allocationStatus === ALLOCATION_STATUS.ALLOCATED ? 'text-yellow-600' :
-                  'text-gray-600'
-                }`}>
-                  {user.allocationStatus?.replace('_', ' ')}
-                  {/* {user.allocationStatus} */}
-                </span>
-              </div>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Unique ID</p>
+            <p className="font-medium text-gray-800">{user?.uniqueId}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Gender</p>
+            <p className="font-medium text-gray-800">{user?.gender}</p>
+          </div>
+          <div>
+            <p className="text-sm text-gray-500">Status</p>
+            <div className="flex items-center gap-2">
+              {user?.allocationStatus === ALLOCATION_STATUS.CONFIRMED ? (
+                <CheckCircle className="w-4 h-4 text-green-600" />
+              ) : user?.allocationStatus === ALLOCATION_STATUS.ALLOCATED ? (
+                <Clock className="w-4 h-4 text-yellow-600" />
+              ) : (
+                <div className="text-gray-400 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" />
+                  <p className="text-sm">NOT STARTED</p>
+                </div>
+              )}
+              <span className={`font-medium text-sm ${
+                user?.allocationStatus === ALLOCATION_STATUS.CONFIRMED ? 'text-green-600 font-bold' :
+                user?.allocationStatus === ALLOCATION_STATUS.ALLOCATED ? 'text-yellow-600' :
+                'text-gray-600'
+              }`}>
+                {user?.allocationStatus?.replace('_', ' ')}
+              </span>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Main Content Card */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <StepIndicator steps={steps} currentStep={currentStep} />
-          <ErrorAlert error={error} onDismiss={() => setError(null)} />
-          <div className="min-h-[400px]">
-            {steps[currentStep].component}
-          </div>
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <StepIndicator steps={steps} currentStep={currentStep} />
+        <ErrorAlert error={error} onDismiss={() => setError(null)} />
+        <div className="min-h-[400px]">
+          {steps[currentStep].component}
+        </div>
+      </div>
+
+      <div className="flex justify-between items-center">
+        <button
+          onClick={handlePrev}
+          disabled={currentStep === 0 || loading}
+          className="flex items-center gap-2 px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          <ChevronLeft className="w-5 h-5" />
+          Back
+        </button>
+
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            Step {currentStep + 1} of {steps.length}
+          </p>
         </div>
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center">
-          <button
-            onClick={handlePrev}
-            disabled={currentStep === 0 || loading}
-            className="flex items-center gap-2 px-6 py-3 bg-reddish text-white rounded-lg font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            Back
-          </button>
-
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Step {currentStep + 1} of {steps.length}
-            </p>
-          </div>
-
-          {renderActionButtons()}
-        </div>
+        {renderActionButtons()}
       </div>
     </div>
   );
