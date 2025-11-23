@@ -396,7 +396,7 @@ const ViewPayment = () => {
               <tr>
                 {columns.map((column) => (
                   <th
-                    key={column.key}
+                    key={column.code}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
                     style={{ width: column.width }}
                   >

@@ -46,14 +46,13 @@ export function AuthProvider({children}){
         if(!userDashboardData){
           throw new Error("Dailed To Fetch User Data")
         }
+        console.log("#################### User Dashboard Data ####################", userDashboardData.data.data)
         return userDashboardData.data.data
       }
       catch(err){
         const errMessage = err?.response?.data?.message
-        const nothing = err?.response?.data?.error?.error0610428194
-        console.log("Error Message From Auth Context: ", err)
+        const nothing = err?.response?.data?.error?.error
         if(nothing == "Nothing"){
-          console.log("No User Data Found")
           throw new Error("INVALID_TOKEN")
         }
         if(errMessage == "Invalid token"){
@@ -66,9 +65,6 @@ retry: false,
   })
   // #:::::::::::::::  GET USER DATA FUNCTION :::::::::::::::::#
   
-
-  console.log("User From Auth Context: ", user)
-
   
   
   // #:::::::::::::::  GET USER PAYMENT RECORDS FUNCTION :::::::::::::::::#
@@ -120,7 +116,7 @@ const {
   queryKey: ['allEvent', user?.uniqueId, userRegisteredEvents], // Add userRegisteredEvents to the key
   queryFn: async () => {
     const response = await axios.get(`${backendUrl}/api/admin/events`);
-    const allEventsData = response.data.data;
+    const allEventsData = response?.data?.data;
 
     const registrationMap = new Map();
     
@@ -143,7 +139,6 @@ const {
       };
     });
 
-    console.log("updated", updatedEvents)
     return updatedEvents;
   },
   enabled: !!user?.uniqueId && !fetchingUserRegisteredEventsLoadingStatus,

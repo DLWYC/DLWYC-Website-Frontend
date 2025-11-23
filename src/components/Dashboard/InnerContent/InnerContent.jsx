@@ -3,7 +3,6 @@ import RegistrationUnit from "../../../pages/Registration/RegistrationUnit";
 import MainDashboard from "../../../pages/Dashboard/Index";
 
 const InnerContent = (e) => {
-  console.log(e.hashValue)
   return (
     <div className={`lg:basis-[80%] basis-[100%] flex flex-col bg-[whitesmoke]`}>
       {/* "Attendenac" */}
