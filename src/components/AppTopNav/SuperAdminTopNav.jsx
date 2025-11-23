@@ -29,7 +29,6 @@ const UserDashboardTopNav = () => {
              navigate({to: '/userLogin'})
            }
            catch(err){
-             console.log(err)
              toast.error("Error Logging Out")
            }
        }

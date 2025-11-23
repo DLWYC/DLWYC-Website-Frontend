@@ -16,11 +16,13 @@ import {
   Bell,
   Calendar as CalendarIcon,
   ChartArea as Chart,
+  Building2,
 } from "lucide-react";
 
 const MenuItems = [
   { name: "Home", icon: Home, url: '/userdashboard' },
   { name: "Payment History", icon: User, url: '/userdashboard/payments' },
+  { name: "Hostel Allocation", icon: Building2, url: '/userdashboard/hostelallocation' },
 ];
 
 const SuperAdminMenuItems = [

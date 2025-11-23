@@ -140,7 +140,7 @@ const handleFilter = () => {
                              
                              
                              <div className="lg:flex lg:justify-end grid text-center lg:mt-0 mt-3">
-                              <Link to={`event/${_._id}`} disabled={_.paymentStatus == 'success' ? true : false} className={`${_.paymentStatus == 'success' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-primary-main hover:text-white'}  text-[14px] transition-all duration-150 border border-primary-main  px-[30px] py-[7px] `}>Register</Link>
+                              <Link to={`event?eventId=${_._id}`} disabled={_.paymentStatus == 'success' ? true : false} className={`${_.paymentStatus == 'success' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-primary-main hover:text-white'}  text-[14px] transition-all duration-150 border border-primary-main  px-[30px] py-[7px] `}>Register</Link>
                              </div>
                              </div>
 

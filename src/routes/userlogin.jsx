@@ -41,7 +41,7 @@ function RouteComponent() {
       }
       catch(error){
         console.log("This is error at Login", error)
-        toast.error(error?.error || "Login Failed🤧")
+        toast.error(error?.error || error?.data || "Login Failed🤧")
       }
       
       console.log("herer", email)
@@ -97,14 +97,6 @@ return (
 
         </div>
 
-        {/* Google OAuth */}
-        {/* <div className="mt-4 flex ">
-          <GoogleLogin
-            onSuccess={handleGoogleLogin}
-            // flow: 'auth-code',
-            onError={() => alert("Google Login Failed")}
-          />
-        </div> */}
 
         <p className="text-[15px] mt-4 text-center">
           Don’t have an account?{" "}
