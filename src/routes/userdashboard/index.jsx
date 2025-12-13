@@ -2,7 +2,7 @@ import { createFileRoute, Link} from '@tanstack/react-router'
 import { Card, CardContent } from "@/components/ui/card"
 import {DashboardCards} from "@/data/Dashboard"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { CalendarClockIcon, Calendar as CalenderIcon, MapPin, TimerIcon } from 'lucide-react'
+import { Building2, CalendarClockIcon, Calendar as CalenderIcon, DoorOpen, MapPin, TimerIcon } from 'lucide-react'
 import UserProfileImage from '@/components/UserProfileImage/UserProfileImage'
 import { Calendar } from "@/components/ui/calendar"
 import { useEffect, useState } from 'react'
@@ -46,7 +46,7 @@ const handleFilter = () => {
   });
   setFilteredEvents(newFilteredEvents);
 };
-
+ 
 // console.log(filtere)
 
 
@@ -70,10 +70,53 @@ const handleFilter = () => {
                 <p className='text-[#64748B] text-[14px] flex items-center'>Unique ID:  
                  { isLoadingUserData ? <span className="loader"></span> : userData?.uniqueId}
                 </p>
+
+                
                 </div>
                 </div>
                </div>
      
+
+     {/* Hostel Information Section */}
+            {!isLoadingUserData && userData?.hostelDetails && (
+              <div className='mt-3 p-3 border border-blue-200 rounded-lg font-rubik'>
+                <div className='flex items-center gap-2 mb-2'>
+                  <Building2 className='w-4 h-4 text-blue-600' />
+                  <h4 className='text-[15px] font-[600] text-blue-900'>Hostel Allocation</h4>
+                </div>
+                <div className='flex gap-6 text-[13px]'>
+                  <div className='flex items-center gap-2'>
+                    <DoorOpen className='w-3 h-3 text-blue-600' />
+                    <span className='text-blue-700'>
+                      <span className='font-[500]'>{userData.hostelDetails.hostelName}</span> - Room {userData.hostelDetails.roomNumber}
+                    </span>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <span className='text-blue-700'>
+                      {userData.hostelDetails.floor} • {userData.hostelDetails.buildingBlock}
+                    </span>
+                  </div>
+                  <div className='flex items-center gap-2'>
+                    <span className={`px-2 py-0.5 rounded text-[11px] font-[500] ${
+                      userData.hostelDetails.allocationStatus === 'CONFIRMED' 
+                        ? 'bg-green-100 text-green-700' 
+                        : 'bg-yellow-100 text-yellow-700'
+                    }`}>
+                      {userData.hostelDetails.allocationStatus}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* No Hostel Allocated */}
+            {!isLoadingUserData && !userData?.hostelDetails && (
+              <div className='mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg'>
+                <p className='text-[13px] text-yellow-700 flex items-center gap-2'>
+                  <Building2 className='w-4 h-4' />
+                  You have not Selected Any Hostel Please Do So as soon as possible         </p>
+              </div>
+            )}
      
              {/* Top Sector */}
                 <div className="flex  space-y-2 ">
@@ -118,7 +161,6 @@ const handleFilter = () => {
                     </div>
                   ):filteredEvents?.map((_, index) => (
                              <div key={index} className="flex border justify-center space-y-2 flex-col rounded-[5px] px-[20px] py-[15px] bg-white border-[#e8e8e8]"> 
-                             {console.log("Front ednd", _.paymentStatus)}
                               
 
                                 <div className="flex justify-between items-center">

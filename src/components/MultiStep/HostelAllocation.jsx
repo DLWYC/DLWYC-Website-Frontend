@@ -6,6 +6,7 @@ import UserProfileImage from '@/components/UserProfileImage/UserProfileImage'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'react-toastify';
+import { useQueryClient } from '@tanstack/react-query';
 
 // API Configuration
 const api = axios.create({
@@ -341,6 +342,8 @@ ErrorAlert.displayName = 'ErrorAlert';
 const HostelAllocationDashboard = () => {
   const { userData, userRegisteredEvents } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
 
   const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -383,11 +386,18 @@ const HostelAllocationDashboard = () => {
     checkEventRegistration();
   }, [userData, userRegisteredEvents]);
 
-  const allocationSuccess = () => {
-    toast.success("Hostel allocation confirmed successfully!");
+const allocationSuccess = async () => {
+  
+  toast.success("Hostel allocation confirmed successfully!");
+  
+  // Invalidate and refetch user data
+  await queryClient.invalidateQueries({ queryKey: ['user'] });
+  
+  // Optional: Wait a bit for the backend to update before navigating
+  setTimeout(() => {
     navigate({ to: '/userdashboard' });
-  };
-
+  }, 500);
+};
   // API Calls
   const checkExistingAllocation = useCallback(async () => {
     if (!hasAccess) return;

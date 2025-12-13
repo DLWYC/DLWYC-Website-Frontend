@@ -4,7 +4,8 @@ import { useAuth } from "../../lib/AuthContext"
 
 
 const UserProfileImage = ({imageWidth, className}) =>{
-  const {userData} = useAuth()
+  const {userData, adminData} = useAuth()
+  console.log("USER DATA IN PROFILE IMAGE COMPONENT:", userData, "ADMIN DATA", adminData)
   return(
  <Avatar
     style={{
