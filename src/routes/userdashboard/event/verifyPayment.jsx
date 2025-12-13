@@ -32,8 +32,6 @@ function RouteComponent() {
   };
   const [status, setStatus] = useState(PAYMENT_STATUS.VERIFYING);
 
-  console.log("Register User Event Called with:", userData);
-
   // Register user event after successful payment
 const registerUserEvent = useCallback(async (paymentData) => {
   
@@ -50,7 +48,7 @@ const registerUserEvent = useCallback(async (paymentData) => {
 
     const registrationData = {
       ...paymentData,
-      userId: userData.uniqueId
+      userId: userData?.uniqueId
     };
 
 

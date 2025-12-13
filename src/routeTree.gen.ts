@@ -16,6 +16,7 @@ import { Route as SuperadminRouteImport } from './routes/superadmin'
 import { Route as RegistrationunitRouteImport } from './routes/registrationunit'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ForgotPasswordRouteImport } from './routes/forgotPassword'
+import { Route as AdminLoginRouteImport } from './routes/adminLogin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as UserdashboardIndexRouteImport } from './routes/userdashboard/index'
 import { Route as SuperadminIndexRouteImport } from './routes/superadmin/index'
@@ -66,6 +67,11 @@ const GalleryRoute = GalleryRouteImport.update({
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgotPassword',
   path: '/forgotPassword',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/adminLogin',
+  path: '/adminLogin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -154,6 +160,7 @@ const UserdashboardEventVerifyPaymentRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/adminLogin': typeof AdminLoginRoute
   '/forgotPassword': typeof ForgotPasswordRoute
   '/gallery': typeof GalleryRoute
   '/registrationunit': typeof RegistrationunitRouteWithChildren
@@ -179,6 +186,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/adminLogin': typeof AdminLoginRoute
   '/forgotPassword': typeof ForgotPasswordRoute
   '/gallery': typeof GalleryRoute
   '/userlogin': typeof UserloginRoute
@@ -202,6 +210,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/adminLogin': typeof AdminLoginRoute
   '/forgotPassword': typeof ForgotPasswordRoute
   '/gallery': typeof GalleryRoute
   '/registrationunit': typeof RegistrationunitRouteWithChildren
@@ -229,6 +238,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/adminLogin'
     | '/forgotPassword'
     | '/gallery'
     | '/registrationunit'
@@ -254,6 +264,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/adminLogin'
     | '/forgotPassword'
     | '/gallery'
     | '/userlogin'
@@ -276,6 +287,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/adminLogin'
     | '/forgotPassword'
     | '/gallery'
     | '/registrationunit'
@@ -302,6 +314,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   GalleryRoute: typeof GalleryRoute
   RegistrationunitRoute: typeof RegistrationunitRouteWithChildren
@@ -365,6 +378,13 @@ declare module '@tanstack/react-router' {
       path: '/forgotPassword'
       fullPath: '/forgotPassword'
       preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/adminLogin': {
+      id: '/adminLogin'
+      path: '/adminLogin'
+      fullPath: '/adminLogin'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -533,6 +553,7 @@ const UserdashboardRouteWithChildren = UserdashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminLoginRoute: AdminLoginRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   GalleryRoute: GalleryRoute,
   RegistrationunitRoute: RegistrationunitRouteWithChildren,

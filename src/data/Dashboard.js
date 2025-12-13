@@ -32,7 +32,7 @@ const SuperAdminMenuItems = [
 
 const userDashboardTopMenu = [
   { name: "My Account", icon: UserRound, url: '/userdashboard/profile' },
-  { name: "Settings", icon: SettingsIcon, url: '/userdashboard/profile' },
+  // { name: "Settings", icon: SettingsIcon, url: '/userdashboard/profile' },
 ]
 
 
@@ -64,13 +64,6 @@ const documentTypes = [
   'Other'
 ];
 
-const sidebarItems = [
-  { id: 'profile', label: 'Profile Overview', icon: UserCircle },
-  { id: 'password', label: 'Change Password', icon: Lock },
-  // { id: 'documents', label: 'Documents', icon: FileText },
-  // { id: 'notifications', label: 'Email Settings', icon: Bell },
-  // { id: 'security', label: 'Security Settings', icon: Shield },
-];
 
-export { userDashboardTopMenu, Events, DashboardCards, documentTypes, sidebarItems, SuperAdminMenuItems, SuperAdminDashboardCards }
+export { userDashboardTopMenu, Events, DashboardCards, documentTypes, SuperAdminMenuItems, SuperAdminDashboardCards }
 export default MenuItems 

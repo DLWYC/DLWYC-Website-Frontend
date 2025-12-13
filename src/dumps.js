@@ -1,3 +1,1539 @@
+import { createFileRoute } from '@tanstack/react-router'
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { Search, Check, X, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Archdeaconries, getArchdeaconryCode } from '@/data/Archdeaconries';
+import axios from 'axios';
+import {
+  TableBody,
+  Table,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { toast } from "react-toastify";
+import RegistrationUnitTopNav from '@/components/AppTopNav/RegitrationUnitTopNav';
+
+
+
+export const Route = createFileRoute('/registrationunit/')({
+  component: EventCheckInPortal,
+})
+
+function EventCheckInPortal() {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  
+  // State management
+  const [selectedEvent, setSelectedEvent] = useState('');
+  const [selectedArchdeaconry, setSelectedArchdeaconry] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [attendees, setAttendees] = useState([]);
+  const [selectedAttendees, setSelectedAttendees] = useState([]);
+  const [events, setEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(25);
+  
+  // Loading states
+  const [isLoadingEvents, setIsLoadingEvents] = useState(true);
+  const [isLoadingAttendees, setIsLoadingAttendees] = useState(false);
+  const [processingCheckIns, setProcessingCheckIns] = useState(new Set());
+
+  // Fetch all events on mount
+  useEffect(() => {
+    const fetchAllEvents = async () => {
+      try {
+        setIsLoadingEvents(true);
+        const response = await axios.get(`${backendUrl}/api/registrationUnit/allEvents`);
+        setEvents(response?.data?.events || []);
+      } catch (error) {
+        console.error("Error fetching events:", error);
+        toast.error({
+          title: "Error",
+          description: "Failed to load events. Please refresh the page.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoadingEvents(false);
+      }
+    };
+    
+    fetchAllEvents();
+  }, [backendUrl, toast]);
+
+  // Fetch attendees when event changes
+  useEffect(() => {
+    const fetchEventAttendees = async () => {
+      if (!selectedEvent) {
+        setAttendees([]);
+        return;
+      }
+
+      try {
+        setIsLoadingAttendees(true);
+        const response = await axios.get(
+          `${backendUrl}/api/registrationUnit/eventAttendees/${selectedEvent}`
+        );
+        setAttendees(response?.data?.data || []);
+      } catch (error) {
+        console.error("Error fetching event attendees:", error);
+        toast.error({
+          title: "Error",
+          description: "Failed to load attendees. Please try again.",
+          variant: "destructive",
+        });
+        setAttendees([]);
+      } finally {
+        setIsLoadingAttendees(false);
+      }
+    };
+
+    fetchEventAttendees();
+  }, [selectedEvent, backendUrl, toast]);
+
+  // Optimized filtering with useMemo
+  const filteredAttendees = useMemo(() => {
+    if (!attendees.length) return [];
+    
+    return attendees.filter(attendee => {
+      // Archdeaconry filter
+      if (selectedArchdeaconry) {
+        const archCode = getArchdeaconryCode(selectedArchdeaconry);
+        if (!attendee.uniqueId?.includes(`/${archCode}/`)) {
+          return false;
+        }
+      }
+      
+      // Search filter (last 4 digits)
+      if (searchQuery) {
+        const last4 = attendee.uniqueId?.slice(-4) || '';
+        if (!last4.includes(searchQuery)) {
+          return false;
+        }
+      }
+      
+      return true;
+    });
+  }, [attendees, searchQuery, selectedArchdeaconry]);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredAttendees.length / itemsPerPage);
+  const currentAttendees = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredAttendees.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredAttendees, currentPage, itemsPerPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedArchdeaconry, searchQuery, selectedEvent]);
+
+  // Check-in handler with optimistic UI update
+  const handleCheckIn = useCallback(async (userId) => {
+    if (processingCheckIns.has(userId)) return;
+
+    setProcessingCheckIns(prev => new Set(prev).add(userId));
+
+    // Optimistic update
+    setAttendees(prev => 
+      prev.map(a => 
+        a.userId === userId 
+          ? { ...a, eventDetails: { ...a.eventDetails, checkedInStatus: true } }
+          : a
+      )
+    );
+
+    try {
+      await axios.patch(
+        `${backendUrl}/api/registrationUnit/eventAttendees/${userId}/checkIn`,
+        { eventTitle: selectedEvent }
+      );
+      
+      toast.success( "Attendee checked in successfully");
+    } catch (error) {
+      console.error("Error during check-in:", error);
+      
+      // Revert optimistic update on error
+      setAttendees(prev => 
+        prev.map(a => 
+          a.userId === userId 
+            ? { ...a, eventDetails: { ...a.eventDetails, checkedInStatus: false } }
+            : a
+        )
+      );
+      
+      toast.error("Failed to check in attendee. Please try again.");
+    } finally {
+      setProcessingCheckIns(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        return newSet;
+      });
+    }
+  }, [backendUrl, selectedEvent, processingCheckIns, toast]);
+
+  // Un-check handler
+  const handleUnCheck = useCallback(async (userId) => {
+    if (processingCheckIns.has(userId)) return;
+
+    setProcessingCheckIns(prev => new Set(prev).add(userId));
+
+    // Optimistic update
+    setAttendees(prev => 
+      prev.map(a => 
+        a.userId === userId 
+          ? { ...a, eventDetails: { ...a.eventDetails, checkedInStatus: false } }
+          : a
+      )
+    );
+
+    try {
+      await axios.patch(
+        `${backendUrl}/api/registrationUnit/eventAttendees/${userId}/undoCheckIn`,
+        { eventTitle: selectedEvent }
+      );
+      
+      toast.success("Check-in reversed successfully");
+    } catch (error) {
+      console.error("Error during un-check:", error);
+      
+      // Revert on error
+      setAttendees(prev => 
+        prev.map(a => 
+          a.userId === userId 
+            ? { ...a, eventDetails: { ...a.eventDetails, checkedInStatus: true } }
+            : a
+        )
+      );
+      
+      toast.error("Failed to reverse check-in. Please try again.");
+    } finally {
+      setProcessingCheckIns(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(userId);
+        return newSet;
+      });
+    }
+  }, [backendUrl, selectedEvent, processingCheckIns, toast]);
+
+  // Selection handlers
+  const allCurrentPageSelected = useMemo(() => 
+    currentAttendees.length > 0 && 
+    currentAttendees.every(a => selectedAttendees.includes(a.userId)),
+    [currentAttendees, selectedAttendees]
+  );
+
+  const handleSelectAll = useCallback((checked) => {
+    if (checked) {
+      setSelectedAttendees(prev => {
+        const currentIds = currentAttendees.map(a => a.userId);
+        return [...new Set([...prev, ...currentIds])];
+      });
+    } else {
+      setSelectedAttendees(prev => 
+        prev.filter(id => !currentAttendees.find(a => a.userId === id))
+      );
+    }
+  }, [currentAttendees]);
+
+  const handleSelectAttendee = useCallback((userId) => {
+    setSelectedAttendees(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  }, []);
+
+  const handleBulkCheckIn = useCallback(async () => {
+    if (!selectedAttendees.length) return;
+
+    const attendeeIds = [...selectedAttendees];
+    setSelectedAttendees([]);
+
+    try {
+      await Promise.all(
+        attendeeIds.map(userId => handleCheckIn(userId))
+      );
+    } catch (error) {
+      console.error("Error during bulk check-in:", error);
+    }
+  }, [selectedAttendees, handleCheckIn]);
+
+  // Pagination
+  const goToPage = useCallback((page) => {
+    setCurrentPage(Math.max(1, Math.min(page, totalPages)));
+  }, [totalPages]);
+
+  // Event change handler
+  const handleEventChange = useCallback((eventTitle) => {
+    setSelectedEvent(eventTitle);
+    setSelectedArchdeaconry('');
+    setSearchQuery('');
+    setSelectedAttendees([]);
+  }, []);
+
+  return (
+    <div className="h-full mt-5 font-rubik">
+      <RegistrationUnitTopNav />
+      {/* Filter Section */}
+      <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Event Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Select Event
+            </label>
+            <select
+              value={selectedEvent}
+              onChange={(e) => handleEventChange(e.target.value)}
+              disabled={isLoadingEvents}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-main focus:border-transparent bg-white disabled:opacity-50"
+            >
+              <option value="">
+                {isLoadingEvents ? 'Loading events...' : 'Select an Event'}
+              </option>
+              {events.map(event => (
+                <option key={event._id} value={event.eventTitle}>
+                  {event.eventTitle}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Archdeaconry Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Archdeaconry
+            </label>
+            <select
+              value={selectedArchdeaconry}
+              onChange={(e) => setSelectedArchdeaconry(e.target.value)}
+              disabled={!selectedEvent || isLoadingAttendees}
+              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-main focus:border-transparent bg-white disabled:opacity-50"
+            >
+              <option value="">All Archdeaconries</option>
+              {Archdeaconries.map(arch => (
+                <option key={arch} value={arch}>
+                  {arch}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Search Field */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Search by Last 4 Digits
+            </label>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value.replace(/\D/g, ''))}
+                placeholder="Enter last 4 digits"
+                maxLength={4}
+                disabled={!selectedEvent || isLoadingAttendees}
+                className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-main focus:border-transparent disabled:opacity-50"
+              />
+              <Search className="absolute right-3 top-3 text-gray-400" size={20} />
+            </div>
+          </div>
+        </div>
+
+        {/* Results Summary */}
+        {selectedEvent && !isLoadingAttendees && (
+          <div className="mt-4 flex items-center justify-between text-sm text-gray-600">
+            <span>
+              Showing {filteredAttendees.length} of {attendees.length} attendees
+            </span>
+            {selectedAttendees.length > 0 && (
+              <Button
+                onClick={handleBulkCheckIn}
+                size="sm"
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Check className="w-4 h-4 mr-2" />
+                Check In Selected ({selectedAttendees.length})
+              </Button>
+            )}
+          </div>
+        )}
+      </div>
+      {/* Table */}
+      <div className="bg-white rounded-lg shadow-md overflow-hidden p-5">
+        <Table>
+        {/* <ScrollArea className='bg-green-500 h-[150px]'> */}
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={allCurrentPageSelected}
+                  onCheckedChange={handleSelectAll}
+                  disabled={currentAttendees.length === 0}
+                />
+              </TableHead>
+              <TableHead>Full Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Payment Date</TableHead>
+              <TableHead>Payment Status</TableHead>
+              <TableHead>Action</TableHead>
+            </TableRow>
+          </TableHeader>
+
+          <TableBody>
+            {isLoadingAttendees ? (
+              <TableRow>
+                <TableCell colSpan={6} className="h-32 text-center">
+                  <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
+                  <span>Loading attendees...</span>
+                </TableCell>
+              </TableRow>
+            ) : currentAttendees.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="h-32 text-center text-gray-500">
+                  {selectedEvent 
+                    ? "No attendees found matching your criteria" 
+                    : "Please select an event to view attendees"
+                  }
+                </TableCell>
+              </TableRow>
+            ) : (
+              currentAttendees.map((attendee) => {
+                const isProcessing = processingCheckIns.has(attendee.userId);
+                const isCheckedIn = attendee.eventDetails?.checkedInStatus;
+                
+                return (
+                  <TableRow key={attendee.userId} >
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedAttendees.includes(attendee.userId)}
+                        onCheckedChange={() => handleSelectAttendee(attendee.userId)}
+                        disabled={isProcessing}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{attendee.fullName}</span>
+                        <span className="text-xs text-muted-foreground">
+                          ID: {attendee.uniqueId}
+                        </span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {attendee.email}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {attendee.eventDetails?.paymentTime 
+                        ? new Date(attendee.eventDetails.paymentTime).toLocaleDateString()
+                        : 'N/A'
+                      }
+                    </TableCell>
+                    <TableCell>
+                      <Badge 
+                        variant={attendee.eventDetails?.paymentStatus === 'success' ? "default" : "secondary"}
+                        className={
+                          attendee.eventDetails?.paymentStatus === 'success' ? `bg-green-600 hover:bg-green-700 text-white ml-[20px]` : `text-white bg-yellow-500 hover:bg-yellow-600 ml-[20px]`
+                        }
+                      >
+                        {attendee.eventDetails?.paymentStatus || 'Pending'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {!isCheckedIn ? (
+                        <Button
+                          onClick={() => handleCheckIn(attendee.userId)}
+                          size="sm"
+                          disabled={isProcessing}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          {isProcessing ? (
+                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                          ) : (
+                            <Check className="w-4 h-4 mr-1" />
+                          )}
+                          Check In
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => handleUnCheck(attendee.userId)}
+                          size="sm"
+                          disabled={isProcessing}
+                          variant="destructive"
+                        >
+                          {isProcessing ? (
+                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                          ) : (
+                            <X className="w-4 h-4 mr-1" />
+                          )}
+                          Un-Check
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+
+        {/* Pagination */}
+        {totalPages > 1 && !isLoadingAttendees && (
+          <div className="flex items-center justify-between px-6 py-4 border-t">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => goToPage(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ChevronLeft className="w-4 h-4 mr-1" />
+              Previous
+            </Button>
+
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">
+                Page {currentPage} of {totalPages}
+              </span>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   
+   // #:::::::::::::::  GET USER LOGIN FUNCTION :::::::::::::::::#
+     const login = useMutation({
+    mutationFn: async({values})=>{
+       const res = await axios.post(`${backendUrl}/api/userLogin`, values);
+       localStorage.setItem("token", res.data.token);
+      return res
+    }, onSuccess: (res) =>{
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+      return res
+    },
+    onError: async (err) =>{
+        const errType = err.response?.data?.errors
+        console.log("Error Type: ", errType)
+        throw errType
+    }
+  })
+     // #:::::::::::::::  GET USER LOGIN FUNCTION :::::::::::::::::#
+
+
+
+
+
+     // #:::::::::::::::  GET USER DATA FUNCTION :::::::::::::::::#
+     // Get User Data From the DB For the Dashboard
+  const {data: user, isLoading: isLoadingUserData, error: errorLoadingUserData, } = useQuery({
+     queryKey: ['user'],
+     queryFn: async () =>{
+      try{
+
+        const userToken = localStorage.getItem('token');
+        const userDashboardData = await axios.get(`${backendUrl}/api/userDashboard`, {
+          headers: {
+            Authorization: `Bearer ${userToken}`
+          }
+        })
+        if(!userDashboardData){
+          throw new Error("Dailed To Fetch User Data")
+        }
+        console.log("User Dashboard Name: ", userDashboardData?.data?.data?.fullName.split(" ")[1])
+        return userDashboardData?.data?.data
+      }
+      catch(err){
+        const errMessage = err?.response?.data?.message
+        const nothing = err?.response?.data?.error?.error
+        if(nothing == "Nothing"){
+          throw new Error("INVALID_TOKEN")
+        }
+        if(errMessage == "Invalid token"){
+          throw new Error("INVALID_TOKEN")
+        }
+      }
+
+},
+retry: false,
+  })
+  // #:::::::::::::::  GET USER DATA FUNCTION :::::::::::::::::#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { createFileRoute } from '@tanstack/react-router'
+// import React, { useState, useRef } from 'react';
+// import { 
+//   User, 
+//   Edit3, 
+//   Save, 
+//   X, 
+//   Camera, 
+//   Phone, 
+//   Mail, 
+//   MapPin, 
+//   Calendar, 
+//   Upload, 
+//   FileText, 
+//   Trash2,
+//   Eye,
+//   Download,
+//   UserCircle,
+//   Lock,
+//   Settings,
+//   CreditCard,
+//   Shield,
+//   Bell,
+//   ChevronRight
+// } from 'lucide-react';
+// import {useAuth} from '@/lib/AuthContext'
+// import {documentTypes, sidebarItems} from '@/data/Dashboard'
+// import UserProfileImage from '@/components/UserProfileImage/UserProfileImage'
+// import ProfileField from "@/components/Profile/Profile"
+// import axios from 'axios';
+
+
+// export const Route = createFileRoute('/userdashboard/profile')({
+//   component: UserProfile,
+// })
+
+
+
+// function UserProfile(){
+//   const{userData} = useAuth()
+//   const [activeTab, setActiveTab] = useState('profile');
+//   const [isEditing, setIsEditing] = useState(false);
+//   const [editData, setEditData] = useState({...userData});
+//   const [profilePreview, setProfilePreview] = useState(null);
+//   const [passwordData, setPasswordData] = useState({
+//     currentPassword: '',
+//     newPassword: '',
+//     confirmPassword: ''
+//   });
+//   const [updatedUserData ,setUserData] = useState({...userData});
+//   const backendURL = import.meta.env.VITE_BACKEND_URL
+//         const userToken = localStorage.getItem('token');
+
+  
+//     const fileInputRef = useRef(null);
+//     const documentInputRef = useRef(null);
+//     const [selectedDocumentType, setSelectedDocumentType] = useState('');
+
+//    const handleEdit = () => {
+//     setIsEditing(true);
+//     setEditData({...userData});
+//     setProfilePreview(userData?.profilePicture);
+//   };
+
+
+// const handleProfilePictureChange = (event) => {
+//   const file = event.target.files[0];
+//   if (file) {
+//     const reader = new FileReader();
+//     reader.onload = (e) => {
+//       setProfilePreview(e.target.result);
+//     };
+//     reader.readAsDataURL(file);
+//   }
+// };
+
+// const handleCancel = () => {
+//   setIsEditing(false);
+//   setEditData({ ...userData });
+//   setProfilePreview(userData.profilePicture);
+// };
+
+// const handleSave = async () => {
+//   setUserData({ ...editData });
+//   if (profilePreview) {
+//     setUserData(prev => ({ ...prev, profilePicture: profilePreview }));
+
+//     const response = await axios.post(`${backendURL}/api/updateUserProfile`, updatedUserData, {
+//        headers: {
+//             Authorization: `Bearer ${userToken}`
+//           }
+//     })
+//     console.log("Response from updating profile", response.data);
+//   }
+//   setIsEditing(false);
+
+
+// };
+
+// console.log("These are the User Data,", updatedUserData);
+  
+//   const mainComponent = () =>{
+//       switch(activeTab){
+//         case 'profile':
+//           return(
+//             <div className="relative">
+
+//                     {/*  */}
+//               <div className=" flex">
+//             {sidebarItems.map((item) => (
+
+//                 <button
+//                       onClick={() => setActiveTab(item.id)}
+//                       className={` cursor-pointer w-full flex items-center gap-3 px-3 py-4 text-left transition-colors duration-200 ${
+//                         activeTab === item.id
+//                           ? 'text-white'
+//                           : 'text-gray-700 hover:bg-gray-50'
+//                       }`}
+//                       style={activeTab === item.id ? { backgroundColor: '#091e54' } : {}}
+//                     > <item.icon className='w-4 h-4' /> <span className="text-[15px]"> {item.label}</span> </button>
+//             ))}
+//               </div>
+//               {/*  */}
+
+
+//             <div className="space-y-2 py-5 ">
+//             <div className="flex items-center justify-between">
+//               <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
+
+//               {!isEditing && (
+//                 <button
+//                   onClick={handleEdit}
+//                   className="flex items-center gap-2 px-4 py-2 text-white hover:bg-[#0a1f55] rounded-lg transition-colors duration-200"
+//                   style={{ backgroundColor: '#091e54' }}
+//                 >
+//                   <Edit3 className="w-4 h-4" />
+//                   Edit
+//                 </button>
+//               )}
+//             </div>
+
+//             <div className="space-y-6">
+
+//                <div className="relative">
+//                <div className="w-fit relative">
+
+//                  <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
+//                   {(profilePreview || userData?.profilePicture) ? (
+//                     <img
+//                       src={profilePreview || userData?.profilePicture}
+//                       alt="Profile"
+//                       className="w-full h-full object-cover"
+//                     />
+//                   ) : (
+//                     <div className="w-full h-full flex items-center justify-center">
+//                       <UserCircle className="w-12 h-12 text-gray-400" />
+//                     </div>
+//                   )}
+//                 </div>
+//                   {isEditing && (
+//                     <button
+//                       onClick={() => fileInputRef.current?.click()}
+//                       className="absolute -bottom-1 -right-1 w-9 h-9 text-white rounded-full flex items-center justify-center hover:bg-[#0a1f55] transition-colors duration-200 cursor-pointer"
+//                       style={{ backgroundColor: '#091e54' }}
+//                     >
+//                       <Camera className="w-4 h-4" />
+//                     </button>
+//                   )}
+//                   <input
+//                     ref={fileInputRef}
+//                     type="file"
+//                     accept="image/*"
+//                     onChange={handleProfilePictureChange}
+//                     className="hidden"
+//                   />
+//                 </div>
+//                </div>
+
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//                 <ProfileField
+//                   label="Full Name"
+//                   value={userData?.fullName}
+//                   field="fullName"
+//                   isEditing={isEditing}
+//                   editData={editData}
+//                   setEditData={setEditData}
+//                 />
+//                 <ProfileField
+//                   label="Email Address"
+//                   value={userData?.email}
+//                   field="email"
+//                   type="email"
+//                   isEditing={isEditing}
+//                   editData={editData}
+//                   setEditData={setEditData}
+//                 />
+//                 <ProfileField
+//                   label="Phone Number"
+//                   value={userData?.phoneNumber}
+//                   field="phoneNumber"
+//                   type="tel"
+//                   isEditing={isEditing}
+//                   editData={editData}
+//                   setEditData={setEditData}
+//                 />
+//                 <ProfileField
+//                   label="Gender"
+//                   value={userData?.gender}
+//                   field="gender"
+//                   isEditing={isEditing}
+//                   editData={editData}
+//                   setEditData={setEditData}
+//                 />
+//                 <ProfileField
+//                   label="Age"
+//                   value={userData?.age}
+//                   field="age"
+//                   isEditing={isEditing}
+//                   editData={editData}
+//                   setEditData={setEditData}
+//                 />
+//                 <ProfileField
+//                   label="Archdeaconry"
+//                   value={userData?.archdeaconry}
+//                   field="archdeaconry"
+//                   isEditing={isEditing}
+//                   editData={editData}
+//                   setEditData={setEditData}
+//                 />
+//                 <ProfileField
+//                   label="Parish"
+//                   value={userData?.parish}
+//                   field="parish"
+//                   isEditing={isEditing}
+//                   editData={editData}
+//                   setEditData={setEditData}
+//                 />
+//               </div>
+
+//               {isEditing && (
+//                 <div className="flex gap-3 pt-4">
+//                   <button
+//                     onClick={handleCancel}
+//                     className="px-6 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
+//                   >
+//                     Cancel
+//                   </button>
+//                   <button
+//                     onClick={handleSave}
+//                     className="px-6 py-2 text-white hover:bg-[#0a1f55] rounded-lg transition-colors duration-200"
+//                     style={{ backgroundColor: '#091e54' }}
+//                   >
+//                     Save Changes
+//                   </button>
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//             </div>
+//           );
+
+//           case 'password':
+//         return (
+//           <div className="space-y-6 font-rubik">
+
+//              <div className=" flex">
+//             {sidebarItems.map((item) => (
+
+//                 <button
+//                       onClick={() => setActiveTab(item.id)}
+//                       className={` cursor-pointer w-full flex items-center gap-3 px-3 py-4 text-left transition-colors duration-200 ${
+//                         activeTab === item.id
+//                           ? 'text-white'
+//                           : 'text-gray-700 hover:bg-gray-50'
+//                       }`}
+//                       style={activeTab === item.id ? { backgroundColor: '#091e54' } : {}}
+//                     > <item.icon className='w-4 h-4' /> <span className="text-[15px]"> {item.label}</span> </button>
+//             ))}
+//               </div>
+//             <h2 className="text-xl font-semibold text-gray-900">Change Password</h2>
+
+//             <div className="space-y-6 ">
+//               <div className="space-y-4">
+//                 <div>
+//                   <label className="block text-[15px] font-medium text-gray-700 mb-2">New Password</label>
+//                   <input
+//                     type="password"
+//                     value={passwordData.newPassword}
+//                     onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
+//                     className="w-full px-3 py-2  rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+//                     placeholder="Enter new password"
+//                   />
+//                 </div>
+
+//                 <div>
+//                   <label className="block text-[15px] font-medium text-gray-700 mb-2">Confirm Password</label>
+//                   <input
+//                     type="password"
+//                     value={passwordData.confirmPassword}
+//                     onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
+//                     className="w-full px-3 py-2  rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+//                     placeholder="Confirm new password"
+//                   />
+//                 </div>
+//               </div>
+
+//               <div className="flex gap-3">
+//                 <button className="px-6 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200">
+//                   Cancel
+//                 </button>
+//                                   <button className="px-6 py-2 text-white hover:bg-[#0a1f55] rounded-lg transition-colors duration-200"
+//                     style={{ backgroundColor: '#091e54' }}>
+//                   Change Password
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         );
+//       }
+//   }
+
+
+
+//   // COMPONENT
+//   return(
+//     <div className="flex font-rubik">
+//       <div className="w-full p-4">
+//         {mainComponent()}
+//       </div>
+//     </div>
+//   )
+// };
+
+
+
+
+
+
+
+
+
+// export default UserProfile;
+
+
+
+
+import { createFileRoute } from '@tanstack/react-router'
+import React, { useState, useRef } from 'react';
+import { 
+  Edit3, 
+  Save, 
+  X, 
+  Camera, 
+  UserCircle,
+  Loader2,
+  CheckCircle2,
+  AlertCircle
+} from 'lucide-react';
+import { useAuth } from '@/lib/AuthContext'
+import { sidebarItems } from '@/data/Dashboard'
+import ProfileField from "@/components/Profile/Profile"
+import axios from 'axios';
+
+export const Route = createFileRoute('/userdashboard/profile')({
+  component: UserProfile,
+})
+
+function UserProfile() {
+  const { userData, updateUserData } = useAuth()
+  const [activeTab, setActiveTab] = useState('profile');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({ ...userData });
+  const [profilePreview, setProfilePreview] = useState(null);
+  const [profileFile, setProfileFile] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [notification, setNotification] = useState(null);
+  
+  const [passwordData, setPasswordData] = useState({
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState({});
+
+  const backendURL = import.meta.env.VITE_BACKEND_URL
+  const userToken = localStorage.getItem('token');
+
+  const fileInputRef = useRef(null);
+
+  // Show notification helper
+  const showNotification = (type, message) => {
+    setNotification({ type, message });
+    setTimeout(() => setNotification(null), 5000);
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditData({ ...userData });
+    setProfilePreview(userData?.profilePicture);
+  };
+
+  const handleProfilePictureChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        showNotification('error', 'Image size should be less than 5MB');
+        return;
+      }
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        showNotification('error', 'Please select a valid image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePreview(e.target.result);
+        setProfileFile(file);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditData({ ...userData });
+    setProfilePreview(userData?.profilePicture);
+    setProfileFile(null);
+  };
+
+  const validateProfileData = () => {
+    const errors = {};
+    
+    if (!editData.fullName?.trim()) {
+      errors.fullName = 'Full name is required';
+    }
+    
+    if (!editData.email?.trim()) {
+      errors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(editData.email)) {
+      errors.email = 'Please enter a valid email';
+    }
+    
+    if (editData.phoneNumber && !/^\+?[\d\s-()]+$/.test(editData.phoneNumber)) {
+      errors.phoneNumber = 'Please enter a valid phone number';
+    }
+
+    return errors;
+  };
+
+  const handleSave = async () => {
+    const errors = validateProfileData();
+    
+    if (Object.keys(errors).length > 0) {
+      showNotification('error', Object.values(errors)[0]);
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      const formData = new FormData();
+      // Append profile data
+      Object.keys(editData).forEach(key => {
+        if (editData[key] !== undefined && editData[key] !== null) {
+          formData.append(key, editData[key]);
+        }
+      });
+
+      // Append profile picture if changed
+      if (profileFile) {
+        formData.append('profilePicture', profileFile);
+      }
+      console.log("Form Datasdasd", formData)
+
+
+      const response = await axios.post(
+        `${backendURL}/api/updateUserProfile`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      if (response.data.success) {
+        // Update context with new data
+        if (updateUserData) {
+          updateUserData(response.data.user);
+        }
+        
+        showNotification('success', 'Profile updated successfully!');
+        setIsEditing(false);
+        setProfileFile(null);
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to update profile. Please try again.';
+      showNotification('error', errorMessage);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const validatePassword = () => {
+    const errors = {};
+
+    if (!passwordData.newPassword) {
+      errors.newPassword = 'New password is required';
+    } else if (passwordData.newPassword.length < 8) {
+      errors.newPassword = 'Password must be at least 8 characters';
+    } else if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(passwordData.newPassword)) {
+      errors.newPassword = 'Password must contain uppercase, lowercase, and number';
+    }
+
+    if (!passwordData.confirmPassword) {
+      errors.confirmPassword = 'Please confirm your password';
+    } else if (passwordData.newPassword !== passwordData.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
+    }
+
+    return errors;
+  };
+
+  const handlePasswordChange = (field, value) => {
+    setPasswordData(prev => ({ ...prev, [field]: value }));
+    // Clear error for this field when user starts typing
+    if (passwordErrors[field]) {
+      setPasswordErrors(prev => ({ ...prev, [field]: null }));
+    }
+  };
+
+  const handleChangePassword = async () => {
+    const errors = validatePassword();
+    
+    if (Object.keys(errors).length > 0) {
+      setPasswordErrors(errors);
+      return;
+    }
+
+    setIsChangingPassword(true);
+
+    try {
+      const response = await axios.post(
+        `${backendURL}/api/changePassword`,
+        {
+          newPassword: passwordData.newPassword
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`
+          }
+        }
+      );
+
+      if (response.data.success) {
+        showNotification('success', 'Password changed successfully!');
+        setPasswordData({ newPassword: '', confirmPassword: '' });
+      }
+    } catch (error) {
+      console.error('Error changing password:', error);
+      const errorMessage = error.response?.data?.message || 'Failed to change password. Please try again.';
+      showNotification('error', errorMessage);
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  const handleCancelPassword = () => {
+    setPasswordData({ newPassword: '', confirmPassword: '' });
+    setPasswordErrors({});
+  };
+
+  const renderNotification = () => {
+    if (!notification) return null;
+
+    const bgColor = notification.type === 'success' ? 'bg-green-50' : 'bg-red-50';
+    const textColor = notification.type === 'success' ? 'text-green-800' : 'text-red-800';
+    const borderColor = notification.type === 'success' ? 'border-green-200' : 'border-red-200';
+    const Icon = notification.type === 'success' ? CheckCircle2 : AlertCircle;
+
+    return (
+      <div className={`fixed top-4 right-4 z-50 ${bgColor} ${textColor} border ${borderColor} rounded-lg p-4 shadow-lg flex items-center gap-3 max-w-md animate-in slide-in-from-top`}>
+        <Icon className="w-5 h-5 flex-shrink-0" />
+        <p className="text-sm font-medium">{notification.message}</p>
+        <button
+          onClick={() => setNotification(null)}
+          className="ml-auto hover:opacity-70"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    );
+  };
+
+  const mainComponent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return (
+          <div className="relative">
+            <div className="flex border-b">
+              {sidebarItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`cursor-pointer w-full flex items-center gap-3 px-3 py-4 text-left transition-colors duration-200 ${
+                    activeTab === item.id
+                      ? 'text-white'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                  style={activeTab === item.id ? { backgroundColor: '#091e54' } : {}}
+                >
+                  <item.icon className='w-4 h-4' />
+                  <span className="text-[15px]">{item.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="space-y-2 py-5">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">Personal Information</h2>
+
+                {!isEditing && (
+                  <button
+                    onClick={handleEdit}
+                    className="flex items-center gap-2 px-4 py-2 text-white hover:bg-[#0a1f55] rounded-lg transition-colors duration-200"
+                    style={{ backgroundColor: '#091e54' }}
+                  >
+                    <Edit3 className="w-4 h-4" />
+                    Edit
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-6">
+                <div className="relative">
+                  <div className="w-fit relative">
+                    <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-100 border-2 border-gray-200">
+                      {(profilePreview || userData?.profilePicture) ? (
+                        <img
+                          src={profilePreview || userData?.profilePicture}
+                          alt="Profile"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <UserCircle className="w-12 h-12 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                    {isEditing && (
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="absolute -bottom-1 -right-1 w-9 h-9 text-white rounded-full flex items-center justify-center hover:bg-[#0a1f55] transition-colors duration-200 cursor-pointer"
+                        style={{ backgroundColor: '#091e54' }}
+                        title="Change profile picture"
+                      >
+                        <Camera className="w-4 h-4" />
+                      </button>
+                    )}
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleProfilePictureChange}
+                      className="hidden"
+                    />
+                  </div>
+                  {isEditing && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      Click the camera icon to change your profile picture (Max 5MB)
+                    </p>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <ProfileField
+                    label="Full Name"
+                    value={userData?.fullName}
+                    field="fullName"
+                    isEditing={isEditing}
+                    editData={editData}
+                    setEditData={setEditData}
+                    required
+                  />
+                  <ProfileField
+                    label="Email Address"
+                    value={userData?.email}
+                    field="email"
+                    type="email"
+                    isEditing={isEditing}
+                    editData={editData}
+                    setEditData={setEditData}
+                    required
+                  />
+                  <ProfileField
+                    label="Phone Number"
+                    value={userData?.phoneNumber}
+                    field="phoneNumber"
+                    type="tel"
+                    isEditing={isEditing}
+                    editData={editData}
+                    setEditData={setEditData}
+                  />
+                  <ProfileField
+                    label="Gender"
+                    value={userData?.gender}
+                    field="gender"
+                    isEditing={isEditing}
+                    editData={editData}
+                    setEditData={setEditData}
+                  />
+                  <ProfileField
+                    label="Age"
+                    value={userData?.age}
+                    field="age"
+                    isEditing={isEditing}
+                    editData={editData}
+                    setEditData={setEditData}
+                  />
+                  <ProfileField
+                    label="Archdeaconry"
+                    value={userData?.archdeaconry}
+                    field="archdeaconry"
+                    isEditing={isEditing}
+                    editData={editData}
+                    setEditData={setEditData}
+                  />
+                  <ProfileField
+                    label="Parish"
+                    value={userData?.parish}
+                    field="parish"
+                    isEditing={isEditing}
+                    editData={editData}
+                    setEditData={setEditData}
+                  />
+                </div>
+
+                {isEditing && (
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      onClick={handleCancel}
+                      disabled={isSaving}
+                      className="px-6 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSave}
+                      disabled={isSaving}
+                      className="px-6 py-2 text-white hover:bg-[#0a1f55] rounded-lg transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ backgroundColor: '#091e54' }}
+                    >
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-4 h-4" />
+                          Save Changes
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'password':
+        return (
+          <div className="space-y-6 font-rubik">
+            <div className="flex border-b">
+              {sidebarItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveTab(item.id)}
+                  className={`cursor-pointer w-full flex items-center gap-3 px-3 py-4 text-left transition-colors duration-200 ${
+                    activeTab === item.id
+                      ? 'text-white'
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
+                  style={activeTab === item.id ? { backgroundColor: '#091e54' } : {}}
+                >
+                  <item.icon className='w-4 h-4' />
+                  <span className="text-[15px]">{item.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <h2 className="text-xl font-semibold text-gray-900">Change Password</h2>
+
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[15px] font-medium text-gray-700 mb-2">
+                    New Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordData.newPassword}
+                    onChange={(e) => handlePasswordChange('newPassword', e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      passwordErrors.newPassword ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter new password"
+                  />
+                  {passwordErrors.newPassword && (
+                    <p className="text-red-500 text-sm mt-1">{passwordErrors.newPassword}</p>
+                  )}
+                  <p className="text-xs text-gray-500 mt-1">
+                    Must be at least 8 characters with uppercase, lowercase, and number
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-[15px] font-medium text-gray-700 mb-2">
+                    Confirm Password <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => handlePasswordChange('confirmPassword', e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      passwordErrors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Confirm new password"
+                  />
+                  {passwordErrors.confirmPassword && (
+                    <p className="text-red-500 text-sm mt-1">{passwordErrors.confirmPassword}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={handleCancelPassword}
+                  disabled={isChangingPassword}
+                  className="px-6 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleChangePassword}
+                  disabled={isChangingPassword}
+                  className="px-6 py-2 text-white hover:bg-[#0a1f55] rounded-lg transition-colors duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: '#091e54' }}
+                >
+                  {isChangingPassword ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Changing...
+                    </>
+                  ) : (
+                    'Change Password'
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex font-rubik">
+      {renderNotification()}
+      <div className="w-full p-4">
+        {mainComponent()}
+      </div>
+    </div>
+  );
+}
+
+export default UserProfile;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // PAYSTACK INITIAL CODE :::::
 
 
