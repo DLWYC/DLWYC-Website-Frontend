@@ -172,9 +172,6 @@ const MultiSteps = ({userData, eventDetails}) => {
   ];
 
 
-  // Step 3: Payment Step based on selection and code status
-  console.log("Selected Option and Code Status", selectedOption);
-
   if (selectedOption === 'single') {
     // For single payment mode
     if (paymentCodeStatus === "Valid Code") {

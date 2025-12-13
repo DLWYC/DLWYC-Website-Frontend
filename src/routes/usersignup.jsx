@@ -33,7 +33,6 @@ const SignUpForm = () => {
      const [isSubmitting, setIsSubmitting] = useState(false);
 
 
-  console.log("Sign Up Data Form", formData)
 
   // Get available parishes based on selected archdeaconry
   const availableParishes = useMemo(() => {
@@ -175,9 +174,9 @@ const SignUpForm = () => {
 
         <div className="grid lg:grid-cols-2 bg-white rounded-2xl border border-gray-300 overflow-hidden">
           {/* Header */}
-          <div className="bg-primary-main px-8 py-6 flex flex-col justify-center">
-            <h2 className="text-3xl font-bold text-white text-center">Create Account</h2>
-            <p className="text-blue-100 text-center mt-2">Join our community today</p>
+          <div className=" bg-cover bg-center bg-no-repeat " style={{backgroundImage: `url("/bg.jpg")`}}>
+            {/* <h2 className="text-3xl font-bold text-white text-center">Create Account</h2> */}
+            {/* <p className="text-blue-100 text-center mt-2">Join our community today</p> */}
           </div>
 
           {/* Form */}

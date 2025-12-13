@@ -7,12 +7,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {useAuth} from "@/lib/AuthContext"
 import { Eye, EyeOff } from 'lucide-react';
 
-export const Route = createFileRoute('/userlogin')({
+export const Route = createFileRoute('/adminLogin')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  const {login, loginIsLoading} = useAuth()
+  const {registrationUnitLogin, registrationUnitLoginILoadingxzz} = useAuth()
   
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -35,30 +35,23 @@ function RouteComponent() {
       }
 
       try{
-         const res = await login({values})
+         const res = await registrationUnitLogin({values})
          toast.success(res?.data?.message)
-         navigate({to: '/userdashboard'});
+         navigate({to: '/registrationunit'});
       }
       catch(error){
         console.log("This is error at Login", error)
         toast.error(error?.error || error?.data || "Login Failed🤧")
       }
       
-      console.log("Login Successful")
+      console.log("herer", email)
      }
    
-
-  const handleGoogleLogin = (credentialResponse) => {
-    console.log(credentialResponse);
-    localStorage.setItem("token", credentialResponse.credential);
-
-  };
-
 return (
     <>
     <div className="flex items-center justify-center min-h-screen bg-gray-100 font-rubik">
       <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-lg">
-        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+        <h2 className="text-2xl font-bold text-center mb-6">Registration Unit Login</h2>
         <div className="space-y-4">
           <input
             type="email"
@@ -75,7 +68,7 @@ return (
               name="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={`text-[14px] w-full px-4  py-3 border  'border-gray-300' rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
+              className={`text-[14px] w-full px-4  py-3 border  border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition`}
               placeholder="Enter your password"
             />
             <button
@@ -92,18 +85,11 @@ return (
             className="w-full bg-primary-main text-white py-2 rounded-lg cursor-pointer hover:bg-reddish duration-100 transition-all"
             onClick={handleLogin}
           >
-          {loginIsLoading ? <span className="loader"></span> : "Login"}
+          {registrationUnitLoginILoadingxzz ? <span className="loader"></span> : "Login"}
           </button>
 
         </div>
-
-
-        <p className="text-[15px] mt-4 text-center">
-          Don’t have an account?{" "}
-          <Link to="/usersignup" className="text-blue-600 hover:underline">
-            Sign Up
-          </Link>
-        </p>
+ 
         </div>
       </div>
     </>

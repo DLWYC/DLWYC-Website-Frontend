@@ -188,11 +188,11 @@ nav ul li a {
 }
 #miniNav {
   width: 230px;
-  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background: white;
+  /* Remove display: grid from here */
 }
 #miniNav li {
   display: grid;

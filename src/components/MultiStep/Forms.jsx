@@ -6,7 +6,6 @@ import { toast } from "react-toastify";
 
 
 const Form = ({ className, array, text, values, setValues, setPaymentCodeStatus, selectedOption }) => {
-  console.log("Form Component Props", { className, array, text, values, selectedOption });
   const navigate = useNavigate();
   const [paymentCode, setpaymentCode] = useState()
   const [payersId, setpayersId] = useState()
@@ -69,7 +68,6 @@ const Form = ({ className, array, text, values, setValues, setPaymentCodeStatus,
       
     }, [paymentCode, numberfPeopleToBePayedFor, payersId])
     
-    console.log("Forms Values", values, "payers Id", payersId)
 // 
   return (
     <div className={`${className}  font-rubik `}>

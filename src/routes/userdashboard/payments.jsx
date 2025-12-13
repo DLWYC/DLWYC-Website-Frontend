@@ -66,7 +66,7 @@ const ViewPayment = () => {
       label: 'ID', 
       sortable: true,
       width: '80px',
-      render: (value) => <div className="font-[400] text-gray-900">#{value}</div>
+      render: (value, row, index) => <div className="font-[400] text-gray-900">{index + 1}</div>
     },
     { 
       key: 'userName', 
@@ -379,8 +379,8 @@ const ViewPayment = () => {
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-opacity-50"
                 style={{ '--tw-ring-color': '#091e54' }}
               >
-                {[5, 10, 20, 50].map((size) => (
-                  <option key={size} value={size}>
+                {[5, 10, 20, 50].map((size, index) => (
+                  <option key={index} value={size}>
                     {size}
                   </option>
                 ))}
@@ -396,7 +396,7 @@ const ViewPayment = () => {
               <tr>
                 {columns.map((column) => (
                   <th
-                    key={column.code}
+                    key={column.key}
                     className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider"
                     style={{ width: column.width }}
                   >
@@ -435,19 +435,22 @@ const ViewPayment = () => {
                   </td>
                 </tr>
               ) : (
-                paginatedData.map((row) => (
+                paginatedData.map((row, rowIndex) => (
                   <tr
-                    key={row.id}
+                    key={row._id}
                     className="hover:bg-gray-50 transition-colors"
                   >
-                    {columns.map((column) => (
+                    {columns.map((column) => {
+                      const globalIndex = (currentPage - 1) * pageSize + rowIndex;
+                      return (
                       <td key={column.key} className="px-6 py-4 whitespace-nowrap ">
                         {column.render 
-                          ? column.render(row[column.key], row) 
+                          ? column.render(row[column.key], row, globalIndex) 
                           : row[column.key]
                         }
                       </td>
-                    ))}
+                      )
+                    })}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button 
                         className="flex items-center gap-2 px-3 py-1 text-[15px] text-white rounded-lg hover:bg-opacity-90 transition-colors"

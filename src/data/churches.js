@@ -98,7 +98,7 @@ const Churches = [
       },
       {
         id: 21,
-        name: `ST PAUL'S ANGLICAN CHURCH ISHAGA`,
+        name: `ST PAUL'S ANGLICAN CHURCH ISHAGATEDO`,
       },
       {
         id: 22,
@@ -106,7 +106,7 @@ const Churches = [
       },
       {
         id: 23,
-        name: `CHURCH OF ASCENSION ISOLO`,
+        name: `ANGLICAN CHURCH OF ASCENSION ISOLO`,
       },
       {
         id: 24,
@@ -114,31 +114,35 @@ const Churches = [
       },
       {
         id: 25,
-        name: `CHRIST CHURCH BUCKNOR`,
+        name: `CHRIST ANGLICAN CHURCH BUCKNOR`,
       },
       {
         id: 26,
-        name: `CHURCH OF REDEMPTION ISHERI`,
+        name: `ANGLICAN CHURCH OF RESSURECTION ISHERI-OSHUN`,
       },
       {
         id: 27,
-        name: `CHURCH OF RESURRECTION WHITESAND`,
+        name: `ANGLICAN CHURCH OF REDEMPTION WHITESAND`,
       },
       {
         id: 28,
-        name: `ANGLICAN CHURCH IJEODODO`,
+        name: `ALL SOULS ANGLICAN CHURCH IJEODODO`,
       },
       {
         id: 29,
-        name: `ANGLICAN CHURCH PROMISELAND`,
+        name: `ANGLICAN CHURCH OF THE PROMISELAND`,
       },
       {
         id: 30,
-        name: `ANGLICAN CHURCH KUDEBU`,
+        name: `ST. LUKE'S CHURCH OKOTA`,
       },
       {
         id: 31,
         name: `CHURCH OF PENTECOST BUCKNOR`,
+      },
+      {
+        id: 130,
+        name: `ANGLICAN CHURCH OF THE HOLY SPIRIT`,
       },
     ],
   },
@@ -1274,31 +1278,63 @@ const Churches = [
       {
         id: 276,
         name: `CHURCH OF THE EPIPHANY, IBA HOUSING EST`,
-      }, 
+      },
     ],
   },
   // This is to be sorted later
-  
+
   {
     id: 29,
     archdeaconry: "Agege",
     churches: [
       {
         id: 277,
-        name: `ST. PAUL'S ISASHI`,
+        name: `ANGLICAN CHURCH CEMENT`,
       },
       {
         id: 278,
-        name: `OUR SAVIOUR'S MODADOLOHUN`,
+        name: `CHURCH OF PENTECOST`,
       },
       {
         id: 279,
-        name: `CHURCH OF THE LIVING FAITH, AGBOROKO`,
+        name: `CAAMAC OKO OBA`,
       },
       {
         id: 280,
-        name: `CHURCH OF THE EPIPHANY, IBA HOUSING EST`,
-      }, 
+        name: `HOLY TRINITY ANGLICAN CHURCH, MANGORO`,
+      },
+      {
+        id: 2801,
+        name: `HOLY TRINITY ANGLICAN CHURCH AGUDA TITUN`,
+      },
+      {
+        id: 2802,
+        name: `CHURCH OF PENTECOST OKE IRA`,
+      },
+      {
+        id: 2803,
+        name: `OUR SAVIOUR'S ANGLICAN CHURCH,IMOLA`,
+      },
+      {
+        id: 2804,
+        name: `ST. ANDREW'S ANGLICAN CHURCH IFAKO`,
+      },
+      {
+        id: 2805,
+        name: `ST. PAUL'S ANGLICAN CHURCH, COWLANE, SANGO AGEGE`,
+      },
+      {
+        id: 2806,
+        name: `HCHRIST CHURCH ANGLICAN,ELERE AGEGE`,
+      },
+      {
+        id: 2807,
+        name: `ST. JOHN'S ANGLICAN CHURCH, PAPA ASHAFA`,
+      },
+      {
+        id: 2808,
+        name: `ALL SAINTS ANGLICAN CHURCH ORILE AGEGE`,
+      },
     ],
   },
   {
@@ -1308,19 +1344,19 @@ const Churches = [
       {
         id: 280,
         name: `CHRIST CHURCH ANGLICAN, AMUWO-ODOFIN`,
-      }, 
+      },
       {
         id: 2822,
         name: `ST. JAMES CHURCH, PEACE ESTATE, AMUWO`,
-      }, 
+      },
       {
         id: 280,
         name: `ST. PETER'S CHURCH GRA, AMUWO`,
-      }, 
+      },
       {
         id: 280,
         name: `ST. PETER'S CHURCH, AGO OKOTA`,
-      }, 
+      },
     ],
   },
 ];
