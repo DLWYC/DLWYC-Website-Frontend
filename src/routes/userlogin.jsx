@@ -44,7 +44,7 @@ function RouteComponent() {
         toast.error(error?.error || error?.data || "Login Failed🤧")
       }
       
-      console.log("herer", email)
+      console.log("Login Successful")
      }
    
 
@@ -92,7 +92,7 @@ return (
             className="w-full bg-primary-main text-white py-2 rounded-lg cursor-pointer hover:bg-reddish duration-100 transition-all"
             onClick={handleLogin}
           >
-          {loginIsLoading ? <span class="loader"></span> : "Login"}
+          {loginIsLoading ? <span className="loader"></span> : "Login"}
           </button>
 
         </div>

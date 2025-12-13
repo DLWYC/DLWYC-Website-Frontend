@@ -3,11 +3,17 @@ import { cn } from "@/lib/utils";
 import  AppSidebar  from  "@/components/AppSideBar/AppSideBar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { toast } from 'react-toastify';
-import RegistrationUnitTopNav from '@/components/AppTopNav/RegitrationUnitTopNav';
 
 
 export const Route = createFileRoute('/registrationunit')({
   component: RegsitrationUnit,
+  beforeLoad: async () =>{
+    const registrationUnitToken = localStorage.getItem('registrationUnitToken');
+      if (!registrationUnitToken) {
+        toast.warn("Please Login To Access This Page")
+        return redirect({ to: '/adminLogin' });
+    }
+  }
 })
 
 
@@ -24,7 +30,6 @@ function RegsitrationUnit() {
             "relative bg-[#f4f7fa] w-full px-2"
           )}
         >
-        <RegistrationUnitTopNav />
 
           <Outlet />
         </main>
