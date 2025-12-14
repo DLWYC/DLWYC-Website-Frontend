@@ -507,35 +507,6 @@ const allocationSuccess = async () => {
     }
   }, [user?.uniqueId, allocation?.allocation_id, hasAccess]);
 
-  const cancelAllocation = useCallback(async () => {
-    if (!hasAccess) return;
-    
-    setLoading(true);
-    
-    try {
-      const { data } = await api.post('/api/allocations/cancelAllocation', {
-        uniqueId: user.uniqueId,
-        allocation_id: allocation.allocation_id
-      });
-
-      if (data.success) {
-        setAllocation(null);
-        setUser(prev => ({ 
-          ...prev, 
-          allocationStatus: ALLOCATION_STATUS.NOT_STARTED
-        }));
-        setAvailableHostels(null);
-        setCurrentStep(0);
-      } else {
-        setError(data.error || 'Failed to cancel allocation');
-      }
-    } catch (err) {
-      console.error('Error cancelling allocation:', err);
-      setError(err.response?.data?.error || 'Failed to cancel allocation');
-    } finally {
-      setLoading(false);
-    }
-  }, [user?.uniqueId, allocation?.allocation_id, hasAccess]);
 
   const handleNext = useCallback(() => {
     if (currentStep === 0) {
@@ -629,14 +600,6 @@ const allocationSuccess = async () => {
     if (isPendingConfirmation) {
       return (
         <div className="flex gap-3">
-          <button
-            onClick={cancelAllocation}
-            disabled={loading}
-            className="flex items-center gap-2 px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <XCircle className="w-5 h-5" />
-            Cancel
-          </button>
           <button
             onClick={confirmAllocation}
             disabled={loading}
