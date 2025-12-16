@@ -1,22 +1,30 @@
 import { createFileRoute } from '@tanstack/react-router'
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Archdeaconries, getArchdeaconryCode } from '@/data/Archdeaconries';
 import axios from 'axios';
-import {
-  TableBody,
-  Table,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from "react-toastify";
 import RegistrationUnitTopNav from '@/components/AppTopNav/RegitrationUnitTopNav';
+
+// Add fadeIn animation styles
+const styleSheet = document.createElement("style");
+styleSheet.textContent = `
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+`;
+document.head.appendChild(styleSheet);
 
 export const Route = createFileRoute('/registrationunit/')({
   component: EventCheckInPortal,
@@ -25,7 +33,6 @@ export const Route = createFileRoute('/registrationunit/')({
 function EventCheckInPortal() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   
-  // State management
   const [selectedEvent, setSelectedEvent] = useState('');
   const [selectedArchdeaconry, setSelectedArchdeaconry] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,15 +40,19 @@ function EventCheckInPortal() {
   const [selectedAttendees, setSelectedAttendees] = useState([]);
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(25);
+  const [itemsPerPage] = useState(12);
+  const [displayedItems, setDisplayedItems] = useState(12); // For lazy loading
   
-  // Loading states
   const [isLoadingEvents, setIsLoadingEvents] = useState(true);
   const [isLoadingAttendees, setIsLoadingAttendees] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [processingCheckIns, setProcessingCheckIns] = useState(new Set());
 
-  // Fetch all events on mount
+  const pollingIntervalRef = useRef(null);
+  const lastFetchTimeRef = useRef(0);
+  const isFetchingRef = useRef(false);
+  const [lastRefreshTime, setLastRefreshTime] = useState(null);
+
   useEffect(() => {
     const fetchAllEvents = async () => {
       try {
@@ -50,7 +61,7 @@ function EventCheckInPortal() {
         setEvents(response?.data?.events || []);
       } catch (error) {
         console.error("Error fetching events:", error);
-        toast.error("Failed to load events. Please refresh the page.");
+        toast.error("Failed to load events");
       } finally {
         setIsLoadingEvents(false);
       }
@@ -59,52 +70,167 @@ function EventCheckInPortal() {
     fetchAllEvents();
   }, [backendUrl]);
 
-  // Fetch attendees function (extracted for reuse)
-  const fetchEventAttendees = useCallback(async (showRefreshIndicator = false) => {
+  const fetchEventAttendees = useCallback(async (showRefreshIndicator = false, silent = false) => {
     if (!selectedEvent) {
       setAttendees([]);
       return;
     }
 
+    // Prevent concurrent requests
+    if (isFetchingRef.current) {
+      console.log("Fetch already in progress, skipping...");
+      return;
+    }
+
+    // Rate limiting: prevent requests within 10 seconds of last fetch
+    // Backend allows 100 requests per 15 minutes (900 seconds)
+    // So max 1 request per 9 seconds to stay safe
+    const now = Date.now();
+    const timeSinceLastFetch = now - lastFetchTimeRef.current;
+    const minInterval = 10000; // 10 seconds between requests
+    
+    if (timeSinceLastFetch < minInterval && !showRefreshIndicator) {
+      console.log(`Rate limited: ${Math.round(timeSinceLastFetch/1000)}s since last fetch (minimum ${minInterval/1000}s)`);
+      return;
+    }
+
+    isFetchingRef.current = true;
+    lastFetchTimeRef.current = now;
+
     try {
       if (showRefreshIndicator) {
         setIsRefreshing(true);
-      } else {
+      } else if (!silent) {
         setIsLoadingAttendees(true);
       }
       
       const response = await axios.get(
-        `${backendUrl}/api/registrationUnit/eventAttendees/${selectedEvent}`
+        `${backendUrl}/api/registrationUnit/eventAttendees/${selectedEvent}`,
+        {
+          timeout: 25000, // 25 second timeout (less than backend's 30s)
+        }
       );
-      setAttendees(response?.data?.data || []);
       
-      if (showRefreshIndicator) {
-        toast.success("Attendees list refreshed successfully");
+      if (response?.data?.data) {
+        setAttendees(response.data.data);
+        setLastRefreshTime(new Date());
+        if (showRefreshIndicator) {
+          toast.success("List refreshed");
+        }
+        console.log(`✓ Fetched ${response.data.data.length} attendees`);
+      } else {
+        console.warn("No data received from server");
+        if (!silent) {
+          toast.warning("No attendees data received");
+        }
       }
     } catch (error) {
       console.error("Error fetching event attendees:", error);
-      toast.error("Failed to load attendees. Please try again.");
-      setAttendees([]);
+      
+      // Don't clear attendees if we already have data
+      if (!silent || attendees.length === 0) {
+        if (error.code === 'ECONNABORTED') {
+          toast.error("Request timeout - Server is busy");
+        } else if (error.response?.status === 429) {
+          console.warn("⚠️ Rate limit hit - backing off");
+          toast.warning("Too many requests - Waiting before next refresh");
+          // Back off for 30 seconds
+          lastFetchTimeRef.current = Date.now() + 20000;
+        } else if (error.response?.status === 404) {
+          toast.error("Event not found");
+          setAttendees([]);
+        } else if (error.response?.status >= 500) {
+          toast.error("Server error - Will retry automatically");
+        } else if (error.code === 'ERR_NETWORK') {
+          if (!silent) {
+            toast.error("Network error - Check your connection");
+          }
+        } else if (!silent) {
+          toast.error("Failed to load attendees");
+        }
+      }
     } finally {
       setIsLoadingAttendees(false);
       setIsRefreshing(false);
+      isFetchingRef.current = false;
     }
-  }, [selectedEvent, backendUrl]);
+  }, [selectedEvent, backendUrl, attendees.length]);
 
-  // Fetch attendees when event changes
   useEffect(() => {
     fetchEventAttendees(false);
   }, [selectedEvent]);
 
-  // Manual refresh handler
+  // Setup auto-refresh polling with page visibility handling
+  useEffect(() => {
+    if (selectedEvent) {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+
+      // Initial fetch
+      const startPolling = () => {
+        // 30 second interval to stay well under rate limit
+        // Backend: 100 requests per 15 min = ~1 request per 9 seconds max
+        // Using 30 seconds gives plenty of headroom for other requests
+        pollingIntervalRef.current = setInterval(() => {
+          // Only fetch if page is visible
+          if (!document.hidden) {
+            fetchEventAttendees(false, true);
+          }
+        }, 30000); // 30 seconds
+      };
+
+      startPolling();
+
+      // Handle page visibility changes
+      const handleVisibilityChange = () => {
+        if (!document.hidden) {
+          // Page became visible - refresh data after a delay
+          console.log("Page visible - scheduling refresh");
+          setTimeout(() => {
+            fetchEventAttendees(false, true);
+          }, 2000); // Wait 2 seconds before fetching
+          
+          // Restart polling
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+          }
+          startPolling();
+        } else {
+          // Page hidden - stop polling to save resources
+          console.log("Page hidden - pausing auto-refresh");
+          if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+          }
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+          pollingIntervalRef.current = null;
+        }
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
+    }
+
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    };
+  }, [selectedEvent, fetchEventAttendees]);
+
   const handleRefresh = useCallback(() => {
     fetchEventAttendees(true);
   }, [fetchEventAttendees]);
 
-  // Calculate statistics
   const statistics = useMemo(() => {
     if (!attendees.length) return { total: 0, checkedIn: 0, pending: 0 };
-    
     const checkedIn = attendees.filter(a => a.eventDetails?.checkedInStatus).length;
     return {
       total: attendees.length,
@@ -113,12 +239,10 @@ function EventCheckInPortal() {
     };
   }, [attendees]);
 
-  // Optimized filtering with useMemo
   const filteredAttendees = useMemo(() => {
     if (!attendees.length) return [];
     
     return attendees.filter(attendee => {
-      // Archdeaconry filter
       if (selectedArchdeaconry) {
         const archCode = getArchdeaconryCode(selectedArchdeaconry);
         if (!attendee.uniqueId?.includes(`/${archCode}/`)) {
@@ -126,7 +250,6 @@ function EventCheckInPortal() {
         }
       }
       
-      // Search filter (flexible - searches in uniqueId, name, email)
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const uniqueId = attendee.uniqueId?.toLowerCase() || '';
@@ -142,25 +265,21 @@ function EventCheckInPortal() {
     });
   }, [attendees, searchQuery, selectedArchdeaconry]);
 
-  // Pagination calculations
   const totalPages = Math.ceil(filteredAttendees.length / itemsPerPage);
   const currentAttendees = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredAttendees.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredAttendees, currentPage, itemsPerPage]);
 
-  // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedArchdeaconry, searchQuery, selectedEvent]);
 
-  // Check-in handler with optimistic UI update
   const handleCheckIn = useCallback(async (userId) => {
     if (processingCheckIns.has(userId)) return;
 
     setProcessingCheckIns(prev => new Set(prev).add(userId));
 
-    // Optimistic update
     setAttendees(prev => 
       prev.map(a => 
         a.userId === userId 
@@ -175,11 +294,12 @@ function EventCheckInPortal() {
         { eventTitle: selectedEvent }
       );
       
-      toast.success("Attendee checked in successfully");
+      toast.success("Checked in successfully");
+      // Optimistic update already applied - no need to refetch immediately
+      // User can manually refresh if they want to verify
     } catch (error) {
       console.error("Error during check-in:", error);
       
-      // Revert optimistic update on error
       setAttendees(prev => 
         prev.map(a => 
           a.userId === userId 
@@ -188,7 +308,7 @@ function EventCheckInPortal() {
         )
       );
       
-      toast.error("Failed to check in attendee. Please try again.");
+      toast.error("Check-in failed");
     } finally {
       setProcessingCheckIns(prev => {
         const newSet = new Set(prev);
@@ -196,15 +316,13 @@ function EventCheckInPortal() {
         return newSet;
       });
     }
-  }, [backendUrl, selectedEvent, processingCheckIns]);
+  }, [backendUrl, selectedEvent, processingCheckIns, fetchEventAttendees]);
 
-  // Un-check handler
   const handleUnCheck = useCallback(async (userId) => {
     if (processingCheckIns.has(userId)) return;
 
     setProcessingCheckIns(prev => new Set(prev).add(userId));
 
-    // Optimistic update
     setAttendees(prev => 
       prev.map(a => 
         a.userId === userId 
@@ -219,11 +337,12 @@ function EventCheckInPortal() {
         { eventTitle: selectedEvent }
       );
       
-      toast.success("Check-in reversed successfully");
+      toast.success("Check-in reversed");
+      // Optimistic update already applied - no need to refetch immediately
+      // User can manually refresh if they want to verify
     } catch (error) {
       console.error("Error during un-check:", error);
       
-      // Revert on error
       setAttendees(prev => 
         prev.map(a => 
           a.userId === userId 
@@ -232,7 +351,7 @@ function EventCheckInPortal() {
         )
       );
       
-      toast.error("Failed to reverse check-in. Please try again.");
+      toast.error("Failed to reverse check-in");
     } finally {
       setProcessingCheckIns(prev => {
         const newSet = new Set(prev);
@@ -240,9 +359,8 @@ function EventCheckInPortal() {
         return newSet;
       });
     }
-  }, [backendUrl, selectedEvent, processingCheckIns]);
+  }, [backendUrl, selectedEvent, processingCheckIns, fetchEventAttendees]);
 
-  // Selection handlers
   const allCurrentPageSelected = useMemo(() => 
     currentAttendees.length > 0 && 
     currentAttendees.every(a => selectedAttendees.includes(a.userId)),
@@ -278,7 +396,6 @@ function EventCheckInPortal() {
     let completed = 0;
 
     setSelectedAttendees([]);
-
     toast.info(`Checking in ${total} attendees...`);
 
     try {
@@ -286,19 +403,71 @@ function EventCheckInPortal() {
         await handleCheckIn(userId);
         completed++;
       }
-      toast.success(`Successfully checked in ${completed} attendees`);
+      toast.success(`Checked in ${completed} attendees`);
     } catch (error) {
       console.error("Error during bulk check-in:", error);
-      toast.error(`Checked in ${completed} of ${total} attendees before error`);
+      toast.error(`Checked in ${completed} of ${total}`);
     }
   }, [selectedAttendees, handleCheckIn]);
 
-  // Pagination
+  const handleBulkUnCheck = useCallback(async () => {
+    if (!selectedAttendees.length) return;
+
+    const attendeeIds = [...selectedAttendees];
+    const total = attendeeIds.length;
+    let completed = 0;
+
+    setSelectedAttendees([]);
+    toast.info(`Reversing check-in for ${total} attendees...`);
+
+    try {
+      for (const userId of attendeeIds) {
+        await handleUnCheck(userId);
+        completed++;
+      }
+      toast.success(`Reversed check-in for ${completed} attendees`);
+    } catch (error) {
+      console.error("Error during bulk un-check:", error);
+      toast.error(`Reversed ${completed} of ${total}`);
+    }
+  }, [selectedAttendees, handleUnCheck]);
+
+  // Lazy loading - gradually increase displayed items
+  useEffect(() => {
+    if (currentAttendees.length > 0) {
+      setDisplayedItems(4); // Start with 4 items
+      
+      const loadMoreItems = () => {
+        setDisplayedItems(prev => {
+          const next = prev + 4;
+          return next >= currentAttendees.length ? currentAttendees.length : next;
+        });
+      };
+
+      // Load 4 more items every 100ms until all are loaded
+      const intervals = [];
+      const totalBatches = Math.ceil(currentAttendees.length / 4);
+      
+      for (let i = 1; i < totalBatches; i++) {
+        const timer = setTimeout(loadMoreItems, i * 100);
+        intervals.push(timer);
+      }
+
+      return () => {
+        intervals.forEach(timer => clearTimeout(timer));
+      };
+    }
+  }, [currentAttendees.length, currentPage]);
+
+  // Get only the items to display (for lazy loading)
+  const displayedAttendees = useMemo(() => {
+    return currentAttendees.slice(0, displayedItems);
+  }, [currentAttendees, displayedItems]);
+
   const goToPage = useCallback((page) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   }, [totalPages]);
 
-  // Event change handler
   const handleEventChange = useCallback((eventTitle) => {
     setSelectedEvent(eventTitle);
     setSelectedArchdeaconry('');
@@ -307,78 +476,67 @@ function EventCheckInPortal() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-8">
+    <div className="min-h-screen bg-gray-50">
       <RegistrationUnitTopNav />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        {/* Statistics Cards */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900">Event Check-In</h1>
+        </div>
+
+        {/* Statistics */}
         {selectedEvent && !isLoadingAttendees && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-white">
-            <div className="rounded-lg shadow-sm p-4 bg-blue-500">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium ">Total Attendees</p>
-                  <p className="text-2xl font-bold">{statistics.total}</p>
+          <div className="grid lg:grid-cols-3 gap-4 mb-6">
+            <div className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-blue-100 rounded-lg p-2">
+                  <Users className="w-5 h-5 text-blue-600" />
                 </div>
-                <Users className="w-8 h-8 " />
+                <div>
+                  <p className="text-sm text-gray-600">Total</p>
+                  <p className="text-2xl font-bold text-gray-900">{statistics.total}</p>
+                </div>
               </div>
             </div>
             
-            <div className="rounded-lg shadow-sm p-4 bg-green-500">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium ">Checked In</p>
-                  <p className="text-2xl font-bold">{statistics.checkedIn}</p>
+            <div className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-green-100 rounded-lg p-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
                 </div>
-                <CheckCircle className="w-8 h-8 " />
+                <div>
+                  <p className="text-sm text-gray-600">Checked In</p>
+                  <p className="text-2xl font-bold text-gray-900">{statistics.checkedIn}</p>
+                </div>
               </div>
             </div>
             
-            <div className="rounded-lg shadow-sm p-4 bg-yellow-500">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium ">Pending</p>
-                  <p className="text-2xl font-bold">{statistics.pending}</p>
+            <div className="bg-white rounded-lg shadow-sm border p-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-amber-100 rounded-lg p-2">
+                  <Clock className="w-5 h-5 text-amber-600" />
                 </div>
-                <Loader2 className="w-8 h-8 " />
+                <div>
+                  <p className="text-sm text-gray-600">Pending</p>
+                  <p className="text-2xl font-bold text-gray-900">{statistics.pending}</p>
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Filter Section */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Filters</h2>
-            {selectedEvent && (
-              <Button
-                onClick={handleRefresh}
-                disabled={isRefreshing || isLoadingAttendees}
-                size="sm"
-                variant="outline"
-                className="gap-2"
-              >
-                <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-                {isRefreshing ? 'Refreshing...' : 'Refresh'}
-              </Button>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Event Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Event
-              </label>
+        {/* Filters */}
+        <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-2">
               <select
                 value={selectedEvent}
                 onChange={(e) => handleEventChange(e.target.value)}
                 disabled={isLoadingEvents}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">
-                  {isLoadingEvents ? 'Loading events...' : 'Select an Event'}
-                </option>
+                <option value="">{isLoadingEvents ? 'Loading...' : 'Select Event'}</option>
                 {events.map(event => (
                   <option key={event._id} value={event.eventTitle}>
                     {event.eventTitle}
@@ -387,162 +545,210 @@ function EventCheckInPortal() {
               </select>
             </div>
 
-            {/* Archdeaconry Selection */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Archdeaconry
-              </label>
               <select
                 value={selectedArchdeaconry}
                 onChange={(e) => setSelectedArchdeaconry(e.target.value)}
                 disabled={!selectedEvent || isLoadingAttendees}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               >
                 <option value="">All Archdeaconries</option>
                 {Archdeaconries.map(arch => (
-                  <option key={arch} value={arch}>
-                    {arch}
-                  </option>
+                  <option key={arch} value={arch}>{arch}</option>
                 ))}
               </select>
             </div>
 
-            {/* Search Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Search
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="ID, name, or email"
-                  disabled={!selectedEvent || isLoadingAttendees}
-                  className="w-full px-4 py-2.5 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-                <Search className="absolute right-3 top-3 text-gray-400" size={20} />
-              </div>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search..."
+                disabled={!selectedEvent || isLoadingAttendees}
+                className="w-full px-3 py-2 pr-9 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+              />
+              <Search className="absolute right-3 top-2.5 text-gray-400" size={18} />
             </div>
           </div>
 
-          {/* Results Summary */}
-          {selectedEvent && !isLoadingAttendees && (
-            <div className="mt-4 flex items-center justify-between text-sm">
-              <span className="text-gray-600">
-                Showing <span className="font-semibold">{filteredAttendees.length}</span> of{' '}
-                <span className="font-semibold">{attendees.length}</span> attendees
-              </span>
-              {selectedAttendees.length > 0 && (
+          {selectedEvent && (
+            <div className="flex items-center justify-between mt-4 pt-4 border-t">
+              <div className="flex items-center gap-3">
+                <Checkbox
+                  checked={allCurrentPageSelected}
+                  onCheckedChange={handleSelectAll}
+                  disabled={currentAttendees.length === 0}
+                />
+                <div className="flex flex-col">
+                  <span className="text-sm text-gray-600">
+                    {filteredAttendees.length} attendees
+                  </span>
+                  {lastRefreshTime && (
+                    <span className="text-xs text-gray-400">
+                      Last updated: {lastRefreshTime.toLocaleTimeString()}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {selectedAttendees.length > 0 && (
+                  <>
+                    <Button
+                      onClick={handleBulkCheckIn}
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <Check className="w-4 h-4 mr-1" />
+                      Check In ({selectedAttendees.length})
+                    </Button>
+                    <Button
+                      onClick={handleBulkUnCheck}
+                      size="sm"
+                      variant="outline"
+                      className="border-red-200 text-red-600 hover:bg-red-50"
+                    >
+                      <X className="w-4 h-4 mr-1" />
+                      Undo ({selectedAttendees.length})
+                    </Button>
+                  </>
+                )}
                 <Button
-                  onClick={handleBulkCheckIn}
+                  onClick={handleRefresh}
+                  disabled={isRefreshing}
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700"
+                  variant="outline"
+                  title="Refresh attendee list (10s cooldown)"
                 >
-                  <Check className="w-4 h-4 mr-2" />
-                  Check In Selected ({selectedAttendees.length})
+                  <RefreshCw className={`w-4 h-4 mr-1.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  Refresh
                 </Button>
-              )}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-gray-50">
-                  <TableHead className="w-12">
-                    <Checkbox
-                      checked={allCurrentPageSelected}
-                      onCheckedChange={handleSelectAll}
-                      disabled={currentAttendees.length === 0}
-                    />
-                  </TableHead>
-                  <TableHead className="font-semibold">Full Name</TableHead>
-                  <TableHead className="font-semibold">Email</TableHead>
-                  <TableHead className="font-semibold">Payment Date</TableHead>
-                  <TableHead className="font-semibold">Payment Status</TableHead>
-                  <TableHead className="font-semibold">Action</TableHead>
-                </TableRow>
-              </TableHeader>
+        {/* Attendee Cards */}
+        <div className="bg-white rounded-lg shadow-sm border">
+          <ScrollArea className="lg:h-[600px] h-[400px] p-4">
+            {isLoadingAttendees ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3 text-blue-500" />
+                  <span className="text-gray-600">Loading attendees...</span>
+                </div>
+              </div>
+            ) : currentAttendees.length === 0 ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <Users className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                  <p className="text-gray-900 font-medium mb-1">
+                    {selectedEvent ? "No attendees found" : "Select an event"}
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {selectedEvent ? "Try adjusting your filters" : "Choose an event to view attendees"}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {displayedAttendees.map((attendee, index) => {
+                  const isProcessing = processingCheckIns.has(attendee.userId);
+                  const isCheckedIn = attendee.eventDetails?.checkedInStatus;
+                  
+                  return (
+                    <div
+                      key={attendee.userId}
+                      className={`relative border rounded-lg p-4 transition-all animate-fadeIn ${
+                        isCheckedIn 
+                          ? 'bg-green-50 border-green-200' 
+                          : 'bg-white hover:shadow-md'
+                      }`}
+                      style={{
+                        animationDelay: `${index * 30}ms`,
+                        opacity: 0,
+                        animation: `fadeIn 0.3s ease-in forwards ${index * 30}ms`
+                      }}
+                    >
+                      {/* Checkbox */}
+                      <div className="absolute top-3 left-3">
+                        <Checkbox
+                          checked={selectedAttendees.includes(attendee.userId)}
+                          onCheckedChange={() => handleSelectAttendee(attendee.userId)}
+                          disabled={isProcessing}
+                        />
+                      </div>
 
-              <TableBody>
-                {isLoadingAttendees ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="h-32 text-center">
-                      <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-blue-500" />
-                      <span className="text-gray-600">Loading attendees...</span>
-                    </TableCell>
-                  </TableRow>
-                ) : currentAttendees.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="h-32 text-center text-gray-500">
-                      {selectedEvent 
-                        ? "No attendees found matching your criteria" 
-                        : "Please select an event to view attendees"
-                      }
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  currentAttendees.map((attendee) => {
-                    const isProcessing = processingCheckIns.has(attendee.userId);
-                    const isCheckedIn = attendee.eventDetails?.checkedInStatus;
-                    
-                    return (
-                      <TableRow 
-                        key={attendee.userId}
-                        className={isCheckedIn ? 'bg-green-50' : 'hover:bg-gray-50'}
-                      >
-                        <TableCell>
-                          <Checkbox
-                            checked={selectedAttendees.includes(attendee.userId)}
-                            onCheckedChange={() => handleSelectAttendee(attendee.userId)}
-                            disabled={isProcessing}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col">
-                            <span className="font-medium text-gray-900">{attendee.fullName}</span>
-                            <span className="text-xs text-gray-500">
-                              ID: {attendee.uniqueId}
-                            </span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm text-gray-700">
-                          {attendee.email}
-                        </TableCell>
-                        <TableCell className="text-sm text-gray-700">
-                          {attendee.eventDetails?.paymentTime 
-                            ? new Date(attendee.eventDetails.paymentTime).toLocaleDateString()
-                            : 'N/A'
-                          }
-                        </TableCell>
-                        <TableCell>
+                      {/* Status Badge */}
+                      {isCheckedIn && (
+                        <div className="absolute top-3 right-3">
+                          <CheckCircle className="w-5 h-5 text-green-600" />
+                        </div>
+                      )}
+
+                      {/* Content */}
+                      <div className="mt-6 space-y-3">
+                        {/* Name */}
+                        <div>
+                          <h3 className="font-semibold text-gray-900 truncate">
+                            {attendee.fullName}
+                          </h3>
+                          <p className="text-xs text-gray-500 truncate mt-0.5">
+                            {attendee.uniqueId}
+                          </p>
+                        </div>
+
+                        {/* Email */}
+                        <div className="flex items-start gap-2">
+                          <Mail className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                          <p className="text-sm text-gray-600 truncate">
+                            {attendee.email}
+                          </p>
+                        </div>
+
+                        {/* Payment Date */}
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                          <p className="text-sm text-gray-600">
+                            {attendee.eventDetails?.paymentTime 
+                              ? new Date(attendee.eventDetails.paymentTime).toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric', 
+                                  year: 'numeric' 
+                                })
+                              : '—'
+                            }
+                          </p>
+                        </div>
+
+                        {/* Payment Status */}
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="w-4 h-4 text-gray-400 flex-shrink-0" />
                           <Badge 
                             variant={attendee.eventDetails?.paymentStatus === 'success' ? "default" : "secondary"}
-                            className={
+                            className={`text-xs ${
                               attendee.eventDetails?.paymentStatus === 'success' 
-                                ? 'bg-green-600 hover:bg-green-700 text-white' 
-                                : 'text-white bg-yellow-500 hover:bg-yellow-600'
-                            }
+                                ? 'bg-green-100 text-green-700' 
+                                : 'bg-amber-100 text-amber-700'
+                            }`}
                           >
                             {attendee.eventDetails?.paymentStatus || 'Pending'}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
+                        </div>
+
+                        {/* Action Button */}
+                        <div className="pt-2">
                           {!isCheckedIn ? (
                             <Button
                               onClick={() => handleCheckIn(attendee.userId)}
                               size="sm"
                               disabled={isProcessing}
-                              className="bg-green-600 hover:bg-green-700"
+                              className="w-full bg-green-600 hover:bg-green-700"
                             >
                               {isProcessing ? (
-                                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                                <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
                               ) : (
-                                <Check className="w-4 h-4 mr-1" />
+                                <Check className="w-4 h-4 mr-1.5" />
                               )}
                               Check In
                             </Button>
@@ -551,28 +757,29 @@ function EventCheckInPortal() {
                               onClick={() => handleUnCheck(attendee.userId)}
                               size="sm"
                               disabled={isProcessing}
-                              variant="destructive"
+                              variant="outline"
+                              className="w-full border-red-200 text-red-600 hover:bg-red-50"
                             >
                               {isProcessing ? (
-                                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                                <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
                               ) : (
-                                <X className="w-4 h-4 mr-1" />
+                                <X className="w-4 h-4 mr-1.5" />
                               )}
-                              Un-Check
+                              Undo
                             </Button>
                           )}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </ScrollArea>
 
           {/* Pagination */}
           {totalPages > 1 && !isLoadingAttendees && (
-            <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50">
+            <div className="flex items-center justify-between px-6 py-4 border-t">
               <Button
                 variant="outline"
                 size="sm"
@@ -583,12 +790,9 @@ function EventCheckInPortal() {
                 Previous
               </Button>
 
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  Page <span className="font-semibold">{currentPage}</span> of{' '}
-                  <span className="font-semibold">{totalPages}</span>
-                </span>
-              </div>
+              <span className="text-sm text-gray-600">
+                Page {currentPage} of {totalPages}
+              </span>
 
               <Button
                 variant="outline"
