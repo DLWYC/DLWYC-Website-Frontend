@@ -107,13 +107,13 @@ As your Diocesan Chaplain, it is my prayer that through this space, you will be 
       <div className="bg-[#eae7fd94] lg:flex flex-col justify-center space-y-5 lg:p-[50px] p-[30px]">
         <div className="lg:p-[40px] lg:m-0 mt-7 text-center">
           <p className="font-style text-yellow lg:text-[45px] text-[29px] p-0">
-            2024 Diocesan Theme
+            2025 Diocesan Theme
           </p>
           <h1 className="font-header lg:text-[40px] text-[30px] text-primary-main">
-            Fight the good fight of faith
+            BE A BEACON OF LIGHT
           </h1>
           <p className="font-san text-[18px] text-reddish font-medium">
-            1 Timothy 6:12
+            Ephesians 4:26
           </p>
         </div>
         {/* Stats */}
