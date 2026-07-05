@@ -1,34 +1,63 @@
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { AuthProvider } from '@/lib/AuthContext'
-import App from './App'
-import './styles.css'
-import reportWebVitals from './reportWebVitals.ts'
+// import React from 'react'
+// import ReactDOM from 'react-dom/client'
+// import { RouterProvider, createRouter } from '@tanstack/react-router'
+// import { routeTree } from './routeTree.gen' // Generated automatically by the compiler plugin!
+// import './index.css'
 
-// Create QueryClient at the top level
-const queryClient = new QueryClient({
+// // Set up the high-performance routing router instance
+// const router = createRouter({ routeTree })
+
+// // Register the router instance for strict type safety autocomplete
+// declare module '@tanstack/react-router' {
+//   interface Register {
+//     router: typeof router
+//   }
+// }
+
+// ReactDOM.createRoot(document.getElementById('root')!).render(
+//   <React.StrictMode>
+//     <RouterProvider router={router} />
+//   </React.StrictMode>,
+// )
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"; // 🟢 Add this line
+import { routeTree } from "./routeTree.gen";
+import "./index.css";
+
+// 1. 🟢 Create and EXPORT the global query engine
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,
+      // Prevents automatic background refetching when users change browser tabs
+      refetchOnWindowFocus: false,
+      // Retries failed requests only once before throwing an error, instead of 3 times
       retry: 1,
     },
   },
-})
+});
 
-// Render the app
-const rootElement = document.getElementById('app')
-if (rootElement && !rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-  root.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </QueryClientProvider>
-    </StrictMode>,
-  )
+// 2. 🟢 Create and EXPORT the global routing engine
+export const router = createRouter({
+  routeTree,
+  context: {
+    queryClient, // Makes the query engine accessible inside your router context
+  },
+});
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
 }
 
-reportWebVitals()
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    {/* 3. 🟢 Wrap your application with the Query Provider */}
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} context={{ queryClient }} />
+    </QueryClientProvider>
+  </React.StrictMode>,
+);
