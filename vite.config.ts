@@ -1,24 +1,21 @@
-import { resolve, dirname } from 'node:path'
-import { defineConfig } from 'vite'
-import viteReact from '@vitejs/plugin-react'
-import tailwindcss from '@tailwindcss/vite'
+import { defineConfig } from "vite";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
+import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import tailwindcss from "@tailwindcss/vite";
+import babel from "@rolldown/plugin-babel";
+import path from "path"
 
-import { TanStackRouterVite } from '@tanstack/router-plugin/vite'
-import { fileURLToPath } from 'node:url'
-
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [
     TanStackRouterVite({ autoCodeSplitting: true }),
-    viteReact(),
+    react(),
     tailwindcss(),
+    babel({ presets: [reactCompilerPreset()] }),
   ],
   resolve: {
     alias: {
-      '@': resolve(dirname(fileURLToPath(import.meta.url)), './src'),
-    },
-  },
-  build: {
-    chunkSizeWarningLimit: 1000, // Increase from default 500
-  },
-})
+      "@": path.resolve(__dirname, "./src")
+    }
+  }
+});

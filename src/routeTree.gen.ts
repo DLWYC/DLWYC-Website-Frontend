@@ -8,383 +8,158 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from './routes/__root'
-import { Route as UsersignupRouteImport } from './routes/usersignup'
-import { Route as UserloginRouteImport } from './routes/userlogin'
-import { Route as UserdashboardRouteImport } from './routes/userdashboard'
-import { Route as SuperadminRouteImport } from './routes/superadmin'
-import { Route as RegistrationunitRouteImport } from './routes/registrationunit'
-import { Route as GalleryRouteImport } from './routes/gallery'
-import { Route as ForgotPasswordRouteImport } from './routes/forgotPassword'
-import { Route as AdminLoginRouteImport } from './routes/adminLogin'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as UserdashboardIndexRouteImport } from './routes/userdashboard/index'
-import { Route as SuperadminIndexRouteImport } from './routes/superadmin/index'
-import { Route as RegistrationunitIndexRouteImport } from './routes/registrationunit/index'
-import { Route as EventsIndexRouteImport } from './routes/events/index'
-import { Route as AboutIndexRouteImport } from './routes/about/index'
-import { Route as UserdashboardProfileRouteImport } from './routes/userdashboard/profile'
-import { Route as UserdashboardPaymentsRouteImport } from './routes/userdashboard/payments'
-import { Route as UserdashboardHostelallocationRouteImport } from './routes/userdashboard/hostelallocation'
-import { Route as UserdashboardEventhistoryRouteImport } from './routes/userdashboard/eventhistory'
-import { Route as SuperadminEventsRouteImport } from './routes/superadmin/events'
-import { Route as EventsIdRouteImport } from './routes/events/$id'
-import { Route as AboutChaplainsRouteImport } from './routes/about/chaplains'
-import { Route as AboutChairmansRouteImport } from './routes/about/chairmans'
-import { Route as UserdashboardEventIndexRouteImport } from './routes/userdashboard/event/index'
-import { Route as UserdashboardEventVerifyPaymentRouteImport } from './routes/userdashboard/event/verifyPayment'
+import { createFileRoute } from '@tanstack/react-router'
 
-const UsersignupRoute = UsersignupRouteImport.update({
-  id: '/usersignup',
-  path: '/usersignup',
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as IndexRouteImport } from './routes/index'
+
+const SignupLazyRouteImport = createFileRoute('/signup')()
+const ResetPasswordLazyRouteImport = createFileRoute('/resetPassword')()
+const ForgotPasswordLazyRouteImport = createFileRoute('/forgotPassword')()
+const DashboardIndexLazyRouteImport = createFileRoute('/dashboard/')()
+
+const SignupLazyRoute = SignupLazyRouteImport.update({
+  id: '/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
-} as any)
-const UserloginRoute = UserloginRouteImport.update({
-  id: '/userlogin',
-  path: '/userlogin',
+} as any).lazy(() => import('./routes/signup.lazy').then((d) => d.Route))
+const ResetPasswordLazyRoute = ResetPasswordLazyRouteImport.update({
+  id: '/resetPassword',
+  path: '/resetPassword',
   getParentRoute: () => rootRouteImport,
-} as any)
-const UserdashboardRoute = UserdashboardRouteImport.update({
-  id: '/userdashboard',
-  path: '/userdashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SuperadminRoute = SuperadminRouteImport.update({
-  id: '/superadmin',
-  path: '/superadmin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RegistrationunitRoute = RegistrationunitRouteImport.update({
-  id: '/registrationunit',
-  path: '/registrationunit',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GalleryRoute = GalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+} as any).lazy(() => import('./routes/resetPassword.lazy').then((d) => d.Route))
+const ForgotPasswordLazyRoute = ForgotPasswordLazyRouteImport.update({
   id: '/forgotPassword',
   path: '/forgotPassword',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/adminLogin',
-  path: '/adminLogin',
+} as any).lazy(() =>
+  import('./routes/forgotPassword.lazy').then((d) => d.Route),
+)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/dashboard.lazy').then((d) => d.Route))
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const UserdashboardIndexRoute = UserdashboardIndexRouteImport.update({
+const DashboardIndexLazyRoute = DashboardIndexLazyRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => UserdashboardRoute,
-} as any)
-const SuperadminIndexRoute = SuperadminIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => SuperadminRoute,
-} as any)
-const RegistrationunitIndexRoute = RegistrationunitIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => RegistrationunitRoute,
-} as any)
-const EventsIndexRoute = EventsIndexRouteImport.update({
-  id: '/events/',
-  path: '/events/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutIndexRoute = AboutIndexRouteImport.update({
-  id: '/about/',
-  path: '/about/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserdashboardProfileRoute = UserdashboardProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => UserdashboardRoute,
-} as any)
-const UserdashboardPaymentsRoute = UserdashboardPaymentsRouteImport.update({
-  id: '/payments',
-  path: '/payments',
-  getParentRoute: () => UserdashboardRoute,
-} as any)
-const UserdashboardHostelallocationRoute =
-  UserdashboardHostelallocationRouteImport.update({
-    id: '/hostelallocation',
-    path: '/hostelallocation',
-    getParentRoute: () => UserdashboardRoute,
-  } as any)
-const UserdashboardEventhistoryRoute =
-  UserdashboardEventhistoryRouteImport.update({
-    id: '/eventhistory',
-    path: '/eventhistory',
-    getParentRoute: () => UserdashboardRoute,
-  } as any)
-const SuperadminEventsRoute = SuperadminEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => SuperadminRoute,
-} as any)
-const EventsIdRoute = EventsIdRouteImport.update({
-  id: '/events/$id',
-  path: '/events/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutChaplainsRoute = AboutChaplainsRouteImport.update({
-  id: '/about/chaplains',
-  path: '/about/chaplains',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutChairmansRoute = AboutChairmansRouteImport.update({
-  id: '/about/chairmans',
-  path: '/about/chairmans',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const UserdashboardEventIndexRoute = UserdashboardEventIndexRouteImport.update({
-  id: '/event/',
-  path: '/event/',
-  getParentRoute: () => UserdashboardRoute,
-} as any)
-const UserdashboardEventVerifyPaymentRoute =
-  UserdashboardEventVerifyPaymentRouteImport.update({
-    id: '/event/verifyPayment',
-    path: '/event/verifyPayment',
-    getParentRoute: () => UserdashboardRoute,
-  } as any)
+  getParentRoute: () => DashboardRoute,
+} as any).lazy(() =>
+  import('./routes/dashboard/index.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/adminLogin': typeof AdminLoginRoute
-  '/forgotPassword': typeof ForgotPasswordRoute
-  '/gallery': typeof GalleryRoute
-  '/registrationunit': typeof RegistrationunitRouteWithChildren
-  '/superadmin': typeof SuperadminRouteWithChildren
-  '/userdashboard': typeof UserdashboardRouteWithChildren
-  '/userlogin': typeof UserloginRoute
-  '/usersignup': typeof UsersignupRoute
-  '/about/chairmans': typeof AboutChairmansRoute
-  '/about/chaplains': typeof AboutChaplainsRoute
-  '/events/$id': typeof EventsIdRoute
-  '/superadmin/events': typeof SuperadminEventsRoute
-  '/userdashboard/eventhistory': typeof UserdashboardEventhistoryRoute
-  '/userdashboard/hostelallocation': typeof UserdashboardHostelallocationRoute
-  '/userdashboard/payments': typeof UserdashboardPaymentsRoute
-  '/userdashboard/profile': typeof UserdashboardProfileRoute
-  '/about': typeof AboutIndexRoute
-  '/events': typeof EventsIndexRoute
-  '/registrationunit/': typeof RegistrationunitIndexRoute
-  '/superadmin/': typeof SuperadminIndexRoute
-  '/userdashboard/': typeof UserdashboardIndexRoute
-  '/userdashboard/event/verifyPayment': typeof UserdashboardEventVerifyPaymentRoute
-  '/userdashboard/event': typeof UserdashboardEventIndexRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/login': typeof LoginRoute
+  '/forgotPassword': typeof ForgotPasswordLazyRoute
+  '/resetPassword': typeof ResetPasswordLazyRoute
+  '/signup': typeof SignupLazyRoute
+  '/dashboard/': typeof DashboardIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/adminLogin': typeof AdminLoginRoute
-  '/forgotPassword': typeof ForgotPasswordRoute
-  '/gallery': typeof GalleryRoute
-  '/userlogin': typeof UserloginRoute
-  '/usersignup': typeof UsersignupRoute
-  '/about/chairmans': typeof AboutChairmansRoute
-  '/about/chaplains': typeof AboutChaplainsRoute
-  '/events/$id': typeof EventsIdRoute
-  '/superadmin/events': typeof SuperadminEventsRoute
-  '/userdashboard/eventhistory': typeof UserdashboardEventhistoryRoute
-  '/userdashboard/hostelallocation': typeof UserdashboardHostelallocationRoute
-  '/userdashboard/payments': typeof UserdashboardPaymentsRoute
-  '/userdashboard/profile': typeof UserdashboardProfileRoute
-  '/about': typeof AboutIndexRoute
-  '/events': typeof EventsIndexRoute
-  '/registrationunit': typeof RegistrationunitIndexRoute
-  '/superadmin': typeof SuperadminIndexRoute
-  '/userdashboard': typeof UserdashboardIndexRoute
-  '/userdashboard/event/verifyPayment': typeof UserdashboardEventVerifyPaymentRoute
-  '/userdashboard/event': typeof UserdashboardEventIndexRoute
+  '/login': typeof LoginRoute
+  '/forgotPassword': typeof ForgotPasswordLazyRoute
+  '/resetPassword': typeof ResetPasswordLazyRoute
+  '/signup': typeof SignupLazyRoute
+  '/dashboard': typeof DashboardIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/adminLogin': typeof AdminLoginRoute
-  '/forgotPassword': typeof ForgotPasswordRoute
-  '/gallery': typeof GalleryRoute
-  '/registrationunit': typeof RegistrationunitRouteWithChildren
-  '/superadmin': typeof SuperadminRouteWithChildren
-  '/userdashboard': typeof UserdashboardRouteWithChildren
-  '/userlogin': typeof UserloginRoute
-  '/usersignup': typeof UsersignupRoute
-  '/about/chairmans': typeof AboutChairmansRoute
-  '/about/chaplains': typeof AboutChaplainsRoute
-  '/events/$id': typeof EventsIdRoute
-  '/superadmin/events': typeof SuperadminEventsRoute
-  '/userdashboard/eventhistory': typeof UserdashboardEventhistoryRoute
-  '/userdashboard/hostelallocation': typeof UserdashboardHostelallocationRoute
-  '/userdashboard/payments': typeof UserdashboardPaymentsRoute
-  '/userdashboard/profile': typeof UserdashboardProfileRoute
-  '/about/': typeof AboutIndexRoute
-  '/events/': typeof EventsIndexRoute
-  '/registrationunit/': typeof RegistrationunitIndexRoute
-  '/superadmin/': typeof SuperadminIndexRoute
-  '/userdashboard/': typeof UserdashboardIndexRoute
-  '/userdashboard/event/verifyPayment': typeof UserdashboardEventVerifyPaymentRoute
-  '/userdashboard/event/': typeof UserdashboardEventIndexRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/login': typeof LoginRoute
+  '/forgotPassword': typeof ForgotPasswordLazyRoute
+  '/resetPassword': typeof ResetPasswordLazyRoute
+  '/signup': typeof SignupLazyRoute
+  '/dashboard/': typeof DashboardIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/adminLogin'
+    | '/dashboard'
+    | '/login'
     | '/forgotPassword'
-    | '/gallery'
-    | '/registrationunit'
-    | '/superadmin'
-    | '/userdashboard'
-    | '/userlogin'
-    | '/usersignup'
-    | '/about/chairmans'
-    | '/about/chaplains'
-    | '/events/$id'
-    | '/superadmin/events'
-    | '/userdashboard/eventhistory'
-    | '/userdashboard/hostelallocation'
-    | '/userdashboard/payments'
-    | '/userdashboard/profile'
-    | '/about'
-    | '/events'
-    | '/registrationunit/'
-    | '/superadmin/'
-    | '/userdashboard/'
-    | '/userdashboard/event/verifyPayment'
-    | '/userdashboard/event'
+    | '/resetPassword'
+    | '/signup'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/adminLogin'
+    | '/login'
     | '/forgotPassword'
-    | '/gallery'
-    | '/userlogin'
-    | '/usersignup'
-    | '/about/chairmans'
-    | '/about/chaplains'
-    | '/events/$id'
-    | '/superadmin/events'
-    | '/userdashboard/eventhistory'
-    | '/userdashboard/hostelallocation'
-    | '/userdashboard/payments'
-    | '/userdashboard/profile'
-    | '/about'
-    | '/events'
-    | '/registrationunit'
-    | '/superadmin'
-    | '/userdashboard'
-    | '/userdashboard/event/verifyPayment'
-    | '/userdashboard/event'
+    | '/resetPassword'
+    | '/signup'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
-    | '/adminLogin'
+    | '/dashboard'
+    | '/login'
     | '/forgotPassword'
-    | '/gallery'
-    | '/registrationunit'
-    | '/superadmin'
-    | '/userdashboard'
-    | '/userlogin'
-    | '/usersignup'
-    | '/about/chairmans'
-    | '/about/chaplains'
-    | '/events/$id'
-    | '/superadmin/events'
-    | '/userdashboard/eventhistory'
-    | '/userdashboard/hostelallocation'
-    | '/userdashboard/payments'
-    | '/userdashboard/profile'
-    | '/about/'
-    | '/events/'
-    | '/registrationunit/'
-    | '/superadmin/'
-    | '/userdashboard/'
-    | '/userdashboard/event/verifyPayment'
-    | '/userdashboard/event/'
+    | '/resetPassword'
+    | '/signup'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminLoginRoute: typeof AdminLoginRoute
-  ForgotPasswordRoute: typeof ForgotPasswordRoute
-  GalleryRoute: typeof GalleryRoute
-  RegistrationunitRoute: typeof RegistrationunitRouteWithChildren
-  SuperadminRoute: typeof SuperadminRouteWithChildren
-  UserdashboardRoute: typeof UserdashboardRouteWithChildren
-  UserloginRoute: typeof UserloginRoute
-  UsersignupRoute: typeof UsersignupRoute
-  AboutChairmansRoute: typeof AboutChairmansRoute
-  AboutChaplainsRoute: typeof AboutChaplainsRoute
-  EventsIdRoute: typeof EventsIdRoute
-  AboutIndexRoute: typeof AboutIndexRoute
-  EventsIndexRoute: typeof EventsIndexRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  ForgotPasswordLazyRoute: typeof ForgotPasswordLazyRoute
+  ResetPasswordLazyRoute: typeof ResetPasswordLazyRoute
+  SignupLazyRoute: typeof SignupLazyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/usersignup': {
-      id: '/usersignup'
-      path: '/usersignup'
-      fullPath: '/usersignup'
-      preLoaderRoute: typeof UsersignupRouteImport
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/userlogin': {
-      id: '/userlogin'
-      path: '/userlogin'
-      fullPath: '/userlogin'
-      preLoaderRoute: typeof UserloginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/userdashboard': {
-      id: '/userdashboard'
-      path: '/userdashboard'
-      fullPath: '/userdashboard'
-      preLoaderRoute: typeof UserdashboardRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/superadmin': {
-      id: '/superadmin'
-      path: '/superadmin'
-      fullPath: '/superadmin'
-      preLoaderRoute: typeof SuperadminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/registrationunit': {
-      id: '/registrationunit'
-      path: '/registrationunit'
-      fullPath: '/registrationunit'
-      preLoaderRoute: typeof RegistrationunitRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gallery': {
-      id: '/gallery'
-      path: '/gallery'
-      fullPath: '/gallery'
-      preLoaderRoute: typeof GalleryRouteImport
+    '/resetPassword': {
+      id: '/resetPassword'
+      path: '/resetPassword'
+      fullPath: '/resetPassword'
+      preLoaderRoute: typeof ResetPasswordLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgotPassword': {
       id: '/forgotPassword'
       path: '/forgotPassword'
       fullPath: '/forgotPassword'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
+      preLoaderRoute: typeof ForgotPasswordLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/adminLogin': {
-      id: '/adminLogin'
-      path: '/adminLogin'
-      fullPath: '/adminLogin'
-      preLoaderRoute: typeof AdminLoginRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -394,178 +169,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/userdashboard/': {
-      id: '/userdashboard/'
+    '/dashboard/': {
+      id: '/dashboard/'
       path: '/'
-      fullPath: '/userdashboard/'
-      preLoaderRoute: typeof UserdashboardIndexRouteImport
-      parentRoute: typeof UserdashboardRoute
-    }
-    '/superadmin/': {
-      id: '/superadmin/'
-      path: '/'
-      fullPath: '/superadmin/'
-      preLoaderRoute: typeof SuperadminIndexRouteImport
-      parentRoute: typeof SuperadminRoute
-    }
-    '/registrationunit/': {
-      id: '/registrationunit/'
-      path: '/'
-      fullPath: '/registrationunit/'
-      preLoaderRoute: typeof RegistrationunitIndexRouteImport
-      parentRoute: typeof RegistrationunitRoute
-    }
-    '/events/': {
-      id: '/events/'
-      path: '/events'
-      fullPath: '/events'
-      preLoaderRoute: typeof EventsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about/': {
-      id: '/about/'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/userdashboard/profile': {
-      id: '/userdashboard/profile'
-      path: '/profile'
-      fullPath: '/userdashboard/profile'
-      preLoaderRoute: typeof UserdashboardProfileRouteImport
-      parentRoute: typeof UserdashboardRoute
-    }
-    '/userdashboard/payments': {
-      id: '/userdashboard/payments'
-      path: '/payments'
-      fullPath: '/userdashboard/payments'
-      preLoaderRoute: typeof UserdashboardPaymentsRouteImport
-      parentRoute: typeof UserdashboardRoute
-    }
-    '/userdashboard/hostelallocation': {
-      id: '/userdashboard/hostelallocation'
-      path: '/hostelallocation'
-      fullPath: '/userdashboard/hostelallocation'
-      preLoaderRoute: typeof UserdashboardHostelallocationRouteImport
-      parentRoute: typeof UserdashboardRoute
-    }
-    '/userdashboard/eventhistory': {
-      id: '/userdashboard/eventhistory'
-      path: '/eventhistory'
-      fullPath: '/userdashboard/eventhistory'
-      preLoaderRoute: typeof UserdashboardEventhistoryRouteImport
-      parentRoute: typeof UserdashboardRoute
-    }
-    '/superadmin/events': {
-      id: '/superadmin/events'
-      path: '/events'
-      fullPath: '/superadmin/events'
-      preLoaderRoute: typeof SuperadminEventsRouteImport
-      parentRoute: typeof SuperadminRoute
-    }
-    '/events/$id': {
-      id: '/events/$id'
-      path: '/events/$id'
-      fullPath: '/events/$id'
-      preLoaderRoute: typeof EventsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about/chaplains': {
-      id: '/about/chaplains'
-      path: '/about/chaplains'
-      fullPath: '/about/chaplains'
-      preLoaderRoute: typeof AboutChaplainsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about/chairmans': {
-      id: '/about/chairmans'
-      path: '/about/chairmans'
-      fullPath: '/about/chairmans'
-      preLoaderRoute: typeof AboutChairmansRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/userdashboard/event/': {
-      id: '/userdashboard/event/'
-      path: '/event'
-      fullPath: '/userdashboard/event'
-      preLoaderRoute: typeof UserdashboardEventIndexRouteImport
-      parentRoute: typeof UserdashboardRoute
-    }
-    '/userdashboard/event/verifyPayment': {
-      id: '/userdashboard/event/verifyPayment'
-      path: '/event/verifyPayment'
-      fullPath: '/userdashboard/event/verifyPayment'
-      preLoaderRoute: typeof UserdashboardEventVerifyPaymentRouteImport
-      parentRoute: typeof UserdashboardRoute
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexLazyRouteImport
+      parentRoute: typeof DashboardRoute
     }
   }
 }
 
-interface RegistrationunitRouteChildren {
-  RegistrationunitIndexRoute: typeof RegistrationunitIndexRoute
+interface DashboardRouteChildren {
+  DashboardIndexLazyRoute: typeof DashboardIndexLazyRoute
 }
 
-const RegistrationunitRouteChildren: RegistrationunitRouteChildren = {
-  RegistrationunitIndexRoute: RegistrationunitIndexRoute,
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardIndexLazyRoute: DashboardIndexLazyRoute,
 }
 
-const RegistrationunitRouteWithChildren =
-  RegistrationunitRoute._addFileChildren(RegistrationunitRouteChildren)
-
-interface SuperadminRouteChildren {
-  SuperadminEventsRoute: typeof SuperadminEventsRoute
-  SuperadminIndexRoute: typeof SuperadminIndexRoute
-}
-
-const SuperadminRouteChildren: SuperadminRouteChildren = {
-  SuperadminEventsRoute: SuperadminEventsRoute,
-  SuperadminIndexRoute: SuperadminIndexRoute,
-}
-
-const SuperadminRouteWithChildren = SuperadminRoute._addFileChildren(
-  SuperadminRouteChildren,
-)
-
-interface UserdashboardRouteChildren {
-  UserdashboardEventhistoryRoute: typeof UserdashboardEventhistoryRoute
-  UserdashboardHostelallocationRoute: typeof UserdashboardHostelallocationRoute
-  UserdashboardPaymentsRoute: typeof UserdashboardPaymentsRoute
-  UserdashboardProfileRoute: typeof UserdashboardProfileRoute
-  UserdashboardIndexRoute: typeof UserdashboardIndexRoute
-  UserdashboardEventVerifyPaymentRoute: typeof UserdashboardEventVerifyPaymentRoute
-  UserdashboardEventIndexRoute: typeof UserdashboardEventIndexRoute
-}
-
-const UserdashboardRouteChildren: UserdashboardRouteChildren = {
-  UserdashboardEventhistoryRoute: UserdashboardEventhistoryRoute,
-  UserdashboardHostelallocationRoute: UserdashboardHostelallocationRoute,
-  UserdashboardPaymentsRoute: UserdashboardPaymentsRoute,
-  UserdashboardProfileRoute: UserdashboardProfileRoute,
-  UserdashboardIndexRoute: UserdashboardIndexRoute,
-  UserdashboardEventVerifyPaymentRoute: UserdashboardEventVerifyPaymentRoute,
-  UserdashboardEventIndexRoute: UserdashboardEventIndexRoute,
-}
-
-const UserdashboardRouteWithChildren = UserdashboardRoute._addFileChildren(
-  UserdashboardRouteChildren,
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
 )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminLoginRoute: AdminLoginRoute,
-  ForgotPasswordRoute: ForgotPasswordRoute,
-  GalleryRoute: GalleryRoute,
-  RegistrationunitRoute: RegistrationunitRouteWithChildren,
-  SuperadminRoute: SuperadminRouteWithChildren,
-  UserdashboardRoute: UserdashboardRouteWithChildren,
-  UserloginRoute: UserloginRoute,
-  UsersignupRoute: UsersignupRoute,
-  AboutChairmansRoute: AboutChairmansRoute,
-  AboutChaplainsRoute: AboutChaplainsRoute,
-  EventsIdRoute: EventsIdRoute,
-  AboutIndexRoute: AboutIndexRoute,
-  EventsIndexRoute: EventsIndexRoute,
+  DashboardRoute: DashboardRouteWithChildren,
+  LoginRoute: LoginRoute,
+  ForgotPasswordLazyRoute: ForgotPasswordLazyRoute,
+  ResetPasswordLazyRoute: ResetPasswordLazyRoute,
+  SignupLazyRoute: SignupLazyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
