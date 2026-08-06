@@ -33,7 +33,7 @@ export const NavItems: NavItem[] = [
   },
   {
     title: "Events",
-    url: "/events",
+    url: "/dashboard/events",
     icon: CalendarDays,
   },
   {

@@ -1,13 +1,7 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
 import Male from "@/assets/male.png";
 import Female from "@/assets/female.png";
-import {
-  BellIcon,
-  CalendarDays,
-  ClockIcon,
-  LibraryBig,
-  MapPin,
-} from "lucide-react";
+import { BellIcon, CalendarDays, LibraryBig } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRightIcon } from "lucide-react";
 import {
@@ -17,13 +11,12 @@ import {
   ItemDescription,
   ItemTitle,
 } from "@/components/ui/item";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
-import { Button } from "@/components/ui/button";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { useGetDashboardStats } from "@/features/dashboard/hooks/useGetDashhboardStats";
-import { Events } from "@/components/Events";
+import { EventCard } from "@/components/Cards/EventCards";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createLazyFileRoute("/dashboard/")({
   component: RouteComponent,
@@ -131,20 +124,19 @@ function RouteComponent() {
             <p className="font-header text-lg font-semibold tracking-tight">
               Latest Events
             </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs text-muted-foreground border cursor-pointer py-1"
+            <Link
+              className="text-xs text-muted-foreground border border-primary-main cursor-pointer py-2 px-4 font-grotesk font-[400]"
+              to={"/dashboard/events"}
             >
               View all
-            </Button>
+            </Link>
           </div>
 
           <Separator className="mb-3" />
 
           <div className="flex flex-col gap-2">
             {data?.latestEvent.map((event: any) => (
-              <Events events={event} />
+              <EventCard events={event} key={event?.eventTitle} />
             ))}
           </div>
         </div>

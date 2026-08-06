@@ -22,7 +22,7 @@ export function useLogin() {
       navigate({ to: '/dashboard' })
     },
     onError: (error: any) => {
-      toast.error(`Login Failed: ${error?.response?.data?.error}`)
+      toast.error(`Login Failed: ${error?.response?.data?.message}`)
     }
   })
 }
