@@ -3,7 +3,7 @@ import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import tailwindcss from "@tailwindcss/vite";
 import babel from "@rolldown/plugin-babel";
-import path from "path"
+import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -11,11 +11,13 @@ export default defineConfig({
     TanStackRouterVite({ autoCodeSplitting: true }),
     react(),
     tailwindcss(),
-    babel({ presets: [reactCompilerPreset()] }),
+    babel({
+      presets: [reactCompilerPreset()],
+    })
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src")
-    }
-  }
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
 });

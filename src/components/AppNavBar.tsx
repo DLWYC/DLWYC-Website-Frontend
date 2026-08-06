@@ -11,9 +11,11 @@ import { Power } from "lucide-react";
 import { userDashboardTopMenu } from "@/data/navLinks";
 import UserProfileImage from "./UserProfileImage";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+import {handleLogout} from "@/config/api"
 
 export function AppNavBar() {
   const {data: user} = useAuthUser()
+
   return (
     <div className="flex justify-between items-center sticky top-0 z-50 w-full bg-[#ffffff] px-1 py-2">
       <SidebarTrigger className="p-0" />
@@ -57,7 +59,7 @@ export function AppNavBar() {
 
               <DropdownMenuSeparator />
               <div className="text-red-500 gap-3 cursor-pointer px-2 py-1.5 text-[15px]">
-                <p className="flex items-center gap-3">
+                <p className="flex items-center gap-3" onClick={()=> handleLogout()}>
                   <Power className="text-red-500 size-4" />
                   Log out
                   {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}

@@ -29,8 +29,9 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    console.log("Original Request", error.config);
 
-      if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       if (originalRequest.url?.includes("/refresh-token")) {
         handleLogout();
         return Promise.reject(error);
@@ -68,7 +69,16 @@ api.interceptors.response.use(
   },
 );
 
-const handleLogout = () => {
+export const handleLogout = async () => {
   // Clear any non-sensitive user profile UI data if necessary
-  localStorage.removeItem("user");
+  try {
+    // 2. Call the backend to clear the cookie (requires withCredentials: true)
+    // We use refreshApi here to bypass our own 'api' interceptor loops
+    await refreshApi.post("/auth/logout");
+  } catch (error) {
+    console.error("Backend logout cookie clearing failed:", error);
+  } finally {
+    // 3. Clean redirect to clear state and reload UI
+    window.location.href = "/login";
+  }
 };
