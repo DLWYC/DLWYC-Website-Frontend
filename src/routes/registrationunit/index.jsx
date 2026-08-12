@@ -1,6 +1,6 @@
-import { createFileRoute, useSearch } from '@tanstack/react-router'
+import { createFileRoute, Link, useSearch } from '@tanstack/react-router'
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar, ScanLine, IdCard, History, Download } from 'lucide-react';
+import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar, ScanLine, IdCard, History, Download, Store } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Archdeaconries, getArchdeaconryCode } from '@/data/Archdeaconries';
 import axios from 'axios';
@@ -782,12 +782,21 @@ function EventCheckInPortal() {
         {/* Header */}
         <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-2xl font-bold text-gray-900">Event Check-In</h1>
-          {selectedEvent && (
-            <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg px-3 py-2">
-              <span className="text-xs uppercase tracking-wide font-semibold">Station</span>
-              <span className="text-sm font-semibold">{selectedEvent}</span>
-            </div>
-          )}
+          <div className="flex items-center gap-3">
+            {selectedEvent && (
+              <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg px-3 py-2">
+                <span className="text-xs uppercase tracking-wide font-semibold">Station</span>
+                <span className="text-sm font-semibold">{selectedEvent}</span>
+              </div>
+            )}
+            <Link
+              to="/registrationunit/stations"
+              className="flex items-center gap-1.5 text-sm text-indigo-600 hover:underline"
+            >
+              <Store className="w-4 h-4" />
+              Stations
+            </Link>
+          </div>
         </div>
 
         {/* Statistics */}

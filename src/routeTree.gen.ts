@@ -28,6 +28,7 @@ import { Route as UserdashboardPaymentsRouteImport } from './routes/userdashboar
 import { Route as UserdashboardHostelallocationRouteImport } from './routes/userdashboard/hostelallocation'
 import { Route as UserdashboardEventhistoryRouteImport } from './routes/userdashboard/eventhistory'
 import { Route as SuperadminEventsRouteImport } from './routes/superadmin/events'
+import { Route as RegistrationunitStationsRouteImport } from './routes/registrationunit/stations'
 import { Route as EventsIdRouteImport } from './routes/events/$id'
 import { Route as AboutChaplainsRouteImport } from './routes/about/chaplains'
 import { Route as AboutChairmansRouteImport } from './routes/about/chairmans'
@@ -131,6 +132,12 @@ const SuperadminEventsRoute = SuperadminEventsRouteImport.update({
   path: '/events',
   getParentRoute: () => SuperadminRoute,
 } as any)
+const RegistrationunitStationsRoute =
+  RegistrationunitStationsRouteImport.update({
+    id: '/stations',
+    path: '/stations',
+    getParentRoute: () => RegistrationunitRoute,
+  } as any)
 const EventsIdRoute = EventsIdRouteImport.update({
   id: '/events/$id',
   path: '/events/$id',
@@ -171,6 +178,7 @@ export interface FileRoutesByFullPath {
   '/about/chairmans': typeof AboutChairmansRoute
   '/about/chaplains': typeof AboutChaplainsRoute
   '/events/$id': typeof EventsIdRoute
+  '/registrationunit/stations': typeof RegistrationunitStationsRoute
   '/superadmin/events': typeof SuperadminEventsRoute
   '/userdashboard/eventhistory': typeof UserdashboardEventhistoryRoute
   '/userdashboard/hostelallocation': typeof UserdashboardHostelallocationRoute
@@ -194,6 +202,7 @@ export interface FileRoutesByTo {
   '/about/chairmans': typeof AboutChairmansRoute
   '/about/chaplains': typeof AboutChaplainsRoute
   '/events/$id': typeof EventsIdRoute
+  '/registrationunit/stations': typeof RegistrationunitStationsRoute
   '/superadmin/events': typeof SuperadminEventsRoute
   '/userdashboard/eventhistory': typeof UserdashboardEventhistoryRoute
   '/userdashboard/hostelallocation': typeof UserdashboardHostelallocationRoute
@@ -221,6 +230,7 @@ export interface FileRoutesById {
   '/about/chairmans': typeof AboutChairmansRoute
   '/about/chaplains': typeof AboutChaplainsRoute
   '/events/$id': typeof EventsIdRoute
+  '/registrationunit/stations': typeof RegistrationunitStationsRoute
   '/superadmin/events': typeof SuperadminEventsRoute
   '/userdashboard/eventhistory': typeof UserdashboardEventhistoryRoute
   '/userdashboard/hostelallocation': typeof UserdashboardHostelallocationRoute
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/about/chairmans'
     | '/about/chaplains'
     | '/events/$id'
+    | '/registrationunit/stations'
     | '/superadmin/events'
     | '/userdashboard/eventhistory'
     | '/userdashboard/hostelallocation'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/about/chairmans'
     | '/about/chaplains'
     | '/events/$id'
+    | '/registrationunit/stations'
     | '/superadmin/events'
     | '/userdashboard/eventhistory'
     | '/userdashboard/hostelallocation'
@@ -298,6 +310,7 @@ export interface FileRouteTypes {
     | '/about/chairmans'
     | '/about/chaplains'
     | '/events/$id'
+    | '/registrationunit/stations'
     | '/superadmin/events'
     | '/userdashboard/eventhistory'
     | '/userdashboard/hostelallocation'
@@ -464,6 +477,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuperadminEventsRouteImport
       parentRoute: typeof SuperadminRoute
     }
+    '/registrationunit/stations': {
+      id: '/registrationunit/stations'
+      path: '/stations'
+      fullPath: '/registrationunit/stations'
+      preLoaderRoute: typeof RegistrationunitStationsRouteImport
+      parentRoute: typeof RegistrationunitRoute
+    }
     '/events/$id': {
       id: '/events/$id'
       path: '/events/$id'
@@ -503,10 +523,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface RegistrationunitRouteChildren {
+  RegistrationunitStationsRoute: typeof RegistrationunitStationsRoute
   RegistrationunitIndexRoute: typeof RegistrationunitIndexRoute
 }
 
 const RegistrationunitRouteChildren: RegistrationunitRouteChildren = {
+  RegistrationunitStationsRoute: RegistrationunitStationsRoute,
   RegistrationunitIndexRoute: RegistrationunitIndexRoute,
 }
 
