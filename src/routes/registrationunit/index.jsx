@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar, ScanLine, IdCard, History } from 'lucide-react';
+import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar, ScanLine, IdCard, History, Download } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Archdeaconries, getArchdeaconryCode } from '@/data/Archdeaconries';
 import axios from 'axios';
@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from "react-toastify";
 import RegistrationUnitTopNav from '@/components/AppTopNav/RegitrationUnitTopNav';
 import { BACKEND_URL } from '@/lib/env';
+import { toCsv, csvCell, downloadCsv } from '@/lib/csv';
 
 // Add fadeIn animation styles
 const styleSheet = document.createElement("style");
@@ -497,6 +498,42 @@ function EventCheckInPortal() {
     return () => clearInterval(id);
   }, [fetchScanLogs]);
 
+  /** Export the recent scan feed (audit trail) as CSV. */
+  const handleExportScanLogs = useCallback(() => {
+    const csv = toCsv(scanLogs, [
+      { key: 'at', label: 'Time' },
+      { key: 'action', label: 'Action' },
+      { key: 'fullName', label: 'Attendee' },
+      { key: 'uid', label: 'Card UID' },
+      { key: 'eventTitle', label: 'Event' },
+      { key: 'message', label: 'Message' },
+    ]);
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
+    downloadCsv(`dlwyc-scan-log-${stamp}.csv`, csv);
+    toast.success(`Exported ${scanLogs.length} scan record(s)`);
+  }, [scanLogs]);
+
+  /** Export the currently-selected event's attendees + check-in status as CSV. */
+  const handleExportCheckInReport = useCallback(() => {
+    if (!selectedEvent) {
+      toast.error('Select an event to export its check-in report');
+      return;
+    }
+    const header = ['Full Name', 'Unique ID', 'Email', 'Card UID', 'Archdeaconry', 'Checked In'];
+    const rows = attendees.map((a) => [
+      a.fullName,
+      a.uniqueId,
+      a.email,
+      a.cardUID || a.rfidTag || '',
+      a.archdeaconry || '',
+      a.eventDetails?.checkedInStatus ? 'Yes' : 'No',
+    ]);
+    const body = rows.map((r) => r.map(csvCell).join(',')).join('\n');
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
+    downloadCsv(`dlwyc-checkin-${(selectedEvent || 'event').replace(/\s+/g, '-')}-${stamp}.csv`, `${header.join(',')}\n${body}\n`);
+    toast.success(`Exported ${attendees.length} attendee(s)`);
+  }, [selectedEvent, attendees]);
+
   // Kiosk mode: keep the scan box focused so operators can tap card after card
   // without clicking the input each time.
   useEffect(() => {
@@ -808,15 +845,27 @@ function EventCheckInPortal() {
                 </p>
               </div>
             </div>
-            <Button
-              onClick={() => fetchScanLogs(true)}
-              size="sm"
-              variant="outline"
-              disabled={isLoadingLogs}
-            >
-              <RefreshCw className={`w-4 h-4 mr-1.5 ${isLoadingLogs ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={handleExportScanLogs}
+                size="sm"
+                variant="outline"
+                disabled={scanLogs.length === 0}
+                title="Download the recent scan feed as a CSV"
+              >
+                <Download className="w-4 h-4 mr-1.5" />
+                Export
+              </Button>
+              <Button
+                onClick={() => fetchScanLogs(true)}
+                size="sm"
+                variant="outline"
+                disabled={isLoadingLogs}
+              >
+                <RefreshCw className={`w-4 h-4 mr-1.5 ${isLoadingLogs ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+            </div>
           </div>
 
           {scanLogs.length === 0 ? (
@@ -954,6 +1003,16 @@ function EventCheckInPortal() {
                     </Button>
                   </>
                 )}
+                <Button
+                  onClick={handleExportCheckInReport}
+                  disabled={!selectedEvent || attendees.length === 0}
+                  size="sm"
+                  variant="outline"
+                  title="Download this event's check-in report as a CSV"
+                >
+                  <Download className="w-4 h-4 mr-1.5" />
+                  Report
+                </Button>
                 <Button
                   onClick={handleRefresh}
                   disabled={isRefreshing}
