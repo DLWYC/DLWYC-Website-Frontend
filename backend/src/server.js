@@ -9,6 +9,7 @@
  */
 import express from 'express';
 import cors from 'cors';
+import os from 'node:os';
 import { load } from './store.js';
 import { seedIfEmpty } from './seed.js';
 import registrationUnitRoutes from './routes/registrationUnit.js';
@@ -23,7 +24,21 @@ load();
 seedIfEmpty();
 
 const app = express();
-app.use(cors());
+
+// CORS: open by default so the web portal AND any network reader (e.g. the
+// Raspberry Pi posting /rfid/scan from another machine) can reach the API.
+// Restrict with CORS_ORIGINS (comma-separated) for production.
+const corsOrigins = (process.env.CORS_ORIGINS || '*')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+app.use(
+  cors({
+    origin: corsOrigins.includes('*') ? true : corsOrigins,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 app.use(express.json({ limit: '2mb' }));
 
 // Simple request logging.
@@ -56,8 +71,17 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ message: 'Internal server error' });
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`\nDLWYC backend listening on http://0.0.0.0:${PORT}`);
-  console.log(`  Registration Unit API : http://localhost:${PORT}/api/registrationUnit`);
-  console.log(`  RFID scan toggle      : POST http://localhost:${PORT}/api/registrationUnit/rfid/scan\n`);
+const host = '0.0.0.0';
+app.listen(PORT, host, () => {
+  // Print the LAN IP so other machines (e.g. a Raspberry Pi reader) can find it.
+  const nets = os.networkInterfaces();
+  const lan = Object.values(nets)
+    .flat()
+    .find((i) => i && i.family === 'IPv4' && !i.internal)?.address || 'localhost';
+
+  console.log(`\nDLWYC backend listening on http://${host}:${PORT}`);
+  console.log(`  Local (this machine): http://localhost:${PORT}/api/registrationUnit`);
+  console.log(`  LAN   (other devices): http://${lan}:${PORT}/api/registrationUnit`);
+  console.log(`  RFID scan toggle     : POST http://${lan}:${PORT}/api/registrationUnit/rfid/scan`);
+  console.log(`  Scan history         : GET  http://${lan}:${PORT}/api/registrationUnit/rfid/logs\n`);
 });

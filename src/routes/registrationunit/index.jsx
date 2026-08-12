@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar, ScanLine, IdCard } from 'lucide-react';
+import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar, ScanLine, IdCard, History } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Archdeaconries, getArchdeaconryCode } from '@/data/Archdeaconries';
 import axios from 'axios';
@@ -59,6 +59,10 @@ function EventCheckInPortal() {
   const [rfidScan, setRfidScan] = useState('');
   const rfidScanRef = useRef('');
   const [assigningCardId, setAssigningCardId] = useState(null);
+  // Recent RFID scan history (from /rfid/logs)
+  const [scanLogs, setScanLogs] = useState([]);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+
   // Kiosk mode keeps the scan box focused so you can tap cards continuously.
   const [autoFocus, setAutoFocus] = useState(() => {
     try {
@@ -467,6 +471,32 @@ function EventCheckInPortal() {
     }
   }, [selectedEvent, findAttendeeByUid, handleCheckIn, handleUnCheck]);
 
+  /**
+   * Fetch recent RFID scan history so operators can see every tap live.
+   */
+  const fetchScanLogs = useCallback(async (showIndicator = false) => {
+    try {
+      if (showIndicator) setIsLoadingLogs(true);
+      const response = await axios.get(`${backendUrl}/api/registrationUnit/rfid/logs`, {
+        timeout: 10000,
+      });
+      if (response?.data?.data) setScanLogs(response.data.data);
+    } catch (error) {
+      console.error('Error fetching scan logs:', error);
+    } finally {
+      setIsLoadingLogs(false);
+    }
+  }, [backendUrl]);
+
+  // Load scan history on mount + keep it fresh alongside the attendee polling.
+  useEffect(() => {
+    fetchScanLogs(true);
+    const id = setInterval(() => {
+      if (!document.hidden) fetchScanLogs();
+    }, 10000); // 10s refresh
+    return () => clearInterval(id);
+  }, [fetchScanLogs]);
+
   // Kiosk mode: keep the scan box focused so operators can tap card after card
   // without clicking the input each time.
   useEffect(() => {
@@ -763,6 +793,79 @@ function EventCheckInPortal() {
             </label>
           </div>
         )}
+
+        {/* RFID Scan History */}
+        <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-3">
+              <div className="bg-indigo-100 rounded-lg p-2">
+                <History className="w-5 h-5 text-indigo-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">Recent Scans</h3>
+                <p className="text-xs text-gray-500">
+                  Live feed of card taps (refreshes every 10s).
+                </p>
+              </div>
+            </div>
+            <Button
+              onClick={() => fetchScanLogs(true)}
+              size="sm"
+              variant="outline"
+              disabled={isLoadingLogs}
+            >
+              <RefreshCw className={`w-4 h-4 mr-1.5 ${isLoadingLogs ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
+
+          {scanLogs.length === 0 ? (
+            <div className="text-center py-6">
+              <ScanLine className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+              <p className="text-sm text-gray-500">
+                No scans yet. Tap a card to see activity here.
+              </p>
+            </div>
+          ) : (
+            <ScrollArea className="max-h-64">
+              <div className="space-y-2">
+                {scanLogs.map((log, idx) => {
+                  const isIn = log.action === 'checkedIn';
+                  return (
+                    <div
+                      key={`${log.at}-${idx}`}
+                      className="flex items-center gap-3 border rounded-lg px-3 py-2"
+                    >
+                      <Badge
+                        variant="secondary"
+                        className={`text-xs shrink-0 ${
+                          isIn
+                            ? 'bg-green-100 text-green-700'
+                            : log.action === 'checkedOut'
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'bg-gray-100 text-gray-600'
+                        }`}
+                      >
+                        {isIn ? 'IN' : log.action === 'checkedOut' ? 'OUT' : 'UNKNOWN'}
+                      </Badge>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm text-gray-900 truncate font-medium">
+                          {log.fullName || log.message || 'Unknown card'}
+                        </p>
+                        <p className="text-xs text-gray-500 font-mono truncate">
+                          {log.uid}{log.eventTitle ? ` · ${log.eventTitle}` : ''}
+                        </p>
+                      </div>
+                      <span className="text-xs text-gray-400 shrink-0">
+                        {new Date(log.at).toLocaleTimeString()}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          )}
+        </div>
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
