@@ -33,7 +33,13 @@ export const Route = createFileRoute('/registrationunit/')({
 function EventCheckInPortal() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   
-  const [selectedEvent, setSelectedEvent] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState(() => {
+    try {
+      return localStorage.getItem('dlw_rfid_event') || '';
+    } catch {
+      return '';
+    }
+  });
   const [selectedArchdeaconry, setSelectedArchdeaconry] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [attendees, setAttendees] = useState([]);
@@ -52,19 +58,53 @@ function EventCheckInPortal() {
   const [rfidScan, setRfidScan] = useState('');
   const rfidScanRef = useRef('');
   const [assigningCardId, setAssigningCardId] = useState(null);
+  // Kiosk mode keeps the scan box focused so you can tap cards continuously.
+  const [autoFocus, setAutoFocus] = useState(() => {
+    try {
+      return localStorage.getItem('dlw_rfid_autofocus') !== 'off';
+    } catch {
+      return true;
+    }
+  });
 
   const pollingIntervalRef = useRef(null);
   const lastFetchTimeRef = useRef(0);
   const isFetchingRef = useRef(false);
   const rfidInputRef = useRef(null);
+  const rfidAutoSubmitTimer = useRef(null);
   const [lastRefreshTime, setLastRefreshTime] = useState(null);
+
+  useEffect(() => {
+    return () => {
+      if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchAllEvents = async () => {
       try {
         setIsLoadingEvents(true);
         const response = await axios.get(`${backendUrl}/api/registrationUnit/allEvents`);
-        setEvents(response?.data?.events || []);
+        const list = response?.data?.events || [];
+        setEvents(list);
+
+        // Auto-select the persisted event (or the first one) so the portal is
+        // ready to scan without any clicks — for unattended kiosk operation.
+        let saved = '';
+        try {
+          saved = localStorage.getItem('dlw_rfid_event') || '';
+        } catch {
+          saved = '';
+        }
+        if (!saved && list.length) {
+          saved = list[0].eventTitle;
+          try {
+            localStorage.setItem('dlw_rfid_event', saved);
+          } catch {
+            /* ignore */
+          }
+          setSelectedEvent(saved);
+        }
       } catch (error) {
         console.error("Error fetching events:", error);
         toast.error("Failed to load events");
@@ -399,7 +439,11 @@ function EventCheckInPortal() {
   const handleRfidSubmit = useCallback(() => {
     // Read the live value from a ref so fast "typed" scans still work.
     const scanned = (rfidScanRef.current || '').trim();
-    if (rfidInputRef.current) rfidInputRef.current.value = '';
+    if (rfidInputRef.current) {
+      rfidInputRef.current.value = '';
+      // Re-focus so the next card can be tapped immediately (kiosk flow).
+      requestAnimationFrame(() => rfidInputRef.current?.focus());
+    }
 
     if (!selectedEvent) {
       toast.error('Select an event before scanning a card');
@@ -421,6 +465,22 @@ function EventCheckInPortal() {
       toast.success(`Checked in: ${attendee.fullName}`);
     }
   }, [selectedEvent, findAttendeeByUid, handleCheckIn, handleUnCheck]);
+
+  // Kiosk mode: keep the scan box focused so operators can tap card after card
+  // without clicking the input each time.
+  useEffect(() => {
+    if (!autoFocus) return;
+    const handler = () => {
+      if (
+        rfidInputRef.current &&
+        document.activeElement !== rfidInputRef.current
+      ) {
+        rfidInputRef.current.focus();
+      }
+    };
+    window.addEventListener('click', handler);
+    return () => window.removeEventListener('click', handler);
+  }, [autoFocus]);
 
   /**
    * Bind an RFID UID to an attendee so future scans resolve to them.
@@ -559,9 +619,26 @@ function EventCheckInPortal() {
 
   const handleEventChange = useCallback((eventTitle) => {
     setSelectedEvent(eventTitle);
+    try {
+      localStorage.setItem('dlw_rfid_event', eventTitle);
+    } catch {
+      /* ignore */
+    }
     setSelectedArchdeaconry('');
     setSearchQuery('');
     setSelectedAttendees([]);
+  }, []);
+
+  const toggleAutoFocus = useCallback(() => {
+    setAutoFocus((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('dlw_rfid_autofocus', next ? 'on' : 'off');
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
   }, []);
 
   return (
@@ -640,14 +717,25 @@ function EventCheckInPortal() {
                   onChange={(e) => {
                     setRfidScan(e.target.value);
                     rfidScanRef.current = e.target.value;
+                    // Auto-submit for USB readers that don't send a terminator:
+                    // if the box holds a complete UID and stops changing, submit.
+                    if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
+                    const v = (e.target.value || '').trim();
+                    if (/^[0-9A-Fa-f]{8,14}$/.test(v)) {
+                      rfidAutoSubmitTimer.current = setTimeout(() => {
+                        handleRfidSubmit();
+                      }, 250);
+                    }
                   }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    // USB keyboard-wedge readers send Enter or Tab as the suffix.
+                    if (e.key === 'Enter' || e.key === 'Tab') {
                       e.preventDefault();
+                      if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
                       handleRfidSubmit();
                     }
                   }}
-                  placeholder="Scan card or paste UID, then press Enter"
+                  placeholder="Tap card or paste UID — it submits automatically"
                   autoComplete="off"
                   autoFocus
                   className="w-full pl-9 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase"
@@ -662,6 +750,16 @@ function EventCheckInPortal() {
                 Submit Scan
               </Button>
             </div>
+
+            {/* Kiosk mode toggle */}
+            <label className="mt-3 flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
+              <Checkbox
+                checked={autoFocus}
+                onCheckedChange={toggleAutoFocus}
+                className="rfid-ignore-focus"
+              />
+              Kiosk mode — keep the scanner focused so you can tap cards continuously.
+            </label>
           </div>
         )}
 
