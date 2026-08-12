@@ -148,6 +148,13 @@ sessions). Options:
 
   > URL-encode spaces as `%20` (or just paste the event title into the query).
 
+- **Station Selector page** — a one-click launchpad at
+  `/registrationunit/stations` (linked from the portal header). It lists every
+  event as a "station" card with an **"Open this station"** button that opens a
+  new portal tab already locked onto that event via `?event=`. Hand out this
+  page (or individual event links) to each laptop operator — no long URLs to
+  copy, no dropdown to click.
+
 - **Raspberry Pi reader** — set `EVENT_TITLE` in the reader's `.env` per
   station; the Pi posts that event with every scan, so the backend toggles the
   right event regardless of what's shown on the laptop screen.
