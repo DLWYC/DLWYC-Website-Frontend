@@ -70,10 +70,12 @@ Added an **RFID Card Scanner** box and per-attendee card features:
 - Each attendee card **shows its assigned UID** (reads `cardUID` or `rfidTag`)
   and has a **"+ Assign card"** button to bind a UID to that attendee.
 - **Recent Scans** panel — a live feed of every card tap (from `/rfid/logs`),
-  refreshed every 10s, showing IN/OUT/UNKNOWN with the attendee, UID and time,
-  and an **Export** button that downloads the scan feed as a CSV audit trail.
-- **Report** button — downloads the currently-selected event's attendee
-  list with check-in status as a CSV (handy for food/attendance billing).
+  refreshed every 10s, with a **summary/rollup** (total / checked-in /
+  checked-out / unknown cards). The **Export** button downloads the scan feed
+  as a CSV audit trail with a summary header.
+- **Report** button — downloads the selected event's attendee list with
+  check-in status as a CSV, **respecting the current archdeaconry + search
+  filters**, and appends a totals row (handy for food/attendance billing).
 
 ## Backend — now included in this repo
 

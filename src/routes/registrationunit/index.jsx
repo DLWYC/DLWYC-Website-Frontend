@@ -291,6 +291,17 @@ function EventCheckInPortal() {
     };
   }, [attendees]);
 
+  // Summary/rollup of the recent scan feed.
+  const scanStats = useMemo(() => {
+    const stats = { total: scanLogs.length, checkedIn: 0, checkedOut: 0, unknown: 0 };
+    for (const log of scanLogs) {
+      if (log.action === 'checkedIn') stats.checkedIn++;
+      else if (log.action === 'checkedOut') stats.checkedOut++;
+      else stats.unknown++;
+    }
+    return stats;
+  }, [scanLogs]);
+
   const filteredAttendees = useMemo(() => {
     if (!attendees.length) return [];
     
@@ -498,29 +509,53 @@ function EventCheckInPortal() {
     return () => clearInterval(id);
   }, [fetchScanLogs]);
 
-  /** Export the recent scan feed (audit trail) as CSV. */
+  /** Export the recent scan feed (audit trail) as CSV, with a summary header. */
   const handleExportScanLogs = useCallback(() => {
-    const csv = toCsv(scanLogs, [
-      { key: 'at', label: 'Time' },
-      { key: 'action', label: 'Action' },
-      { key: 'fullName', label: 'Attendee' },
-      { key: 'uid', label: 'Card UID' },
-      { key: 'eventTitle', label: 'Event' },
-      { key: 'message', label: 'Message' },
+    const header = ['DLWYC — RFID Scan Audit Trail', ''];
+    const summary = [
+      ['Generated', new Date().toLocaleString()],
+      ['Total scans', String(scanStats.total)],
+      ['Checked in', String(scanStats.checkedIn)],
+      ['Checked out', String(scanStats.checkedOut)],
+      ['Unknown cards', String(scanStats.unknown)],
+    ];
+    const cols = ['Time', 'Action', 'Attendee', 'Card UID', 'Event', 'Message'];
+    const body = scanLogs.map((log) => [
+      log.at,
+      log.action,
+      log.fullName || '',
+      log.uid || '',
+      log.eventTitle || '',
+      log.message || '',
     ]);
-    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
-    downloadCsv(`dlwyc-scan-log-${stamp}.csv`, csv);
-    toast.success(`Exported ${scanLogs.length} scan record(s)`);
-  }, [scanLogs]);
 
-  /** Export the currently-selected event's attendees + check-in status as CSV. */
+    const lines = [];
+    lines.push(header.join(','));
+    lines.push('');
+    summary.forEach((row) => lines.push(row.map(csvCell).join(',')));
+    lines.push('');
+    lines.push(cols.join(','));
+    body.forEach((row) => lines.push(row.map(csvCell).join(',')));
+
+    const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
+    downloadCsv(`dlwyc-scan-log-${stamp}.csv`, `${lines.join('\n')}\n`);
+    toast.success(`Exported ${scanStats.total} scan record(s)`);
+  }, [scanLogs, scanStats]);
+
+  /**
+   * Export the selected event's attendees + check-in status as CSV.
+   * Respects the current archdeaconry + search filters and appends a totals row.
+   */
   const handleExportCheckInReport = useCallback(() => {
     if (!selectedEvent) {
       toast.error('Select an event to export its check-in report');
       return;
     }
+    const rowsToExport = filteredAttendees;
+    const checkedIn = rowsToExport.filter((a) => a.eventDetails?.checkedInStatus).length;
+
     const header = ['Full Name', 'Unique ID', 'Email', 'Card UID', 'Archdeaconry', 'Checked In'];
-    const rows = attendees.map((a) => [
+    const rows = rowsToExport.map((a) => [
       a.fullName,
       a.uniqueId,
       a.email,
@@ -528,11 +563,21 @@ function EventCheckInPortal() {
       a.archdeaconry || '',
       a.eventDetails?.checkedInStatus ? 'Yes' : 'No',
     ]);
-    const body = rows.map((r) => r.map(csvCell).join(',')).join('\n');
+    const lines = [];
+    lines.push(header.join(','));
+    rows.forEach((r) => lines.push(r.map(csvCell).join(',')));
+    lines.push('');
+    lines.push(['Total', '', '', '', '', rowsToExport.length].map(csvCell).join(','));
+    lines.push(['Checked In', '', '', '', '', checkedIn].map(csvCell).join(','));
+
     const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-');
-    downloadCsv(`dlwyc-checkin-${(selectedEvent || 'event').replace(/\s+/g, '-')}-${stamp}.csv`, `${header.join(',')}\n${body}\n`);
-    toast.success(`Exported ${attendees.length} attendee(s)`);
-  }, [selectedEvent, attendees]);
+    const filtered = selectedArchdeaconry || searchQuery ? '-filtered' : '';
+    downloadCsv(
+      `dlwyc-checkin-${(selectedEvent || 'event').replace(/\s+/g, '-')}${filtered}-${stamp}.csv`,
+      `${lines.join('\n')}\n`
+    );
+    toast.success(`Exported ${rowsToExport.length} attendee(s)`);
+  }, [selectedEvent, filteredAttendees, selectedArchdeaconry, searchQuery]);
 
   // Kiosk mode: keep the scan box focused so operators can tap card after card
   // without clicking the input each time.
@@ -876,6 +921,26 @@ function EventCheckInPortal() {
               </p>
             </div>
           ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+              <div className="border rounded-lg p-3 text-center">
+                <p className="text-2xl font-bold text-gray-900">{scanStats.total}</p>
+                <p className="text-xs text-gray-500">Total</p>
+              </div>
+              <div className="border rounded-lg p-3 text-center bg-green-50">
+                <p className="text-2xl font-bold text-green-700">{scanStats.checkedIn}</p>
+                <p className="text-xs text-gray-500">Checked In</p>
+              </div>
+              <div className="border rounded-lg p-3 text-center bg-amber-50">
+                <p className="text-2xl font-bold text-amber-700">{scanStats.checkedOut}</p>
+                <p className="text-xs text-gray-500">Checked Out</p>
+              </div>
+              <div className="border rounded-lg p-3 text-center bg-gray-50">
+                <p className="text-2xl font-bold text-gray-600">{scanStats.unknown}</p>
+                <p className="text-xs text-gray-500">Unknown</p>
+              </div>
+            </div>
+          )}
+          {scanLogs.length > 0 && (
             <ScrollArea className="max-h-64">
               <div className="space-y-2">
                 {scanLogs.map((log, idx) => {
@@ -1005,7 +1070,7 @@ function EventCheckInPortal() {
                 )}
                 <Button
                   onClick={handleExportCheckInReport}
-                  disabled={!selectedEvent || attendees.length === 0}
+                  disabled={!selectedEvent || filteredAttendees.length === 0}
                   size="sm"
                   variant="outline"
                   title="Download this event's check-in report as a CSV"
