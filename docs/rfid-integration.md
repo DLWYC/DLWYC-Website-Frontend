@@ -63,6 +63,11 @@ Added an **RFID Card Scanner** box and per-attendee card features:
 - **Scan Card box** — auto-focused and **auto-submits**: a full UID submits on
   its own (~250ms after typing stops) or on **Enter** / **Tab** (the suffix
   most USB readers send). Toggles **check-in / check-out**.
+- **On-screen confirmation** — after a successful tap, a large overlay pops up
+  showing the attendee's **name, a green/amber check mark, and their card UID**
+  (green "You're checked in!" or amber "You've been checked out"), then
+  auto-dismisses after ~3.5s so the next person can scan. Great for a
+  screen facing the attendee at a food line.
 - **Kiosk mode** (default ON) keeps the scan box focused so you can tap card
   after card with no clicks.
 - **Persists your selected event** across page loads and auto-selects the first
