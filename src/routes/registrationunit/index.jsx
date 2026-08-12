@@ -25,6 +25,28 @@ styleSheet.textContent = `
       transform: translateY(0);
     }
   }
+  @keyframes confirmPop {
+    0% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    60% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes checkDraw {
+    from {
+      stroke-dashoffset: 40;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
 `;
 document.head.appendChild(styleSheet);
 
@@ -81,6 +103,24 @@ function EventCheckInPortal() {
   // Recent RFID scan history (from /rfid/logs)
   const [scanLogs, setScanLogs] = useState([]);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
+
+  // On-screen confirmation shown to the attendee after a successful tap.
+  const [scanConfirm, setScanConfirm] = useState(null);
+  const scanConfirmTimer = useRef(null);
+
+  const showScanConfirm = useCallback((name, action, uid) => {
+    setScanConfirm({ name, action, uid, at: Date.now() });
+    if (scanConfirmTimer.current) clearTimeout(scanConfirmTimer.current);
+    // Auto-dismiss so the next attendee can be scanned immediately.
+    scanConfirmTimer.current = setTimeout(() => setScanConfirm(null), 3500);
+  }, []);
+
+  // Clean up the confirmation timer on unmount.
+  useEffect(() => {
+    return () => {
+      if (scanConfirmTimer.current) clearTimeout(scanConfirmTimer.current);
+    };
+  }, []);
 
   // Kiosk mode keeps the scan box focused so you can tap cards continuously.
   const [autoFocus, setAutoFocus] = useState(() => {
@@ -497,11 +537,13 @@ function EventCheckInPortal() {
     if (attendee.eventDetails?.checkedInStatus) {
       handleUnCheck(attendee.userId);
       toast.info(`Checked out: ${attendee.fullName}`);
+      showScanConfirm(attendee.fullName, 'checkedOut', scanned);
     } else {
       handleCheckIn(attendee.userId);
       toast.success(`Checked in: ${attendee.fullName}`);
+      showScanConfirm(attendee.fullName, 'checkedIn', scanned);
     }
-  }, [selectedEvent, findAttendeeByUid, handleCheckIn, handleUnCheck]);
+  }, [selectedEvent, findAttendeeByUid, handleCheckIn, handleUnCheck, showScanConfirm]);
 
   /**
    * Fetch recent RFID scan history so operators can see every tap live.
@@ -1333,6 +1375,51 @@ function EventCheckInPortal() {
           )}
         </div>
       </div>
+
+      {/* On-screen check-in/out confirmation (shown to the attendee) */}
+      {scanConfirm && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+          <div
+            className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center"
+            style={{ animation: 'confirmPop 0.35s ease-out' }}
+          >
+            <div
+              className={`mx-auto mb-4 w-20 h-20 rounded-full flex items-center justify-center ${
+                scanConfirm.action === 'checkedIn' ? 'bg-green-100' : 'bg-amber-100'
+              }`}
+            >
+              <svg viewBox="0 0 52 52" className="w-12 h-12">
+                <circle
+                  cx="26"
+                  cy="26"
+                  r="24"
+                  fill="none"
+                  className={scanConfirm.action === 'checkedIn' ? 'stroke-green-500' : 'stroke-amber-500'}
+                  strokeWidth="3"
+                />
+                <path
+                  fill="none"
+                  className={scanConfirm.action === 'checkedIn' ? 'stroke-green-500' : 'stroke-amber-500'}
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M14 27l8 8 16-16"
+                  style={{ strokeDasharray: 40, strokeDashoffset: 0, animation: 'checkDraw 0.4s ease-out 0.15s both' }}
+                />
+              </svg>
+            </div>
+
+            <p className="text-lg font-bold text-gray-900">
+              {scanConfirm.action === 'checkedIn' ? "You're checked in!" : "You've been checked out"}
+            </p>
+            <p className="text-sm text-gray-500 mt-1 mb-4">{scanConfirm.name}</p>
+
+            <p className="text-xs text-gray-400 font-mono bg-gray-50 border rounded-lg px-3 py-2">
+              {scanConfirm.uid}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
