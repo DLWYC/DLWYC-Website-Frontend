@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useSearch } from '@tanstack/react-router'
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar, ScanLine, IdCard, History, Download } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -34,14 +34,32 @@ export const Route = createFileRoute('/registrationunit/')({
 
 function EventCheckInPortal() {
   const backendUrl = BACKEND_URL
-  
+
+  // Per-station event wiring: a station opens its own URL like
+  //   /registrationunit?event=Day%201%20Lunch
+  // so the portal auto-selects that event for scanning. Falls back to the
+  // last-used event stored on this machine.
+  const search = useSearch({ from: Route.id, strict: false });
+  const stationEvent = (search && search.event) || '';
+
   const [selectedEvent, setSelectedEvent] = useState(() => {
     try {
-      return localStorage.getItem('dlw_rfid_event') || '';
+      return stationEvent || localStorage.getItem('dlw_rfid_event') || '';
     } catch {
-      return '';
+      return stationEvent || '';
     }
   });
+
+  // Persist the station event so it survives reloads on this machine.
+  useEffect(() => {
+    if (stationEvent) {
+      try {
+        localStorage.setItem('dlw_rfid_event', stationEvent);
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [stationEvent]);
   const [selectedArchdeaconry, setSelectedArchdeaconry] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [attendees, setAttendees] = useState([]);
@@ -94,13 +112,15 @@ function EventCheckInPortal() {
         const list = response?.data?.events || [];
         setEvents(list);
 
-        // Auto-select the persisted event (or the first one) so the portal is
-        // ready to scan without any clicks — for unattended kiosk operation.
-        let saved = '';
-        try {
-          saved = localStorage.getItem('dlw_rfid_event') || '';
-        } catch {
-          saved = '';
+        // Auto-select the station/persisted event (or the first one) so the
+        // portal is ready to scan without any clicks — for kiosk operation.
+        let saved = stationEvent;
+        if (!saved) {
+          try {
+            saved = localStorage.getItem('dlw_rfid_event') || '';
+          } catch {
+            saved = '';
+          }
         }
         if (!saved && list.length) {
           saved = list[0].eventTitle;
@@ -120,7 +140,7 @@ function EventCheckInPortal() {
     };
     
     fetchAllEvents();
-  }, [backendUrl]);
+  }, [backendUrl, stationEvent]);
 
   const fetchEventAttendees = useCallback(async (showRefreshIndicator = false, silent = false) => {
     if (!selectedEvent) {
@@ -760,8 +780,14 @@ function EventCheckInPortal() {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-6 flex items-center justify-between flex-wrap gap-3">
           <h1 className="text-2xl font-bold text-gray-900">Event Check-In</h1>
+          {selectedEvent && (
+            <div className="flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-lg px-3 py-2">
+              <span className="text-xs uppercase tracking-wide font-semibold">Station</span>
+              <span className="text-sm font-semibold">{selectedEvent}</span>
+            </div>
+          )}
         </div>
 
         {/* Statistics */}
