@@ -42,6 +42,12 @@ cp .env.example .env
 # edit .env, then:
 ```
 
+**`BACKEND_URL`** is the base URL of the DLWYC backend. The backend listens on
+all interfaces and prints its **LAN IP** on startup (e.g.
+`http://192.168.1.20:4000`). If this Pi and the laptop running the backend are
+on the same Wi-Fi/network, use that LAN URL. CORS is open by default so the Pi
+can POST scans from anywhere on the network.
+
 Two modes:
 
 - **`SCAN_MODE=toggle`** — each scan calls

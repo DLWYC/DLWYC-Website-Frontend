@@ -69,6 +69,8 @@ Added an **RFID Card Scanner** box and per-attendee card features:
   event, so the portal is scan-ready immediately.
 - Each attendee card **shows its assigned UID** (reads `cardUID` or `rfidTag`)
   and has a **"+ Assign card"** button to bind a UID to that attendee.
+- **Recent Scans** panel — a live feed of every card tap (from `/rfid/logs`),
+  refreshed every 10s, showing IN/OUT/UNKNOWN with the attendee, UID and time.
 
 ## Backend — now included in this repo
 
@@ -97,6 +99,14 @@ assigned card UIDs you can scan immediately.
 3. **`POST /api/registrationUnit/rfid/scan`** (used by the Pi reader in
    `toggle` mode). Body: `{ cardUID, eventTitle }`. Resolves the UID and
    toggles check-in/check-out, returning `{ action: 'checkedIn'|'checkedOut' }`.
+
+### Remote access for a network reader (Raspberry Pi)
+
+The backend listens on `0.0.0.0` and prints its **LAN IP** on startup, and CORS
+is open by default — so a Raspberry Pi on the same network can POST scans
+directly to it (no browser involved, so CORS isn't even a factor for the Pi).
+Just set the reader's `BACKEND_URL` to `http://<laptop-lan-ip>:4000`. Restrict
+origins later with the `CORS_ORIGINS` env var for production.
 
 > **Going to production:** replace the JSON store in `backend/src/store.js` with
 > a real database and add JWT + real payment verification — the API shape stays
