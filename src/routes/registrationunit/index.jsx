@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar } from 'lucide-react';
+import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar, ScanLine, IdCard } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Archdeaconries, getArchdeaconryCode } from '@/data/Archdeaconries';
 import axios from 'axios';
@@ -48,9 +48,15 @@ function EventCheckInPortal() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [processingCheckIns, setProcessingCheckIns] = useState(new Set());
 
+  // RFID card scanning state
+  const [rfidScan, setRfidScan] = useState('');
+  const rfidScanRef = useRef('');
+  const [assigningCardId, setAssigningCardId] = useState(null);
+
   const pollingIntervalRef = useRef(null);
   const lastFetchTimeRef = useRef(0);
   const isFetchingRef = useRef(false);
+  const rfidInputRef = useRef(null);
   const [lastRefreshTime, setLastRefreshTime] = useState(null);
 
   useEffect(() => {
@@ -361,6 +367,89 @@ function EventCheckInPortal() {
     }
   }, [backendUrl, selectedEvent, processingCheckIns, fetchEventAttendees]);
 
+  /**
+   * Normalize a scanned/pasted tag to an uppercase, colon-free UID.
+   * e.g. " 12:34:AB:CD " -> "1234ABCD"
+   */
+  const normalizeUid = useCallback((raw) => {
+    return (raw || '').toUpperCase().replace(/[^0-9A-F]/g, '');
+  }, []);
+
+  /**
+   * Get the attendee record that a UID belongs to. Reads both `cardUID`
+   * and `rfidTag` fields so it works no matter which name your backend uses.
+   */
+  const findAttendeeByUid = useCallback(
+    (uid) => {
+      const key = normalizeUid(uid);
+      if (!key) return undefined;
+      return attendees.find((a) => {
+        const tag = normalizeUid(a?.cardUID || a?.rfidTag || '');
+        return tag && tag === key;
+      });
+    },
+    [attendees, normalizeUid]
+  );
+
+  /**
+   * Handle a card scan. Works with a USB keyboard-wedge RFID reader (which
+   * types the UID into the box and presses Enter) OR a manually typed/pasted
+   * UID from the Raspberry Pi reader service. Toggles check-in/check-out.
+   */
+  const handleRfidSubmit = useCallback(() => {
+    // Read the live value from a ref so fast "typed" scans still work.
+    const scanned = (rfidScanRef.current || '').trim();
+    if (rfidInputRef.current) rfidInputRef.current.value = '';
+
+    if (!selectedEvent) {
+      toast.error('Select an event before scanning a card');
+      return;
+    }
+    if (!scanned) return;
+
+    const attendee = findAttendeeByUid(scanned);
+    if (!attendee) {
+      toast.error('No attendee found for that card. Assign the card to someone first.');
+      return;
+    }
+
+    if (attendee.eventDetails?.checkedInStatus) {
+      handleUnCheck(attendee.userId);
+      toast.info(`Checked out: ${attendee.fullName}`);
+    } else {
+      handleCheckIn(attendee.userId);
+      toast.success(`Checked in: ${attendee.fullName}`);
+    }
+  }, [selectedEvent, findAttendeeByUid, handleCheckIn, handleUnCheck]);
+
+  /**
+   * Bind an RFID UID to an attendee so future scans resolve to them.
+   * Calls a documented backend endpoint — update the URL if yours differs.
+   */
+  const handleAssignRfid = useCallback(
+    async (userId, fullName) => {
+      const uid = window.prompt(`Paste the card UID for ${fullName}:`);
+      const normalized = normalizeUid(uid || '');
+      if (!normalized) return;
+
+      setAssigningCardId(userId);
+      try {
+        await axios.patch(
+          `${backendUrl}/api/registrationUnit/eventAttendees/${userId}/rfid`,
+          { cardUID: normalized }
+        );
+        toast.success(`Card ${normalized} assigned to ${fullName}`);
+        fetchEventAttendees(true);
+      } catch (error) {
+        console.error('Error assigning RFID card:', error);
+        toast.error('Could not assign card — check the backend /rfid endpoint exists.');
+      } finally {
+        setAssigningCardId(null);
+      }
+    },
+    [backendUrl, normalizeUid, fetchEventAttendees]
+  );
+
   const allCurrentPageSelected = useMemo(() => 
     currentAttendees.length > 0 && 
     currentAttendees.every(a => selectedAttendees.includes(a.userId)),
@@ -522,6 +611,56 @@ function EventCheckInPortal() {
                   <p className="text-2xl font-bold text-gray-900">{statistics.pending}</p>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* RFID Card Scanner */}
+        {selectedEvent && (
+          <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="bg-indigo-100 rounded-lg p-2">
+                <ScanLine className="w-5 h-5 text-indigo-600" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900">Scan RFID Card</h3>
+                <p className="text-xs text-gray-500">
+                  Tap a tag on the reader (or type/paste the UID) to check in / check out.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <ScanLine className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                <input
+                  ref={rfidInputRef}
+                  type="text"
+                  value={rfidScan}
+                  onChange={(e) => {
+                    setRfidScan(e.target.value);
+                    rfidScanRef.current = e.target.value;
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleRfidSubmit();
+                    }
+                  }}
+                  placeholder="Scan card or paste UID, then press Enter"
+                  autoComplete="off"
+                  autoFocus
+                  className="w-full pl-9 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase"
+                />
+              </div>
+              <Button
+                onClick={handleRfidSubmit}
+                size="default"
+                className="bg-indigo-600 hover:bg-indigo-700"
+              >
+                <Check className="w-4 h-4 mr-1" />
+                Submit Scan
+              </Button>
             </div>
           </div>
         )}
@@ -696,6 +835,32 @@ function EventCheckInPortal() {
                           <p className="text-xs text-gray-500 truncate mt-0.5">
                             {attendee.uniqueId}
                           </p>
+                        </div>
+
+                        {/* RFID Tag */}
+                        <div className="flex items-center gap-2">
+                          <IdCard className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                          {attendee.cardUID || attendee.rfidTag ? (
+                            <Badge
+                              variant="secondary"
+                              className="text-[11px] font-mono bg-indigo-50 text-indigo-700 border border-indigo-100"
+                            >
+                              {attendee.cardUID || attendee.rfidTag}
+                            </Badge>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleAssignRfid(attendee.userId, attendee.fullName)
+                              }
+                              disabled={assigningCardId === attendee.userId}
+                              className="text-[11px] text-indigo-600 hover:underline disabled:opacity-50"
+                            >
+                              {assigningCardId === attendee.userId
+                                ? 'Assigning...'
+                                : '+ Assign card'}
+                            </button>
+                          )}
                         </div>
 
                         {/* Email */}
