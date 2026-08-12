@@ -11,7 +11,7 @@ const Confirmation = ({values}) => {
   console.log("Values CONFIRMTION PAGE", values)
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const backendURL = import.meta.env.VITE_BACKEND_URL
+  const backendURL = import.meta.env.VITE_BACKEND_URL || ''
   const queryClient = useQueryClient()
   const {userData, userRegisteredEvents} = useAuth()
   // console.log("all Cached Data", queryClient.getQueryData(['allEvent', userData?.uniqueId, userRegisteredEvents]), "ALL", queryClient.getQueriesData())

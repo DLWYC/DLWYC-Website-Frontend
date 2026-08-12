@@ -27,7 +27,7 @@ const Form = ({ className, array, text, values, setValues, setPaymentCodeStatus,
     }
     
 
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/payment/verify-code`, {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL || ''}/api/payment/verify-code`, {
         "payersId": payersId,
         "archdeaconry": values?.archdeaconry,
         "paymentCode": paymentCode,

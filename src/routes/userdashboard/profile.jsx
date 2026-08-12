@@ -34,7 +34,7 @@ function UserProfile() {
   
   
 
-  const backendURL = import.meta.env.VITE_BACKEND_URL
+  const backendURL = import.meta.env.VITE_BACKEND_URL || ''
   const userToken = localStorage.getItem('token');
 
   const fileInputRef = useRef(null);

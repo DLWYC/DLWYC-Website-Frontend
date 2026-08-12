@@ -28,7 +28,7 @@ function PayStack({ userDetails, values, setValues, paymentOption }) {
   const [paymentStatus, setPaymentStatus] = useState(PAYMENT_STATUS.PENDING);
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_BACKEND_URL || ''
   const queryClient = useQueryClient();
 
   // Generate unique reference for this payment attempt

@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from "react-toastify";
 import RegistrationUnitTopNav from '@/components/AppTopNav/RegitrationUnitTopNav';
+import { BACKEND_URL } from '@/lib/env';
 
 // Add fadeIn animation styles
 const styleSheet = document.createElement("style");
@@ -31,7 +32,7 @@ export const Route = createFileRoute('/registrationunit/')({
 })
 
 function EventCheckInPortal() {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const backendUrl = BACKEND_URL
   
   const [selectedEvent, setSelectedEvent] = useState(() => {
     try {

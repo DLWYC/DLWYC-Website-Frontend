@@ -12,7 +12,7 @@ export const Route = createFileRoute('/usersignup')({
 
 
 const SignUpForm = () => {
-     const backendUrl = import.meta.env.VITE_BACKEND_URL
+     const backendUrl = import.meta.env.VITE_BACKEND_URL || ''
 
   const [formData, setFormData] = useState({
     fullName: '',
