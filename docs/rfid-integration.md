@@ -132,13 +132,34 @@ flow instead:
 The same pattern works anywhere you want attendance tracked (main gate, food,
 sessions). Options:
 
-- **Multiple portals** — one browser tab per station, each on the same event.
-  The existing 30s auto-refresh keeps every station's list in sync.
-- **Per-station event** — create separate "events" per station (e.g.
-  "Day 1 Lunch") and run the scan box against each. Uses the exact same code.
+- **Per-station event, auto-selected by URL (recommended).** Each station opens
+  its own URL with an `event` param and the portal locks onto that event — so
+  the reader is effectively "wired" to the station with zero clicks:
+
+  ```
+  /registrationunit?event=Day%201%20Lunch
+  /registrationunit?event=Day%201%20Dinner
+  /registrationunit?event=Day%202%20Lunch
+  ```
+
+  The station event is auto-selected, **persisted** on that machine, and shown
+  as a **"Station"** badge at the top of the portal. Operators just tap cards.
+  On each station laptop, bookmark its own URL (or pin the tab) and you're set.
+
+  > URL-encode spaces as `%20` (or just paste the event title into the query).
+
+- **Raspberry Pi reader** — set `EVENT_TITLE` in the reader's `.env` per
+  station; the Pi posts that event with every scan, so the backend toggles the
+  right event regardless of what's shown on the laptop screen.
+
 - **Real-time** — if you want instant cross-tab updates, add a WebSocket that
   the reader service pushes scan events to; subscribe in the portal. (Not
   implemented here — covered under Path C in the overview.)
+
+> **Setup tip:** create one "event" per station/meal in the backend (e.g.
+> "Day 1 Lunch", "Day 2 Breakfast"), then assign each station's laptop the
+> matching `?event=` URL. Exports (`Report`) already break down attendance per
+> event, so food billing stays clean.
 
 ## Data model
 
