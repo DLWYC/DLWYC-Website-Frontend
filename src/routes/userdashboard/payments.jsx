@@ -33,7 +33,7 @@ export const Route = createFileRoute('/userdashboard/payments')({
 
 
 const ViewPayment = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || ''
   const {userPaymentRecord, refetch} = useAuth()
   const data  = userPaymentRecord;
   const [searchTerm, setSearchTerm] = useState('');

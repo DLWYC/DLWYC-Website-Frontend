@@ -70,26 +70,39 @@ Added an **RFID Card Scanner** box and per-attendee card features:
 - Each attendee card **shows its assigned UID** (reads `cardUID` or `rfidTag`)
   and has a **"+ Assign card"** button to bind a UID to that attendee.
 
-## What the backend team needs to add
+## Backend — now included in this repo
 
-The frontend and reader service assume your backend provides:
+A working backend is provided in **`backend/`** (Express + JSON-file store,
+auto-seeded). It implements the full Registration Unit + RFID flow and is wired
+to the frontend via the Vite dev proxy, so you can run everything locally with:
 
-1. **`cardUID` field on attendee records.** The attendee objects returned by
-   `GET /api/registrationUnit/eventAttendees/:eventTitle` should include the
-   attendee's card UID (e.g. `cardUID: "1234ABCD"`). Both the reader service
-   and the scan box look this up.
+```bash
+npm run dev:full    # runs backend (:4000) + frontend (:3000) together
+```
+
+See **`backend/README.md`** for endpoints and the demo login
+(`admin@dlwyc.org` / `admin123`). Seed data already includes attendees with
+assigned card UIDs you can scan immediately.
+
+### Endpoints the frontend/reader rely on
+
+1. **`cardUID` field on attendee records.** `GET
+   /api/registrationUnit/eventAttendees/:eventTitle` returns each attendee's
+   `cardUID`. Both the reader service and the scan box look this up.
 
 2. **`PATCH /api/registrationUnit/eventAttendees/:userId/rfid`**
-   Body: `{ cardUID }`. Stores the UID on the attendee. Used by the
-   "Assign card" button. If your endpoint path differs, update it in
-   `handleAssignRfid` in `registrationunit/index.jsx`.
+   Body: `{ cardUID }`. Stores the UID (and rejects cards already bound to
+   someone else). Used by the "Assign card" button.
 
 3. **`POST /api/registrationUnit/rfid/scan`** (used by the Pi reader in
-   `toggle` mode). Body: `{ cardUID, eventTitle }`. It should resolve the
-   attendee by UID and toggle their check-in/check-out for the event,
-   returning something like `{ action: 'checkedIn' | 'checkedOut', attendee }`.
+   `toggle` mode). Body: `{ cardUID, eventTitle }`. Resolves the UID and
+   toggles check-in/check-out, returning `{ action: 'checkedIn'|'checkedOut' }`.
 
-If you'd rather not add `POST /rfid/scan` on the backend, use the simpler
+> **Going to production:** replace the JSON store in `backend/src/store.js` with
+> a real database and add JWT + real payment verification — the API shape stays
+> the same, so the frontend doesn't change.
+
+If you'd rather not use the `/rfid/scan` endpoint, use the simpler
 flow instead:
 
 > **Simplest path (no new backend endpoint):**

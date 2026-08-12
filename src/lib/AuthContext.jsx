@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export function AuthProvider({children}){
      const queryClient = useQueryClient()
-     const backendUrl = import.meta.env.VITE_BACKEND_URL
+     const backendUrl = import.meta.env.VITE_BACKEND_URL || ''
 
   // #:::::::::::::::  GET USER LOGIN FUNCTION :::::::::::::::::#
 const login = useMutation({

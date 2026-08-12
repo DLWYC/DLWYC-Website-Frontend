@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "vite --port 3000",
     "start": "vite --port 3000",
+    "dev:api": "npm --prefix backend run dev",
+    "dev:full": "concurrently -k -n API,WEB -c yellow,cyan \"npm run dev:api\" \"npm run dev\"",
     "build": "vite build && tsc",
     "serve": "vite preview",
     "test": "vitest run",
@@ -56,6 +58,7 @@
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
     "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^10.0.4",
     "jsdom": "^26.0.0",
     "prettier": "^3.5.3",
     "tw-animate-css": "^1.3.7",

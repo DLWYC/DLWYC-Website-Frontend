@@ -17,7 +17,7 @@ function RouteComponent() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { userData } = useAuth();
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_BACKEND_URL || ''
    const hasVerified = useRef(false);
 
    // Get reference from URL params (?reference=xyz)
