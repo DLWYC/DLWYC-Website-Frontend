@@ -25,49 +25,48 @@ const processQueue = (error: any) => {
   failedQueue = [];
 };
 
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    console.log("Original Request", error.config);
+// api.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {
+//     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (originalRequest.url?.includes("/refresh-token")) {
-        handleLogout();
-        return Promise.reject(error);
-      }
+//     if (error.response?.status === 401 && !originalRequest._retry) {
+//       if (originalRequest.url?.includes("/refresh-token")) {
+//         handleLogout();
+//         return Promise.reject(error);
+//       }
 
-      originalRequest._retry = true;
+//       originalRequest._retry = true;
 
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then(() => api(originalRequest))
-          .catch((err) => Promise.reject(err));
-      }
+//       if (isRefreshing) {
+//         return new Promise((resolve, reject) => {
+//           failedQueue.push({ resolve, reject });
+//         })
+//           .then(() => api(originalRequest))
+//           .catch((err) => Promise.reject(err));
+//       }
 
-      isRefreshing = true;
+//       isRefreshing = true;
 
-      try {
-        // Trigger backend to drop a new accessToken cookie
-        await refreshApi.post("/auth/refresh-token");
-        isRefreshing = false;
-        processQueue(null);
+//       try {
+//         // Trigger backend to drop a new accessToken cookie
+//         await refreshApi.post("/auth/refresh-token");
+//         isRefreshing = false;
+//         processQueue(null);
 
-        // Re-run the initial failed request with the new cookie automatically attached
-        return api(originalRequest);
-      } catch (refreshError) {
-        isRefreshing = false;
-        processQueue(refreshError);
-        handleLogout();
-        return Promise.reject(refreshError);
-      }
-    }
+//         // Re-run the initial failed request with the new cookie automatically attached
+//         return api(originalRequest);
+//       } catch (refreshError) {
+//         isRefreshing = false;
+//         processQueue(refreshError);
+//         handleLogout();
+//         return Promise.reject(refreshError);
+//       }
+//     }
 
-    return Promise.reject(error);
-  },
-);
+//     return Promise.reject(error);
+//   },
+// );
 
 export const handleLogout = async () => {
   // Clear any non-sensitive user profile UI data if necessary

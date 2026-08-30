@@ -31,7 +31,7 @@ export function useGetSingleEventData(eventId: string) {
       }
 
       // 3. Find the single event from the list (Works for BOTH cached and freshly fetched data)
-      const singleEvent = eventList.find((event: any) => event._id === eventId);
+      const singleEvent = eventList?.find((event: any) => event._id === eventId);
 
       if (!singleEvent) {
         throw new Error("Event Not Found");
@@ -57,8 +57,19 @@ export function useGetUserRegisteredEvents() {
     queryKey: ["userRegisteredEvents"],
     queryFn: async () => {
       const registeredEvents = await api.get("/events/userRegisteredEvents");
-      console.log("Registered Eventsdsasd: ::", registeredEvents?.data?.events);
       return registeredEvents.data?.events;
     },
   });
+}
+
+
+export function usePaymentWebHook(reference: string){
+  return useQuery({
+    queryKey: ['transactionStatus'],
+    queryFn: async () =>{
+      const res = await api.get(`/events/verify-payment/${reference}`);
+      console.log("Payment Webhook Response: ", res.data);
+      return res.data?.status;
+    }
+  })
 }
