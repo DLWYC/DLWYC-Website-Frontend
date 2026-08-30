@@ -1,9 +1,11 @@
 import { api } from "@/config/api";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
+
 
 import { toast } from "react-toastify";
 
-export function useVerifyCode(eventId, code) {
+export function useVerifyCode(eventId: any, code: any) {
   return useMutation({
     mutationFn: async () => {
       console.log({ eventId: eventId, code: code });
@@ -18,8 +20,7 @@ export function useVerifyCode(eventId, code) {
   });
 }
 
-export function useFreeEventRegistration(eventId) {
-
+export function useFreeEventRegistration(eventId: any) {
   return useMutation({
     mutationFn: async () => {
       const res = await api.post("events/free", { eventId });
@@ -36,3 +37,32 @@ export function useFreeEventRegistration(eventId) {
     },
   });
 }
+
+export function useInitalizePaymentTransaction() {
+  return useMutation({
+    mutationFn: async (paymentRequest: {
+      email: string;
+      amount: number;
+      reference: string;
+      eventId: string;
+      amountOfPeople: number;
+    }) => {
+      const res = await api.post(
+        "events/initializeTransaction",
+        paymentRequest,
+      );
+      console.log(res.data);
+      return res.data
+    },
+    onSuccess: (data: string | undefined) => {
+      const authUrl = data?.data?.data?.authorization_url
+      console.log("Payment initialized: ", authUrl);
+      window.location.href = authUrl;
+    },
+    onError: (error: any) => {
+      console.log("Error From Payment Request: ", error);
+    },
+  });
+}
+
+
