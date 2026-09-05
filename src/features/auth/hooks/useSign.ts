@@ -28,7 +28,7 @@ export function useRegister() {
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ['user'] })
       toast.success(res.message ?? 'Account created successfully!')
-      navigate({ to: '/login' })
+      navigate({ to: '/dashboard' })
     },
     onError: (error: any) => {
       const msg =

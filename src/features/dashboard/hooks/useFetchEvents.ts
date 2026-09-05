@@ -65,11 +65,13 @@ export function useGetUserRegisteredEvents() {
 
 export function usePaymentWebHook(reference: string){
   return useQuery({
-    queryKey: ['transactionStatus'],
+    queryKey: ['transactionStatus', reference],
     queryFn: async () =>{
       const res = await api.get(`/events/verify-payment/${reference}`);
       console.log("Payment Webhook Response: ", res.data);
       return res.data?.status;
-    }
+    },
+    enabled: !!reference && reference !== "", // Only run this query if reference is truthy
+    retry: false
   })
 }

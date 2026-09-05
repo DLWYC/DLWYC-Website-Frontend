@@ -1,5 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
+import  Hero  from "@/sections/Hero";
+import  GalleryPreview from "@/sections/GalleryPreview";
+import {
+  PastorQuote,
+  BuiltForImpact,
+  FutureSection
+} from "@/sections/ExpandedSections";
+import Family from "@/sections/Family";
+import Events from "@/sections/Events";
+import WorkforceSection from "@/sections/WorkforceSection";
 
 export const Route = createFileRoute("/")({
   component: LandingView,
@@ -7,17 +17,15 @@ export const Route = createFileRoute("/")({
 
 function LandingView() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-4">
-      <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">
-        Optimized Application Core
-      </h1>
-      <p className="text-muted-foreground max-w-md">
-        Structured with pnpm, Oxlint, Tailwind v4, and file-based route
-        splitting.
-      </p>
-      <Button asChild size="lg">
-        <Link to="/dashboard">Enter Performance Panel</Link>
-      </Button>
+    <div className="min-h-screen text-center ">
+      <Hero />
+      <PastorQuote />
+      <Family />
+      <BuiltForImpact />
+      <GalleryPreview />
+      <FutureSection />
+      <Events />
+      <WorkforceSection />
     </div>
   );
 }
