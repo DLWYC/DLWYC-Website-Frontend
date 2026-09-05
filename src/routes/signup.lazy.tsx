@@ -208,99 +208,34 @@ function SignUpView() {
     register(formData, {
       onSuccess: () => {
         setFormData(INITIAL_FORM);
-        setStep("role-select");
       },
     });
   };
 
   // ── Slide animation classes ──
-  const slideClass = animating
-    ? slideDirection === "forward"
-      ? "opacity-0 -translate-x-4"
-      : "opacity-0 translate-x-4"
-    : "opacity-100 translate-x-0";
+  // const slideClass = animating
+  //   ? slideDirection === "forward"
+  //     ? "opacity-0 -translate-x-4"
+  //     : "opacity-0 translate-x-4"
+  //   : "opacity-100 translate-x-0";
 
   return (
     <div className="flex min-h-screen font-rubik">
       {/* ── Left: form panel ── */}
       <div className="flex flex-col justify-center items-center w-full lg:w-[40%] px-5 sm:px-2 bg-white overflow-y-auto">
-        <div className="max-w-lg w-full">
+        <div className="max-w-lg w-full space-y-4">
 
           {/* Logo */}
-          <div className="mb-6">
+          <div className="">
             <img src={Logo} alt="DLWYC Logo" className="h-10 w-auto" />
           </div>
 
-          {/* Animated step container */}
-          <div className={`transition-all duration-250 ease-in-out ${slideClass}`}>
-
-            {/* ── Step 1: Role selection ── */}
-            {step === "role-select" && (
-              <div className="space-y-5">
-                <div>
-                  <h2 className="text-[18px] font-semibold text-gray-800">
-                    How are you joining us?
-                  </h2>
-                  <p className="text-[13px] text-gray-400 mt-1">
-                    Select the option that best describes you to continue.
-                  </p>
-                </div>
-
-                <div className="space-y-3">
-                  <RoleCard
-                    type="Member"
-                    description="I belong to a parish in the archdeaconry"
-                    selected={formData.membershipType === "Member"}
-                    onSelect={() => handleRoleSelect("Member")}
-                  />
-                  <RoleCard
-                    type="Guest"
-                    description="I'm visiting or not affiliated with a parish"
-                    selected={formData.membershipType === "Guest"}
-                    onSelect={() => handleRoleSelect("Guest")}
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={handleProceed}
-                  disabled={!formData.membershipType}
-                  className="w-full bg-primary-main hover:bg-reddish active:scale-[0.98] text-white py-2.5 rounded-lg text-[14px] font-[400] transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  Continue
-                </button>
-
-                <p className="text-sm text-center text-gray-500">
-                  Already have an account?{" "}
-                  <Link to="/login" className="text-reddish font-medium hover:underline">
-                    Sign in
-                  </Link>
-                </p>
-              </div>
-            )}
-
-            {/* ── Step 2: Registration form ── */}
-            {step === "form" && (
-              <div className="space-y-1">
+            
+              <div className="">
                 {/* Header with back button */}
-                <div className="flex items-center gap-3 mb-4">
-                  <button
-                    type="button"
-                    onClick={handleBack}
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
-                    aria-label="Go back"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <div>
-                    <h2 className="text-[18px] font-semibold text-gray-800 leading-tight">
-                      Create your account
-                    </h2>
-                    <p className="text-[12px] text-gray-400">
-                      Registering as a{" "}
-                      <span className="text-primary-main font-medium">{formData.membershipType}</span>
-                    </p>
-                  </div>
+
+                <div className=" flex items-center font-rubik leading-[40px] text-[20px]">
+                  <h2>Create An Account</h2>
                 </div>
 
                 {/* Full Name */}
@@ -422,9 +357,8 @@ function SignUpView() {
                   </div>
                 </div>
 
-                {/* Archdeaconry + Parish — Members only */}
-                {isMember && (
-                  <div className="grid grid-cols-2 gap-3">
+                
+                  <div className="grid grid-cols-2 gap-3  mb-4">
                     <div>
                       <label className="text-[14px] font-[400] text-gray-700 mb-[1.5px]">
                         Archdeaconry <span className="text-red-400">*</span>
@@ -467,9 +401,8 @@ function SignUpView() {
                       <FieldError message={errors.parish} />
                     </div>
                   </div>
-                )}
 
-                {/* Profile Picture */}
+                {/* Profile Picture
                 <div>
                   <label className="text-[14px] font-[400] text-gray-700 mb-[1.5px]">
                     Profile Picture{" "}
@@ -499,7 +432,7 @@ function SignUpView() {
                       <FieldError message={errors.profilePicture} />
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Submit */}
                 <button
@@ -524,12 +457,9 @@ function SignUpView() {
                   </Link>
                 </p>
               </div>
-            )}
           </div>
         </div>
-      </div>
 
-      {/* ── Right: image + testimonial ── */}
       <div className="hidden lg:flex lg:w-[60%] relative overflow-hidden">
         <img src={SignupBackground} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden="true" />
         <div className="absolute inset-0 bg-black/30" aria-hidden="true" />

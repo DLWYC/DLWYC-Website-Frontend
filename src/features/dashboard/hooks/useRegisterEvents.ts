@@ -51,7 +51,6 @@ export function useInitalizePaymentTransaction() {
         "events/initializeTransaction",
         paymentRequest,
       );
-      console.log(res.data);
       return res.data
     },
     onSuccess: (data: string | undefined) => {
@@ -60,7 +59,8 @@ export function useInitalizePaymentTransaction() {
       window.location.href = authUrl;
     },
     onError: (error: any) => {
-      console.log("Error From Payment Request: ", error);
+      toast.error(`${error?.response?.data.error}`);
+      // return error?.response;
     },
   });
 }

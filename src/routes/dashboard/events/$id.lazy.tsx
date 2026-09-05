@@ -1,5 +1,8 @@
 import { createLazyFileRoute, useSearch, Link } from "@tanstack/react-router";
-import { useGetSingleEventData, usePaymentWebHook } from "@/features/dashboard/hooks/useFetchEvents";
+import {
+  useGetSingleEventData,
+  usePaymentWebHook,
+} from "@/features/dashboard/hooks/useFetchEvents";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import {
   Field,
@@ -14,15 +17,22 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { MapPin, UserIcon, Check, X } from "lucide-react";
+import { MapPin, UserIcon, Check, X, CalendarHeartIcon, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useVerifyCode,
   useInitalizePaymentTransaction,
 } from "@/features/dashboard/hooks/useRegisterEvents";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import Spinner from "@/components/Loader/Spinner";
+import { customAlphabet } from "nanoid";
+import { toast } from "react-toastify";
+
+const generateReference = customAlphabet(
+  "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
+  12,
+);
 
 export const Route = createLazyFileRoute("/dashboard/events/$id")({
   component: RouteComponent,
@@ -32,84 +42,58 @@ function RouteComponent() {
   const { id } = Route.useParams();
   const { trxref } = useSearch({ from: "/dashboard/events/$id" });
 
-  // ── ALL HOOKS DECLARED UNCONDITIONALLY, TOP OF COMPONENT ──
-  // No hook below this block may sit inside an if/loop/early-return.
-  const {
-    data: event,
-    isLoading,
-    error: fetchError,
-  } = useGetSingleEventData(id);
-
-  const {
-    mutate: initializePayment,
-    isPending: paymentPending,
-    error: paymentError,
-  } = useInitalizePaymentTransaction();
+  const { data: event, isLoading, error: fetchError} = useGetSingleEventData(id);
+  const { mutate: verifyCode, isPending: verifyPending, error: verifyError} = useVerifyCode(id, "");
+  const { mutate: initializePayment, isPending: paymentPending, error: paymentError} = useInitalizePaymentTransaction();
+  const { data: status, isLoading: verifying } = usePaymentWebHook(trxref);
+  const { data: user } = useAuthUser();
 
   const [tabState, setTabState] = useState("mode");
   const [code, setCode] = useState("");
   const [registrationMode, setRegistrationMode] = useState("code");
   const [quantity, setQuantity] = useState(1);
-
-  const { mutate: verifyCode, isPending: verifyPending, error: verifyError } =
-    useVerifyCode(id, code);
-
-  const { data: user } = useAuthUser();
-
-  // Reference generated exactly ONCE (as soon as user.uniqueID is available),
-  // then locked — re-renders never regenerate it, so what the user sees
-  // always matches what gets sent to Paystack.
   const referenceRef = useRef<string | null>(null);
-  if (!referenceRef.current && user?.uniqueID) {
-    referenceRef.current = `TXN_${user.uniqueID.replace(/[^a-zA-Z0-9]/g, "")}_${Date.now()}`;
+
+  useEffect(()=>{
+      if (!referenceRef.current) {
+    referenceRef.current = `TXN_${generateReference()}`;
   }
-  const reference = referenceRef.current;
-
-  // Poll/verify webhook status only when trxref exists — the hook itself
-  // should internally no-op if trxref is undefined, but it's still ALWAYS
-  // called so hook order never shifts.
-  const { data: status, isLoading: verifying } = usePaymentWebHook(trxref ?? "");
-
+  }, [])
 
   // ── DERIVED VALUES, MEMOIZED ──
-  const unitPrice = useMemo(
-    () => parseFloat(event?.eventPrice) || 0,
-    [event?.eventPrice],
-  );
+  const unitPrice = useMemo(() => parseFloat(event?.eventPrice) || 0, [event?.eventPrice]);
   const total = useMemo(() => unitPrice * quantity, [unitPrice, quantity]);
 
-  const decrement = useCallback(
-    () => setQuantity((q) => Math.max(1, q - 1)),
-    [],
-  );
-  const increment = useCallback(
-    () => setQuantity((q) => Math.min(10, q + 1)),
-    [],
-  );
+  const decrement = useCallback(() => setQuantity((q) => Math.max(1, q - 1)), []);
+  const increment = useCallback(() => setQuantity((q) => Math.min(10, q + 1)), []);
 
-  // handlePayment left untouched per your API's contract — amount/amountOfPeople
-  // are exactly as your backend expects them.
+  
   const handlePayment = useCallback(() => {
-    if (paymentPending || !reference) return; // guards the double-click race
+    const activeRef = referenceRef.current
+    if (paymentPending || !activeRef || !user?.email) {
+      console.log("resss", paymentPending, activeRef, user?.email)
+      return;
+    }  // guards the double-click race
+
     initializePayment({
       email: user?.email,
       amount: total,
-      reference,
+      reference: activeRef,
       eventId: id,
       amountOfPeople: quantity,
     });
-  }, [paymentPending, reference, initializePayment, user?.email, unitPrice, id, quantity]);
+  }, [paymentPending, initializePayment, user?.email, total, id, quantity]);
 
   const handleNext = useCallback(() => {
     switch (tabState) {
       case "mode":
-        setTabState(registrationMode === "code" ? "verify-code" : "paymentDetails");
+        setTabState(
+          registrationMode === "code" ? "verify-code" : "paymentDetails",
+        );
         break;
       case "paymentDetails":
         setTabState("payment");
         break;
-      // "verify-code" and "payment" advance on their own success callbacks,
-      // not via this generic Next button.
     }
   }, [tabState, registrationMode]);
 
@@ -148,7 +132,9 @@ function RouteComponent() {
             <div className="h-full pt-9 pb-7 px-6 flex flex-col items-center gap-4 text-center">
               <Spinner />
               <div>
-                <p className="text-[16px] font-[500]">Confirming your payment</p>
+                <p className="text-[16px] font-[500]">
+                  Confirming your payment
+                </p>
                 <p className="text-[13px] text-gray-500 mt-2 leading-relaxed">
                   Hang tight, this only takes a moment
                 </p>
@@ -162,11 +148,17 @@ function RouteComponent() {
                 <Check className="w-5 h-5 text-green-700" />
               </div>
               <div>
-                <p className="text-[25px] font-[500] text-[#173404]">Payment Successful</p>
-                <p className="text-[14px] text-[#3B6D11] mt-1.5 leading-relaxed mb-4">
-                  Click the button below to return to the dashboard and view your registered events
+                <p className="text-[25px] font-[500] text-[#173404]">
+                  Payment Successful
                 </p>
-                <Link to={'/dashboard'} className=" bg-primary-main text-white py-2 px-4 text-[14px] rounded-md hover:bg-primary-dark">
+                <p className="text-[14px] text-[#3B6D11] mt-1.5 leading-relaxed mb-4">
+                  Click the button below to return to the dashboard and view
+                  your registered events
+                </p>
+                <Link
+                  to={"/dashboard"}
+                  className=" bg-primary-main text-white py-2 px-4 text-[14px] rounded-md hover:bg-primary-dark"
+                >
                   Return to Dashboard
                 </Link>
               </div>
@@ -205,13 +197,16 @@ function RouteComponent() {
           <h2 className="text-center font-header font-bold text-[25px] py-3">
             Select Mode
           </h2>
-          <RadioGroup defaultValue="code" className="w-full lg:flex grid">
+          <RadioGroup value={registrationMode} onValueChange={setRegistrationMode} defaultValue="code" className="w-full lg:flex grid">
             <FieldLabel
               htmlFor="code"
               onClick={() => setRegistrationMode("code")}
               className="relative bg-white rounded-xl p-4 has-data-[state=checked]:bg-primary-main text-primary-main has-data-[state=checked]:border-primary-main has-data-[state=checked]:text-white cursor-pointer"
             >
-              <Field orientation="vertical" className="flex items-center justify-center space-y-3">
+              <Field
+                orientation="vertical"
+                className="flex items-center justify-center space-y-3"
+              >
                 <div className="rounded-md has-data-[state=checked]:bg-white has-data-[state=checked]:text-[white]">
                   <UserIcon />
                 </div>
@@ -224,7 +219,11 @@ function RouteComponent() {
                   </FieldDescription>
                 </FieldContent>
               </Field>
-              <RadioGroupItem value="code" id="code" className="absolute right-4 top-4" />
+              <RadioGroupItem
+                value="code"
+                id="code"
+                className="absolute right-4 top-4"
+              />
             </FieldLabel>
 
             <FieldLabel
@@ -232,7 +231,10 @@ function RouteComponent() {
               onClick={() => setRegistrationMode("payment")}
               className="relative bg-white rounded-xl p-4 has-data-[state=checked]:bg-primary-main text-primary-main has-data-[state=checked]:border-primary-main has-data-[state=checked]:text-white cursor-pointer"
             >
-              <Field orientation="vertical" className="flex items-center justify-center space-y-3">
+              <Field
+                orientation="vertical"
+                className="flex items-center justify-center space-y-3"
+              >
                 <div className="rounded-md has-data-[state=checked]:bg-white has-data-[state=checked]:text-[white]">
                   <UserIcon />
                 </div>
@@ -245,7 +247,11 @@ function RouteComponent() {
                   </FieldDescription>
                 </FieldContent>
               </Field>
-              <RadioGroupItem value="payment" id="payment" className="absolute right-4 top-4" />
+              <RadioGroupItem
+                value="payment"
+                id="payment"
+                className="absolute right-4 top-4"
+              />
             </FieldLabel>
           </RadioGroup>
         </TabsContent>
@@ -262,7 +268,13 @@ function RouteComponent() {
               </p>
             </div>
 
-            <InputOTP maxLength={5} id="otp-verification" required value={code} onChange={setCode}>
+            <InputOTP
+              maxLength={5}
+              id="otp-verification"
+              required
+              value={code}
+              onChange={setCode}
+            >
               <InputOTPGroup className="*:data-[slot=input-otp-slot]:h-10 *:data-[slot=input-otp-slot]:w-30 *:data-[slot=input-otp-slot]:text-xl">
                 <InputOTPSlot index={0} />
                 <InputOTPSlot index={1} />
@@ -290,19 +302,19 @@ function RouteComponent() {
 
         {/* Payment details / headcount */}
         <TabsContent value="paymentDetails">
-          <div className="w-full rounded-2xl bg-white border border-gray-100 p-5 flex flex-col gap-5">
+          <div className="w-full rounded-2xl bg-white border border-gray-100 p-5 flex flex-col gap-5 font-rubik">
             <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-              <div className="w-11 h-11 rounded-[10px] bg-reddish/10 flex-shrink-0" />
+              <div className="w-11 h-11 rounded-[10px] bg-reddish/10 flex-shrink-0 flex items-center place-content-center"> <Calendar className="text-primary font-bold"/> </div>
               <div className="min-w-0">
                 <p className="text-[15px] font-[500] font-header truncate">
                   {event?.eventTitle}
                 </p>
                 <p className="text-[12px] text-gray-500 mt-1 flex items-center gap-1">
                   <MapPin className="w-3.5 h-3.5" />
-                  {event?.location ?? "Venue"}
+                  {event?.eventLocation ?? "Venue"}
                 </p>
               </div>
-              <span className="ml-auto text-[15px] font-[500] text-reddish whitespace-nowrap ">
+              <span className="ml-auto text-[16px] font-[600] text-primary whitespace-nowrap ">
                 ₦{unitPrice.toLocaleString()}
               </span>
             </div>
@@ -345,21 +357,27 @@ function RouteComponent() {
         {/* Payment summary + pay */}
         <TabsContent value="payment">
           <div className="w-full max-w-[420px] mx-auto rounded-2xl bg-white border border-gray-100 p-5 flex flex-col gap-4">
-            <p className="text-[15px] font-[500] font-header">Complete payment</p>
+            <p className="text-[15px] font-[500] font-header">
+              Complete payment
+            </p>
 
             <div>
               <div className="flex items-center justify-between py-2.5 border-b border-gray-100">
                 <span className="text-[13px] text-gray-500 ">Name</span>
-                <span className="text-[13px] font-[500] ">{user?.fullName}</span>
+                <span className="text-[13px] font-[500] ">
+                  {user?.fullName}
+                </span>
               </div>
               <div className="flex items-center justify-between py-2.5 border-b border-gray-100">
-                <span className="text-[13px] text-gray-500 ">Number of people</span>
+                <span className="text-[13px] text-gray-500 ">
+                  Number of people
+                </span>
                 <span className="text-[13px] font-[500] ">{quantity}</span>
               </div>
               <div className="flex items-center justify-between py-2.5 border-b border-gray-100">
                 <span className="text-[13px] text-gray-500 ">Reference</span>
                 <span className="text-[12px] font-[500] font-mono">
-                  {reference ?? "Generating..."}
+                  {referenceRef.current ?? "Generating..."}
                 </span>
               </div>
               <div className="flex items-center justify-between pt-3.5 pb-1">
@@ -370,18 +388,15 @@ function RouteComponent() {
               </div>
             </div>
 
-            {paymentError && (
-              <p className="text-[13px] text-red-500 ">
-                {paymentError.message ?? "Something went wrong. Please try again."}
-              </p>
-            )}
 
             <button
               onClick={handlePayment}
-              disabled={paymentPending || !reference}
-              className="w-full h-11 rounded-[10px] bg-reddish text-white text-[14px] font-[500]  disabled:opacity-60"
+              disabled={paymentPending || !referenceRef}
+              className="w-full h-11 rounded-[10px] bg-reddish text-white text-[14px] font-[500]  disabled:opacity-60 cursor-pointer"
             >
-              {paymentPending ? "Redirecting..." : `Pay ₦${total.toLocaleString()}`}
+              {paymentPending
+                ? "Redirecting..."
+                : `Pay ₦${total.toLocaleString()}`}
             </button>
 
             <p className="text-center text-[12px] text-gray-400 ">
@@ -403,7 +418,11 @@ function RouteComponent() {
           <Button
             type="button"
             className="w-[30%] font-rubik text-[14px] py-3 text-white bg-primary-main disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            disabled={tabState === "successful" || tabState === "verify-code" || tabState === "payment"}
+            disabled={
+              tabState === "successful" ||
+              tabState === "verify-code" ||
+              tabState === "payment"
+            }
             onClick={handleNext}
           >
             Next

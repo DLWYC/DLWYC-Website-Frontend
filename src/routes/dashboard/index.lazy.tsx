@@ -58,7 +58,7 @@ function RouteComponent() {
           <img
             src={user.gender == "Male" ? Male : Female}
             alt="male avatar"
-            className="w-[35%] absolute object-cover right-0 z-[70] -bottom-[100px]"
+            className="w-[35%] absolute object-cover right-0 z-[40] -bottom-[100px]"
           />
         </div>
 
@@ -71,8 +71,8 @@ function RouteComponent() {
           </div>
 
           <ScrollArea className="h-[30vh] w-full">
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <Item variant="outline" className="p-1 mt-1 mb-1">
+            {[1, 2, 3, 4, 5, 6].map((item, key) => (
+              <Item variant="outline" className="p-1 mt-1 mb-1" key={key}>
                 <ItemContent className="p-0">
                   <ItemTitle className="font-header text-[14px]">
                     Basic Item
