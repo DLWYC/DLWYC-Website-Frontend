@@ -89,7 +89,7 @@ function Events() {
                         {event.date.split(" ")[0]}
                       </span>
                       <span className="font-geom text-2xl font-bold">
-                        {event.date.match(/\d+/)[0] ? event.date.match(/\d+/)[0] : ""}
+                        {event.date.match(/\d+/)?.[0]}
                       </span>
                     </div>
                   </div>

@@ -1,7 +1,6 @@
-import React from 'react'
 import { motion } from 'framer-motion'
 
-function SectionTitle({ subtitle, title, description }) {
+function SectionTitle({ subtitle, title, description }: { subtitle?: string; title: string; description?: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}

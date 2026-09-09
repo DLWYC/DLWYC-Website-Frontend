@@ -118,7 +118,7 @@ function GalleryPreview() {
 
         <div className="mt-10 text-center">
           <Link
-            to="/gallery"
+            to={"/"}
             className="inline-flex rounded-full bg-blue-600 px-8 py-3 text-sm font-semibold text-white transition hover:bg-blue-500"
           >
             View Full Gallery

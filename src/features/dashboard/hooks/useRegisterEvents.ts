@@ -1,12 +1,17 @@
 import { api } from "@/config/api";
 import { useMutation } from "@tanstack/react-query";
 
-
 import { toast } from "react-toastify";
 
 export function useVerifyCode() {
   return useMutation({
-    mutationFn: async ({eventId, code}: {eventId: string; code: string}) => {
+    mutationFn: async ({
+      eventId,
+      code,
+    }: {
+      eventId: string;
+      code: string;
+    }) => {
       console.log({ eventId: eventId, code: code });
       const res = await api.post("/events/verify-code", { eventId, code });
       console.log("Log: ", res.data);
@@ -50,12 +55,20 @@ export function useInitalizePaymentTransaction() {
         "events/initializeTransaction",
         paymentRequest,
       );
-      return res.data
+      return res.data;
     },
-    onSuccess: (data: string | undefined) => {
-      const authUrl = data?.data?.data?.authorization_url
+    onSuccess: (response: {
+      data: { data: { authorization_url: string } };
+    }) => {
+      console.log("Payment initialized: ", response);
+
+      // Clean extraction with no errors
+      const authUrl = response.data?.data?.authorization_url;
+
       console.log("Payment initialized: ", authUrl);
-      window.location.href = authUrl;
+      if (authUrl) {
+        window.location.href = authUrl;
+      }
     },
     onError: (error: any) => {
       toast.error(`${error?.response?.data.error}`);
@@ -63,5 +76,3 @@ export function useInitalizePaymentTransaction() {
     },
   });
 }
-
-

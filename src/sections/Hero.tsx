@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import { motion } from 'framer-motion'
 
 function Hero() {
-  const scrollTo = useCallback((e, href) => {
+  const scrollTo = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
     document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
   }, [])
