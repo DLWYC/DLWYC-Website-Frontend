@@ -1,6 +1,5 @@
 import { api } from "@/config/api";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useNavigate } from "@tanstack/react-router";
+import { useMutation } from "@tanstack/react-query";
 
 
 import { toast } from "react-toastify";

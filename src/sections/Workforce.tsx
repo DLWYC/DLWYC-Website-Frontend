@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "@tanstack/react-router";
 import { FaUsers, FaArrowRight } from "react-icons/fa";
 import SectionTitle from "@/components/SectionTitle";
@@ -34,7 +33,7 @@ function WorkforceSection() {
         </div>
 
         <Link
-          to="/join"
+          to={"/"}
           className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-500 transition-all duration-300 font-geom"
         >
           <FaUsers size={16} />

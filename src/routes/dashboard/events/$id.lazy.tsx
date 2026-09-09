@@ -1,4 +1,5 @@
 import { createLazyFileRoute, useSearch, Link } from "@tanstack/react-router";
+
 import {
   useGetSingleEventData,
   usePaymentWebHook,
@@ -17,14 +18,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  MapPin,
-  UserIcon,
-  Check,
-  X,
-  CalendarHeartIcon,
-  Calendar,
-} from "lucide-react";
+import { MapPin, UserIcon, Check, X, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -34,7 +28,6 @@ import {
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import Spinner from "@/components/Loader/Spinner";
 import { customAlphabet } from "nanoid";
-import { toast } from "react-toastify";
 
 const generateReference = customAlphabet(
   "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz",
@@ -47,23 +40,16 @@ export const Route = createLazyFileRoute("/dashboard/events/$id")({
 
 function RouteComponent() {
   const { id } = Route.useParams();
-  const { trxref } = useSearch({ from: "/dashboard/events/$id" });
+  const { trxref = "" } = useSearch({ from: "/dashboard/events/$id" });
 
   const {
     data: event,
     isLoading,
     error: fetchError,
   } = useGetSingleEventData(id);
-  const {
-    mutate: verifyCode,
-    isPending: verifyPending,
-    error: verifyError,
-  } = useVerifyCode();
-  const {
-    mutate: initializePayment,
-    isPending: paymentPending,
-    error: paymentError,
-  } = useInitalizePaymentTransaction();
+  const { mutate: verifyCode, isPending: verifyPending } = useVerifyCode();
+  const { mutate: initializePayment, isPending: paymentPending } =
+    useInitalizePaymentTransaction();
   const { data: status, isLoading: verifying } = usePaymentWebHook(trxref);
   const { data: user } = useAuthUser();
 
@@ -138,9 +124,11 @@ function RouteComponent() {
 
   const handleVerifyCode = useCallback(() => {
     verifyCode(
-        { eventId: id, code: code }, {
-      onSuccess: () => setTabState("successful"),
-    })
+      { eventId: id, code: code },
+      {
+        onSuccess: () => setTabState("successful"),
+      },
+    );
   }, [verifyCode, id, code, setTabState]);
 
   // ── EARLY RETURNS — ONLY NOW, AFTER EVERY HOOK HAS RUN ──

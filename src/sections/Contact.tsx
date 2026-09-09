@@ -20,7 +20,7 @@ function ContactPage() {
   });
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitted(true);
     const subject = encodeURIComponent(formData.subject || "General Inquiry");
@@ -36,7 +36,7 @@ function ContactPage() {
       "mailto:dlwyouth@gmail.com?subject=" + subject + "&body=" + body;
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 

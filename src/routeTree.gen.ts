@@ -14,6 +14,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardEventsIdRouteImport } from './routes/dashboard/events/$id'
 
 const SignupLazyRouteImport = createFileRoute('/signup')()
 const ResetPasswordLazyRouteImport = createFileRoute('/resetPassword')()
@@ -21,9 +22,6 @@ const ForgotPasswordLazyRouteImport = createFileRoute('/forgotPassword')()
 const DashboardIndexLazyRouteImport = createFileRoute('/dashboard/')()
 const DashboardEventsIndexLazyRouteImport =
   createFileRoute('/dashboard/events/')()
-const DashboardEventsIdLazyRouteImport = createFileRoute(
-  '/dashboard/events/$id',
-)()
 
 const SignupLazyRoute = SignupLazyRouteImport.update({
   id: '/signup',
@@ -72,7 +70,7 @@ const DashboardEventsIndexLazyRoute =
   } as any).lazy(() =>
     import('./routes/dashboard/events/index.lazy').then((d) => d.Route),
   )
-const DashboardEventsIdLazyRoute = DashboardEventsIdLazyRouteImport.update({
+const DashboardEventsIdRoute = DashboardEventsIdRouteImport.update({
   id: '/events/$id',
   path: '/events/$id',
   getParentRoute: () => DashboardRoute,
@@ -88,7 +86,7 @@ export interface FileRoutesByFullPath {
   '/resetPassword': typeof ResetPasswordLazyRoute
   '/signup': typeof SignupLazyRoute
   '/dashboard/': typeof DashboardIndexLazyRoute
-  '/dashboard/events/$id': typeof DashboardEventsIdLazyRoute
+  '/dashboard/events/$id': typeof DashboardEventsIdRoute
   '/dashboard/events/': typeof DashboardEventsIndexLazyRoute
 }
 export interface FileRoutesByTo {
@@ -98,7 +96,7 @@ export interface FileRoutesByTo {
   '/resetPassword': typeof ResetPasswordLazyRoute
   '/signup': typeof SignupLazyRoute
   '/dashboard': typeof DashboardIndexLazyRoute
-  '/dashboard/events/$id': typeof DashboardEventsIdLazyRoute
+  '/dashboard/events/$id': typeof DashboardEventsIdRoute
   '/dashboard/events': typeof DashboardEventsIndexLazyRoute
 }
 export interface FileRoutesById {
@@ -110,7 +108,7 @@ export interface FileRoutesById {
   '/resetPassword': typeof ResetPasswordLazyRoute
   '/signup': typeof SignupLazyRoute
   '/dashboard/': typeof DashboardIndexLazyRoute
-  '/dashboard/events/$id': typeof DashboardEventsIdLazyRoute
+  '/dashboard/events/$id': typeof DashboardEventsIdRoute
   '/dashboard/events/': typeof DashboardEventsIndexLazyRoute
 }
 export interface FileRouteTypes {
@@ -219,7 +217,7 @@ declare module '@tanstack/react-router' {
       id: '/dashboard/events/$id'
       path: '/events/$id'
       fullPath: '/dashboard/events/$id'
-      preLoaderRoute: typeof DashboardEventsIdLazyRouteImport
+      preLoaderRoute: typeof DashboardEventsIdRouteImport
       parentRoute: typeof DashboardRoute
     }
   }
@@ -227,13 +225,13 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardIndexLazyRoute: typeof DashboardIndexLazyRoute
-  DashboardEventsIdLazyRoute: typeof DashboardEventsIdLazyRoute
+  DashboardEventsIdRoute: typeof DashboardEventsIdRoute
   DashboardEventsIndexLazyRoute: typeof DashboardEventsIndexLazyRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardIndexLazyRoute: DashboardIndexLazyRoute,
-  DashboardEventsIdLazyRoute: DashboardEventsIdLazyRoute,
+  DashboardEventsIdRoute: DashboardEventsIdRoute,
   DashboardEventsIndexLazyRoute: DashboardEventsIndexLazyRoute,
 }
 

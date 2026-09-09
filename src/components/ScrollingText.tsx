@@ -1,5 +1,3 @@
-import React from 'react'
-
 function ScrollingText() {
   const text = "TOO LOADED TO BE STRANDED • RAISING KINGDOM LEADERS • DIOCESAN YOUTH CHAPLANCY • "
 

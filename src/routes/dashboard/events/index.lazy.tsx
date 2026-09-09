@@ -49,15 +49,15 @@ type FilterValue = (typeof FILTERS)[number];
 
 function EventComponent() {
   interface SelectedEvent {
-    _id: String;
-    eventTitle: String;
+    _id: string;
+    eventTitle: string;
     eventDate: Date;
-    eventLocation: String;
-    eventTime: String;
-    eventDescription: String;
-    eventType: String;
+    eventLocation: string;
+    eventTime: string;
+    eventDescription: string;
+    eventType: string;
     eventCapacity: Number;
-    eventImage?: String;
+    eventImage?: string;
     registeredCount: Number;
   }
   interface Event {
