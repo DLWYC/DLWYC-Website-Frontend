@@ -6,6 +6,8 @@ import 'react-toastify/dist/ReactToastify.css'
 // 🟢 2. Explicitly define what dependencies main.tsx passes into the router
 interface MyRouterContext {
   queryClient: QueryClient
+  request?: Request;
+  ssrHeaders?: {cookie?: string}
 }
 
 // 🟢 3. Upgrade from 'createRootRoute' to 'createRootRouteWithContext'
