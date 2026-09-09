@@ -71,7 +71,7 @@ function RouteComponent() {
           </div>
 
           <ScrollArea className="h-[30vh] w-full">
-            {[1, 2, 3, 4, 5, 6].map((item, key) => (
+            {[1, 2, 3, 4, 5, 6].map((key) => (
               <Item variant="outline" className="p-1 mt-1 mb-1" key={key}>
                 <ItemContent className="p-0">
                   <ItemTitle className="font-header text-[14px]">
