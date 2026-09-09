@@ -1,7 +1,7 @@
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import {
-  Eye, EyeOff, User, Mail, Phone, Lock, Users, Calendar, Church, Image, ChevronLeft,
+  Eye, EyeOff, User, Mail, Phone, Lock, Users, Calendar, Church
 } from "lucide-react";
 import Churches from "../data/churches";
 import { FieldError } from "@/components/error/fieldError";
@@ -27,7 +27,6 @@ const INITIAL_FORM = {
   membershipType: "" as "Member" | "Guest" | "",
 };
 
-type Step = "role-select" | "form";
 
 function InputWrapper({
   icon: Icon,
@@ -58,54 +57,10 @@ const inputCls =
 const selectCls =
   "w-full pl-9 pr-4 py-2.5 text-[13px] bg-transparent outline-none rounded-lg text-gray-800 appearance-none cursor-pointer disabled:cursor-not-allowed disabled:text-gray-400";
 
-// ── Role selection card ──
-function RoleCard({
-  type,
-  description,
-  selected,
-  onSelect,
-}: {
-  type: "Member" | "Guest";
-  description: string;
-  selected: boolean;
-  onSelect: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onSelect}
-      className={`w-full text-left px-5 py-4 rounded-xl border-2 transition-all duration-200
-        ${
-          selected
-            ? "border-primary-main bg-primary-main/5"
-            : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-        }`}
-    >
-      <div className="flex items-center justify-between">
-        <div>
-          <p className={`text-[14px] font-semibold ${selected ? "text-primary-main" : "text-gray-800"}`}>
-            {type}
-          </p>
-          <p className="text-[12px] text-gray-400 mt-0.5">{description}</p>
-        </div>
-        {/* Custom radio circle */}
-        <div
-          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all
-            ${selected ? "border-primary-main" : "border-gray-300"}`}
-        >
-          {selected && <div className="w-2.5 h-2.5 rounded-full bg-primary-main" />}
-        </div>
-      </div>
-    </button>
-  );
-}
 
 function SignUpView() {
   const { mutate: register, isPending } = useRegister();
 
-  const [step, setStep] = useState<Step>("role-select");
-  const [animating, setAnimating] = useState(false);
-  const [slideDirection, setSlideDirection] = useState<"forward" | "back">("forward");
 
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [showPassword, setShowPassword] = useState(false);
@@ -119,35 +74,8 @@ function SignUpView() {
     return selected ? selected.churches : [];
   }, [formData.archdeaconry]);
 
-  // ── Slide transition helper ──
-  const goTo = (nextStep: Step, direction: "forward" | "back") => {
-    setSlideDirection(direction);
-    setAnimating(true);
-    setTimeout(() => {
-      setStep(nextStep);
-      setAnimating(false);
-    }, 250);
-  };
+  
 
-  const handleRoleSelect = (type: "Member" | "Guest") => {
-    setFormData((prev) => ({
-      ...prev,
-      membershipType: type,
-      archdeaconry: "",
-      parish: "",
-    }));
-    setErrors({});
-  };
-
-  const handleProceed = () => {
-    if (!formData.membershipType) return;
-    goTo("form", "forward");
-  };
-
-  const handleBack = () => {
-    goTo("role-select", "back");
-    setErrors({});
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -159,25 +87,6 @@ function SignUpView() {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      setErrors((prev) => ({ ...prev, profilePicture: "Please select a valid image file" }));
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setErrors((prev) => ({ ...prev, profilePicture: "Image size should not exceed 5MB" }));
-      return;
-    }
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const result = reader.result as string;
-      setFormData((prev) => ({ ...prev, profilePicture: result }));
-      setErrors((prev) => ({ ...prev, profilePicture: "" }));
-    };
-    reader.readAsDataURL(file);
-  };
 
   const validate = () => {
     const next: Record<string, string> = {};
@@ -212,12 +121,6 @@ function SignUpView() {
     });
   };
 
-  // ── Slide animation classes ──
-  // const slideClass = animating
-  //   ? slideDirection === "forward"
-  //     ? "opacity-0 -translate-x-4"
-  //     : "opacity-0 translate-x-4"
-  //   : "opacity-100 translate-x-0";
 
   return (
     <div className="flex min-h-screen font-rubik">

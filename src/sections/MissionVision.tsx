@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { FaBullseye, FaEye } from "react-icons/fa";
 import SectionTitle from "@/components/SectionTitle";

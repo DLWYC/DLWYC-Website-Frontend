@@ -29,7 +29,7 @@ function WorkforceSection() {
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <Link
-                to="/join"
+                to={"/"}
                 className="inline-flex items-center gap-3 rounded-full bg-blue-600 pl-7 pr-2 py-2 text-sm font-semibold text-white transition hover:bg-blue-500"
               >
                 Join a Workforce

@@ -1,5 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
+import { createFileRoute } from "@tanstack/react-router";
 import  Hero  from "@/sections/Hero";
 import  GalleryPreview from "@/sections/GalleryPreview";
 import {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 const familyValues = [
@@ -41,7 +41,7 @@ const familyValues = [
 ]
 
 function Family() {
-  const [hoveredIndex, setHoveredIndex] = useState(null)
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
 
   return (
     <section id="values" className="relative overflow-hidden bg-white py-24 lg:py-26">

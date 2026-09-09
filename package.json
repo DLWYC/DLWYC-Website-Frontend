@@ -40,7 +40,8 @@
     "swiper": "^14.2.0",
     "tailwind-merge": "^3.6.0",
     "tremor": "^0.0.1",
-    "vaul": "^1.1.2"
+    "vaul": "^1.1.2",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",

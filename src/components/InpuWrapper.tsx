@@ -1,4 +1,4 @@
-export function InputWrapper({ icon: Icon, error, children }) {
+export function InputWrapper({ icon: Icon, error, children }: { icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; error?: boolean; children: React.ReactNode }) {
   return (
     <div className={`relative flex items-center border rounded-lg transition-all
       ${error

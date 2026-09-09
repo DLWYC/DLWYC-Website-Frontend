@@ -1,4 +1,3 @@
-import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FaTimes } from 'react-icons/fa'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -12,7 +11,7 @@ const images = Array.from({ length: 35 }, (_, index) => ({
   alt: `Gallery image ${index + 1}`,
 }))
 
-function Gallery({ open, onClose }) {
+function Gallery({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
     <AnimatePresence>
       {open && (

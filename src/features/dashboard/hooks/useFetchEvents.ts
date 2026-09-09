@@ -1,5 +1,5 @@
 import { api } from "@/config/api";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useFetchAllEvents() {
   return useQuery({

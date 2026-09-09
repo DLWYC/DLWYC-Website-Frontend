@@ -145,7 +145,7 @@ function RouteComponent() {
         <div className="lg:w-[34%] lg:flex hidden">
           <Calendar
             mode="single"
-            selected={Date.now()}
+            selected={new Date()}
             // onSelect={setSelectedDate}
             className="rounded-lg border bg-white border-muted w-full"
             captionLayout="dropdown"

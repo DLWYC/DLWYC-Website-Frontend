@@ -1,18 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
 import "swiper/css";
-import { FaChurch, FaUsers, FaCalendarAlt, FaQuoteLeft } from "react-icons/fa";
+import { FaCalendarAlt, FaQuoteLeft } from "react-icons/fa";
 
 export function BuiltForImpact() {
-  const pillars = [
-    "Weekly fellowship gatherings across parishes",
-    "Bible study, prayer, and discipleship pathways",
-    "Service projects that meet real community needs",
-    "Leadership training for the next generation",
-  ];
 
   const legacyImages = [
     "/gallery/pix11.jpg",
@@ -206,13 +200,13 @@ export function FutureSection() {
             </p>
             <div className="my-8 flex items-center place-content-center gap-4">
               <Link
-                to="/join"
+                to={"/"}
                 className="rounded-full bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-500 transition-colors"
               >
                 Join the Chaplaincy
               </Link>
               <Link
-                to="/contact"
+                to={"/"}
                 className="rounded-full border border-slate-300 px-6 py-3 font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
               >
                 Contact Us

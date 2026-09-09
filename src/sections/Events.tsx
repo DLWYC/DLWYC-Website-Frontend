@@ -1,4 +1,3 @@
-import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
 import { FaMapMarkerAlt, FaClock, FaArrowRight } from "react-icons/fa";
@@ -90,7 +89,7 @@ function Events() {
                         {event.date.split(" ")[0]}
                       </span>
                       <span className="font-geom text-2xl font-bold">
-                        {event.date.match(/\d+/)[0]}
+                        {event.date.match(/\d+/)[0] ? event.date.match(/\d+/)[0] : ""}
                       </span>
                     </div>
                   </div>
@@ -116,7 +115,7 @@ function Events() {
 
                   <div className="shrink-0">
                     <Link
-                      to="/events"
+                      to={"/"}
                       className="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-300 text-sm group/btn border border-blue-600/20 font-grotesk"
                     >
                       Learn More
@@ -134,7 +133,7 @@ function Events() {
 
         <div className="mt-10 text-center">
           <Link
-            to="/events"
+            to={"/"}
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-blue-50 text-blue-700 font-semibold rounded-full hover:bg-blue-100 transition-colors font-grotesk"
           >
             View All Events
