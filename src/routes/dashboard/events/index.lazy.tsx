@@ -296,12 +296,13 @@ function EventComponent() {
                     : "Register"}
               </Button>
             ) : selectedEvent?.registeredCount === selectedEvent?.eventCapacity ? (
-              <Button
-                disabled
-                className="bg-gray-400 text-white text-center rounded-[5px] font-header text-[16px] py-2 cursor-not-allowed"
+              <Link
+                // disabled
+                to={`${selectedEvent?._id}`}
+                className="bg-gray-400 text-white text-center rounded-[5px] font-header text-[16px] py-2 cursor-pointer"
               >
-                Event Full
-              </Button>
+                Event Full - Enter Code If Available
+              </Link>
             ) : (
               <Link
                 to={`${selectedEvent?._id}`}

@@ -17,7 +17,14 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { MapPin, UserIcon, Check, X, CalendarHeartIcon, Calendar } from "lucide-react";
+import {
+  MapPin,
+  UserIcon,
+  Check,
+  X,
+  CalendarHeartIcon,
+  Calendar,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -42,9 +49,21 @@ function RouteComponent() {
   const { id } = Route.useParams();
   const { trxref } = useSearch({ from: "/dashboard/events/$id" });
 
-  const { data: event, isLoading, error: fetchError} = useGetSingleEventData(id);
-  const { mutate: verifyCode, isPending: verifyPending, error: verifyError} = useVerifyCode(id, "");
-  const { mutate: initializePayment, isPending: paymentPending, error: paymentError} = useInitalizePaymentTransaction();
+  const {
+    data: event,
+    isLoading,
+    error: fetchError,
+  } = useGetSingleEventData(id);
+  const {
+    mutate: verifyCode,
+    isPending: verifyPending,
+    error: verifyError,
+  } = useVerifyCode();
+  const {
+    mutate: initializePayment,
+    isPending: paymentPending,
+    error: paymentError,
+  } = useInitalizePaymentTransaction();
   const { data: status, isLoading: verifying } = usePaymentWebHook(trxref);
   const { data: user } = useAuthUser();
 
@@ -54,26 +73,34 @@ function RouteComponent() {
   const [quantity, setQuantity] = useState(1);
   const referenceRef = useRef<string | null>(null);
 
-  useEffect(()=>{
-      if (!referenceRef.current) {
-    referenceRef.current = `TXN_${generateReference()}`;
-  }
-  }, [])
+  useEffect(() => {
+    if (!referenceRef.current) {
+      referenceRef.current = `TXN_${generateReference()}`;
+    }
+  }, []);
 
   // ── DERIVED VALUES, MEMOIZED ──
-  const unitPrice = useMemo(() => parseFloat(event?.eventPrice) || 0, [event?.eventPrice]);
+  const unitPrice = useMemo(
+    () => parseFloat(event?.eventPrice) || 0,
+    [event?.eventPrice],
+  );
   const total = useMemo(() => unitPrice * quantity, [unitPrice, quantity]);
 
-  const decrement = useCallback(() => setQuantity((q) => Math.max(1, q - 1)), []);
-  const increment = useCallback(() => setQuantity((q) => Math.min(10, q + 1)), []);
+  const decrement = useCallback(
+    () => setQuantity((q) => Math.max(1, q - 1)),
+    [],
+  );
+  const increment = useCallback(
+    () => setQuantity((q) => Math.min(10, q + 1)),
+    [],
+  );
 
-  
   const handlePayment = useCallback(() => {
-    const activeRef = referenceRef.current
+    const activeRef = referenceRef.current;
     if (paymentPending || !activeRef || !user?.email) {
-      console.log("resss", paymentPending, activeRef, user?.email)
+      console.log("resss", paymentPending, activeRef, user?.email);
       return;
-    }  // guards the double-click race
+    } // guards the double-click race
 
     initializePayment({
       email: user?.email,
@@ -110,10 +137,11 @@ function RouteComponent() {
   }, [tabState]);
 
   const handleVerifyCode = useCallback(() => {
-    verifyCode(undefined, {
+    verifyCode(
+        { eventId: id, code: code }, {
       onSuccess: () => setTabState("successful"),
-    });
-  }, [verifyCode]);
+    })
+  }, [verifyCode, id, code, setTabState]);
 
   // ── EARLY RETURNS — ONLY NOW, AFTER EVERY HOOK HAS RUN ──
   if (isLoading) {
@@ -197,7 +225,12 @@ function RouteComponent() {
           <h2 className="text-center font-header font-bold text-[25px] py-3">
             Select Mode
           </h2>
-          <RadioGroup value={registrationMode} onValueChange={setRegistrationMode} defaultValue="code" className="w-full lg:flex grid">
+          <RadioGroup
+            value={registrationMode}
+            onValueChange={setRegistrationMode}
+            defaultValue="code"
+            className="w-full lg:flex grid"
+          >
             <FieldLabel
               htmlFor="code"
               onClick={() => setRegistrationMode("code")}
@@ -226,33 +259,35 @@ function RouteComponent() {
               />
             </FieldLabel>
 
-            <FieldLabel
-              htmlFor="payment"
-              onClick={() => setRegistrationMode("payment")}
-              className="relative bg-white rounded-xl p-4 has-data-[state=checked]:bg-primary-main text-primary-main has-data-[state=checked]:border-primary-main has-data-[state=checked]:text-white cursor-pointer"
-            >
-              <Field
-                orientation="vertical"
-                className="flex items-center justify-center space-y-3"
+            {event?.registeredCount !== event?.eventCapacity && (
+              <FieldLabel
+                htmlFor="payment"
+                onClick={() => setRegistrationMode("payment")}
+                className="relative bg-white rounded-xl p-4 has-data-[state=checked]:bg-primary-main text-primary-main has-data-[state=checked]:border-primary-main has-data-[state=checked]:text-white cursor-pointer"
               >
-                <div className="rounded-md has-data-[state=checked]:bg-white has-data-[state=checked]:text-[white]">
-                  <UserIcon />
-                </div>
-                <FieldContent>
-                  <FieldTitle className="font-header text-[22px] font-bold">
-                    Make Payment
-                  </FieldTitle>
-                  <FieldDescription className="font-rubik text-[14px] has-data-[state=checked]:text-white/70">
-                    You are paying for yourself alone
-                  </FieldDescription>
-                </FieldContent>
-              </Field>
-              <RadioGroupItem
-                value="payment"
-                id="payment"
-                className="absolute right-4 top-4"
-              />
-            </FieldLabel>
+                <Field
+                  orientation="vertical"
+                  className="flex items-center justify-center space-y-3"
+                >
+                  <div className="rounded-md has-data-[state=checked]:bg-white has-data-[state=checked]:text-[white]">
+                    <UserIcon />
+                  </div>
+                  <FieldContent>
+                    <FieldTitle className="font-header text-[22px] font-bold">
+                      Make Payment
+                    </FieldTitle>
+                    <FieldDescription className="font-rubik text-[14px] has-data-[state=checked]:text-white/70">
+                      You are paying for yourself alone
+                    </FieldDescription>
+                  </FieldContent>
+                </Field>
+                <RadioGroupItem
+                  value="payment"
+                  id="payment"
+                  className="absolute right-4 top-4"
+                />
+              </FieldLabel>
+            )}
           </RadioGroup>
         </TabsContent>
 
@@ -284,12 +319,6 @@ function RouteComponent() {
               </InputOTPGroup>
             </InputOTP>
 
-            {verifyError && (
-              <p className="text-[13px] text-red-500  -mt-4">
-                {verifyError.message}
-              </p>
-            )}
-
             <Button
               className="w-full rounded-lg font-rubik font-normal text-sm py-5 text-white bg-primary-main hover:bg-primary-main/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               onClick={handleVerifyCode}
@@ -304,7 +333,10 @@ function RouteComponent() {
         <TabsContent value="paymentDetails">
           <div className="w-full rounded-2xl bg-white border border-gray-100 p-5 flex flex-col gap-5 font-rubik">
             <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-              <div className="w-11 h-11 rounded-[10px] bg-reddish/10 flex-shrink-0 flex items-center place-content-center"> <Calendar className="text-primary font-bold"/> </div>
+              <div className="w-11 h-11 rounded-[10px] bg-reddish/10 flex-shrink-0 flex items-center place-content-center">
+                {" "}
+                <Calendar className="text-primary font-bold" />{" "}
+              </div>
               <div className="min-w-0">
                 <p className="text-[15px] font-[500] font-header truncate">
                   {event?.eventTitle}
@@ -387,7 +419,6 @@ function RouteComponent() {
                 </span>
               </div>
             </div>
-
 
             <button
               onClick={handlePayment}

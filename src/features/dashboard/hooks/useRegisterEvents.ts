@@ -5,9 +5,9 @@ import { useNavigate } from "@tanstack/react-router";
 
 import { toast } from "react-toastify";
 
-export function useVerifyCode(eventId: any, code: any) {
+export function useVerifyCode() {
   return useMutation({
-    mutationFn: async () => {
+    mutationFn: async ({eventId, code}: {eventId: string; code: string}) => {
       console.log({ eventId: eventId, code: code });
       const res = await api.post("/events/verify-code", { eventId, code });
       console.log("Log: ", res.data);
