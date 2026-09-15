@@ -1,27 +1,24 @@
-import { Outlet, createRootRoute, useLocation } from '@tanstack/react-router'
-import { GoogleOAuthProvider } from '@react-oauth/google'
-import NavBar from '@/components/Nav_Bar/Nav_Bar'
-import Footer from '@/components/Footer/Footer'
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
+import { ToastContainer } from 'react-toastify'
+import type { QueryClient } from '@tanstack/react-query' // 🟢 1. Import the type engine
+import 'react-toastify/dist/ReactToastify.css'
 
-export const Route = createRootRoute({
-  component: () => {
-    const location = useLocation()
-    return (
-      <>
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-          {location.pathname.startsWith('/userdashboard') ||
-          location.pathname.startsWith('/superadmin') ||
-          location.pathname.startsWith('/registrationunit') ? null : (
-            <NavBar />
-          )}
-          <Outlet />
-          {location.pathname.startsWith('/userdashboard') ||
-          location.pathname.startsWith('/superadmin') ||
-          location.pathname.startsWith('/registrationunit') ? null : (
-            <Footer />
-          )}
-        </GoogleOAuthProvider>
-      </>
-    )
-  },
+// 🟢 2. Explicitly define what dependencies main.tsx passes into the router
+interface MyRouterContext {
+  queryClient: QueryClient
+}
+
+// 🟢 3. Upgrade from 'createRootRoute' to 'createRootRouteWithContext'
+export const Route = createRootRouteWithContext<MyRouterContext>()({
+  component: RootLayout,
 })
+
+function RootLayout() {
+  return (
+    <div className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-primary/20">
+      {/* Viewport for current active route matching */}
+      <Outlet />
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+    </div>
+  )
+}
