@@ -20,12 +20,14 @@ styleSheet.textContent = `
 document.head.appendChild(styleSheet);
 
 /**
- * In-page QR scanner — opens the device camera (phone camera, or a plugged-in
- * USB camera) and decodes check-in QR passes right inside the web page.
+ * In-page QR scanner — opens the device camera and decodes check-in QR
+ * passes right inside the web page.
  *
- * No hardware is wired in: the browser's camera API does the capture, so the
- * first target (phones) works out of the box. When you plug an external
- * camera into the machine, it simply shows up in the camera list below.
+ * The intended setup is mobile devices: each operator scans with their own
+ * phone. No hardware is wired in — the browser's camera API does the capture,
+ * so phones work out of the box. If a separate camera device is ever
+ * connected to a computer, it simply appears in the camera list (optional
+ * fallback, not the plan).
  */
 export default function QrScannerModal({ open, onClose, onScan }) {
   const [status, setStatus] = useState('idle'); // idle | loading | scanning | result | error
@@ -122,8 +124,8 @@ export default function QrScannerModal({ open, onClose, onScan }) {
       if (!navigator.mediaDevices?.getUserMedia) {
         setError(
           'This browser cannot access the camera here. Phone cameras need a secure ' +
-            'HTTPS connection — open the portal over HTTPS (or use a computer with a ' +
-            'plugged-in USB camera on localhost/HTTPS).'
+            'HTTPS connection — open the portal over an HTTPS address. (On a ' +
+            'computer, localhost works.)'
         );
         setStatus('error');
         return;
@@ -256,8 +258,9 @@ export default function QrScannerModal({ open, onClose, onScan }) {
             </div>
           )}
 
-          {/* Camera picker — phones show front/back; a plugged-in USB camera
-              appears here automatically (the "extra camera device" path). */}
+          {/* Camera picker — phones show front/back. If a separate camera
+              device is ever connected to a computer, it appears here
+              automatically (optional fallback, not the main setup). */}
           {cameras.length > 1 && (
             <div className="flex items-center gap-2">
               <Camera className="w-4 h-4 text-gray-400 shrink-0" />
@@ -298,9 +301,10 @@ export default function QrScannerModal({ open, onClose, onScan }) {
           </div>
 
           <p className="text-[11px] text-gray-400 leading-relaxed">
-            The camera runs entirely on this device — nothing is uploaded. On phones, allow the
-            camera prompt once. For a station setup, plug a USB camera into this computer and
-            select it from the list.
+            Uses this device's camera — nothing is uploaded. Allow the camera
+            prompt once. (If you ever want to use a separate camera device
+            instead of a phone, it shows up in the camera list automatically —
+            but a mobile device is the recommended setup.)
           </p>
         </div>
       </div>

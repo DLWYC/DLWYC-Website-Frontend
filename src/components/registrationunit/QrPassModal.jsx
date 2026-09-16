@@ -94,8 +94,8 @@ export default function QrPassModal({ attendee, eventId, eventTitle, onClose }) 
           />
 
           <p className="text-[11px] text-gray-400 text-center leading-relaxed">
-            Show this on screen or print it. The scanner in the portal reads it with a phone or
-            USB camera.
+            Show this on screen or print it. The scanner in the portal reads it with the
+            operator's phone.
           </p>
 
           <div className="flex gap-2 w-full">
