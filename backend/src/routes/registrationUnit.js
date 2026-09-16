@@ -144,6 +144,121 @@ router.post('/rfid/scan', (req, res) => {
   return res.json({ message: `Checked ${toggled ? 'in' : 'out'}`, action, data: toAttendeeView(attendee) });
 });
 
+/**
+ * POST /api/registrationUnit/qr/scan
+ * QR code twin of /rfid/scan. Body:
+ *   { payload }                       — the raw QR text (DLWYC-CHKIN|<eventId>|<uniqueId>)
+ * or { eventId, uniqueId } directly.
+ * Optional: { eventTitle } — the station's selected event, used as a guard so a
+ * station only checks people in/out for its own event.
+ * Resolves the attendee by their own uniqueId, toggles check-in/check-out and
+ * logs the scan with method "qr".
+ */
+router.post('/qr/scan', (req, res) => {
+  const body = req.body || {};
+  let eventId = (body.eventId || '').toString().trim();
+  let uniqueId = (body.uniqueId || '').toString().trim().toUpperCase();
+
+  // Accept the raw QR text as well (same format the frontend generates/parses).
+  if (!uniqueId && body.payload) {
+    const raw = (body.payload || '').trim();
+    if (raw.startsWith('{')) {
+      try {
+        const obj = JSON.parse(raw);
+        eventId = eventId || String(obj.eventId || '').trim();
+        uniqueId = String(obj.uniqueId || '').trim().toUpperCase();
+      } catch {
+        /* fall through to pipe format */
+      }
+    }
+    if (!uniqueId) {
+      const parts = raw.split('|').map((s) => s.trim());
+      if (parts[0]?.toUpperCase() === 'DLWYC-CHKIN') {
+        if (parts.length >= 3) {
+          eventId = eventId || parts[1] || '';
+          uniqueId = (parts[2] || '').toUpperCase();
+        } else if (parts.length === 2 && parts[1]) {
+          // Lenient form: prefix + uniqueId only (no event) — the station
+          // guard below still applies.
+          uniqueId = parts[1].toUpperCase();
+        }
+      }
+    }
+  }
+
+  if (!uniqueId) {
+    return res.status(400).json({ message: 'No attendee unique ID found in that QR code' });
+  }
+
+  const attendee = db.attendees.find(
+    (a) => (a.uniqueId || '').toUpperCase() === uniqueId
+  );
+
+  if (!attendee) {
+    logRfidScan({
+      uid: uniqueId,
+      method: 'qr',
+      eventTitle: eventId,
+      action: 'unknown',
+      message: 'No attendee for QR',
+    });
+    return res.status(404).json({
+      message: 'No attendee found for this QR code',
+      action: 'unknown',
+    });
+  }
+
+  // Event guard: the event encoded in the QR (or the station's event) must be
+  // the event this attendee is registered for.
+  const attendeeEvent = attendee.eventDetails?.eventTitle || '';
+  const findEvent = (id) =>
+    db.events.find((e) => e._id === id || e.eventTitle === id);
+
+  let wrongEvent = null;
+  const qrEvent = eventId ? findEvent(eventId) : null;
+  const stationEvent = (body.eventTitle || '').toString().trim();
+  if (qrEvent && qrEvent.eventTitle !== attendeeEvent) {
+    wrongEvent = qrEvent.eventTitle;
+  } else if (stationEvent && stationEvent !== attendeeEvent) {
+    wrongEvent = stationEvent;
+  }
+
+  if (wrongEvent) {
+    logRfidScan({
+      uid: uniqueId,
+      method: 'qr',
+      eventTitle: attendeeEvent,
+      action: 'wrongEvent',
+      fullName: attendee.fullName,
+      message: `QR is for ${wrongEvent}`,
+    });
+    return res.status(409).json({
+      message: `This QR is for ${wrongEvent} — ${attendee.fullName} is registered for ${attendeeEvent}`,
+      action: 'wrongEvent',
+      data: toAttendeeView(attendee),
+    });
+  }
+
+  const toggled = !attendee.eventDetails?.checkedInStatus;
+  attendee.eventDetails.checkedInStatus = toggled;
+  save();
+
+  const action = toggled ? 'checkedIn' : 'checkedOut';
+  logRfidScan({
+    uid: uniqueId,
+    method: 'qr',
+    eventTitle: attendeeEvent,
+    action,
+    userId: attendee.userId,
+    fullName: attendee.fullName,
+  });
+  return res.json({
+    message: `Checked ${toggled ? 'in' : 'out'}`,
+    action,
+    data: toAttendeeView(attendee),
+  });
+});
+
 /** GET /api/registrationUnit/rfid/logs  (optional — recent scan history) */
 router.get('/rfid/logs', (_req, res) => {
   res.json({ data: db.rfidLogs.slice(0, 50) });

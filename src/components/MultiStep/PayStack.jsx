@@ -16,7 +16,6 @@ const PAYMENT_STATUS = {
 };
 
 function PayStack({ userDetails, values, setValues, paymentOption }) {
-    console.log("PayStack Component Props", { userDetails, values, paymentOption });
   const numberfPeopleToBePayedFor = values?.numberfPeopleToBePayedFor ?? 0;
   const single = 7500 // Production amount
   
@@ -56,7 +55,6 @@ function PayStack({ userDetails, values, setValues, paymentOption }) {
         callback_url: `${window.location.origin}/userdashboard/event/verifyPayment?eventId=${values?.eventId}`, // Where Paystack redirects after payment
       };
 
-      console.log('Initializing payment with:', payStackData);
 
       // Send request to your backend to initialize payment
       const response = await axios.post(`${backendURL}/api/payment/initializeTransaction/`,  payStackData);

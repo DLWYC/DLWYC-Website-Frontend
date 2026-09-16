@@ -35,8 +35,24 @@ function makeAttendee({ fullName, email, archCode, n, eventTitle, cardUID }) {
 }
 
 const SEED_EVENTS = [
-  { _id: 'evt-camp', eventTitle: '2025 YOUTH CAMP', date: '2026-03-25', location: 'DLW Camp Ground' },
-  { _id: 'evt-harvest', eventTitle: 'YOUTH HARVEST', date: '2026-06-14', location: 'Cathedral Hall' },
+  {
+    _id: 'evt-camp',
+    eventTitle: '2025 YOUTH CAMP',
+    date: '2026-03-25',
+    // eventDate/eventTime in ISO form — the user dashboard calendar + event
+    // cards read these fields.
+    eventDate: '2026-03-25T08:00:00.000Z',
+    eventTime: '08:00',
+    location: 'DLW Camp Ground',
+  },
+  {
+    _id: 'evt-harvest',
+    eventTitle: 'YOUTH HARVEST',
+    date: '2026-06-14',
+    eventDate: '2026-06-14T09:00:00.000Z',
+    eventTime: '09:00',
+    location: 'Cathedral Hall',
+  },
 ];
 
 const ARCH_CODES = ['04', '13', '17', '22', '24', '30'];
@@ -47,10 +63,51 @@ const SAMPLE_TAG_UIDS = [
   'AABBCCDD01', '1A2B3C4D5E', '6F78A9B0C1',
 ];
 
+/** Demo user accounts (first two attendees) so the user dashboard can be
+ *  tested: log in with attendee1@example.com / attendee123 and you'll see
+ *  your own check-in QR pass. */
+function makeDemoUsers(attendees) {
+  return [0, 1]
+    .filter((i) => attendees[i])
+    .map((i) => ({
+      userId: attendees[i].userId,
+      fullName: attendees[i].fullName,
+      email: attendees[i].email,
+      password: 'attendee123',
+      phone: attendees[i].phone,
+      gender: attendees[i].gender,
+      uniqueId: attendees[i].uniqueId,
+      archdeaconry: (attendees[i].uniqueId || '').split('/')[1] || '04',
+    }));
+}
+
+/**
+ * Light migration for databases seeded before the QR feature existed:
+ * adds eventDate/eventTime to events and creates the demo user accounts.
+ */
+function migrate(current) {
+  let changed = false;
+  for (const e of current.events) {
+    if (!e.eventDate && e.date) {
+      e.eventDate = `${e.date}T08:00:00.000Z`;
+      e.eventTime = e.eventTime || '08:00';
+      changed = true;
+    }
+  }
+  if (!Array.isArray(current.users)) current.users = [];
+  if (current.users.length === 0 && current.attendees.length > 0) {
+    current.users.push(...makeDemoUsers(current.attendees));
+    changed = true;
+  }
+  if (changed) save();
+  return changed;
+}
+
 export function seedIfEmpty() {
   const current = load();
   if (current.events.length > 0 && current.attendees.length > 0) {
-    return { seeded: false };
+    const migrated = migrate(current);
+    return { seeded: false, migrated };
   }
 
   const events = SEED_EVENTS.map((e) => ({ ...e }));
@@ -102,10 +159,13 @@ export function seedIfEmpty() {
     },
   ];
 
+  const users = makeDemoUsers(attendees);
+
   db.events = events;
   db.attendees = attendees;
   db.admins = admins;
+  db.users = users;
   db.rfidLogs = [];
   save();
-  return { seeded: true, events: events.length, attendees: attendees.length };
+  return { seeded: true, events: events.length, attendees: attendees.length, users: users.length };
 }
