@@ -81,6 +81,12 @@ Added an **RFID Card Scanner** box and per-attendee card features:
 - **Report** button — downloads the selected event's attendee list with
   check-in status as a CSV, **respecting the current archdeaconry + search
   filters**, and appends a totals row (handy for food/attendance billing).
+- **Scan QR Code** button — opens an in-page browser camera scanner (phone or
+  plugged-in USB camera) that reads an attendee's check-in QR pass and runs
+  the same check-in/out + confirmation flow. See the **QR code check-in**
+  section below.
+- Each attendee card also has a **QR** button to view / print that person's
+  check-in QR pass (event ID + their unique ID).
 
 ## Backend — now included in this repo
 
@@ -109,6 +115,13 @@ assigned card UIDs you can scan immediately.
 3. **`POST /api/registrationUnit/rfid/scan`** (used by the Pi reader in
    `toggle` mode). Body: `{ cardUID, eventTitle }`. Resolves the UID and
    toggles check-in/check-out, returning `{ action: 'checkedIn'|'checkedOut' }`.
+
+4. **`POST /api/registrationUnit/qr/scan`** (QR code twin of `/rfid/scan`).
+   Body: `{ payload }` — the raw QR text — or `{ eventId, uniqueId }`
+   directly. Optional `{ eventTitle }` scopes the scan to the station's
+   event. Resolves the attendee by their **own unique ID**, toggles
+   check-in/check-out, and logs with `method: 'qr'`. Returns the same
+   `{ action: 'checkedIn'|'checkedOut'|'wrongEvent'|'unknown' }` shape.
 
 ### Remote access for a network reader (Raspberry Pi)
 
@@ -172,6 +185,56 @@ sessions). Options:
 > "Day 1 Lunch", "Day 2 Breakfast"), then assign each station's laptop the
 > matching `?event=` URL. Exports (`Report`) already break down attendance per
 > event, so food billing stays clean.
+
+## QR code check-in (phone / plugged-in camera)
+
+The same check-in/out flow also works with **QR codes**. The QR pass is the
+attendee's "digital card" and encodes exactly two things:
+
+1. the **event ID** (the event's `_id`, e.g. `evt-camp`)
+2. the attendee's **own unique ID** (e.g. `DLW/04/2026/0001`)
+
+Wire format (plain text, any QR generator/scanner can handle it):
+
+```
+DLWYC-CHKIN|<eventId>|<uniqueId>
+```
+
+A JSON object `{ "eventId": "...", "uniqueId": "..." }` is accepted too.
+Both the generator and parser live in **`src/lib/qr.js`**
+(`buildQrPayload` / `parseQrPayload`).
+
+### Where the QR comes from
+
+- **Registration Unit portal** — each attendee card has a **QR** button that
+  opens a modal showing that person's pass (event ID + their unique ID). Use
+  **Print pass** for a physical pass.
+- **User dashboard** — after an attendee logs in, their registered event card
+  has a **Show Check-In QR** toggle. This is the QR they'd present on their
+  phone at the gate. Demo login: `attendee1@example.com` / `attendee123`.
+
+### Where it gets scanned
+
+The portal's **Scan QR Code** button opens a browser camera scanner
+(`src/components/registrationunit/QrScannerModal.jsx`, built on
+`html5-qrcode`). It runs **entirely on the device** — the phone's camera (or a
+plugged-in **USB camera**, which just shows up in the in-modal camera picker)
+captures the frame and decodes the QR locally. On a successful decode it posts
+to `POST /api/registrationUnit/qr/scan`, and the same green/amber
+confirmation + Recent Scans feed (tagged **QR**) that RFID uses is shown.
+
+> **Camera requires a secure context.** Browsers only expose the camera over
+> **HTTPS** (or `localhost`). So: on a computer, `http://localhost:3000`
+> works out of the box; on a **phone**, the page must be reached over HTTPS
+> (a production host, or a local tunnel) — a plain `http://<lan-ip>` page on a
+> phone will not get camera access. The scanner shows a friendly message in
+> that case instead of failing silently.
+
+### Guards
+
+- If the QR's event doesn't match the attendee's registered event (or the
+  station's selected event), the scan is rejected with a **WRONG** log entry.
+- Non-DLWYC QR codes are rejected in the frontend with a clear toast.
 
 ## Data model
 

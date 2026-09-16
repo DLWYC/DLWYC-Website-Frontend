@@ -2,9 +2,10 @@ import { createFileRoute, Link} from '@tanstack/react-router'
 import { Card, CardContent } from "@/components/ui/card"
 import {DashboardCards} from "@/data/Dashboard"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Building2, CalendarClockIcon, Calendar as CalenderIcon, DoorOpen, MapPin, TimerIcon } from 'lucide-react'
+import { Building2, CalendarClockIcon, Calendar as CalenderIcon, DoorOpen, MapPin, TimerIcon, QrCode } from 'lucide-react'
 import UserProfileImage from '@/components/UserProfileImage/UserProfileImage'
 import { Calendar } from "@/components/ui/calendar"
+import CheckInQr from '@/components/CheckInQr'
 import { useEffect, useState } from 'react'
 import { formatDate } from 'date-fns/format'
 import NotFound from '@/assets/Dashboard/notfound.png'
@@ -22,6 +23,8 @@ function UserDashboard() {
   const {userData, isLoadingUserData, allEvent, userRegisteredEvents, fetchingAllEvents, errorLoadingEvents} = useAuth()
   const [date, setDate] = useState(new Date())
   const [filteredEvents, setFilteredEvents] = useState([]);
+  // Which event's check-in QR pass is currently expanded (null = all closed).
+  const [qrOpenFor, setQrOpenFor] = useState(null);
   
 
 
@@ -184,6 +187,34 @@ const handleFilter = () => {
                              <div className="lg:flex lg:justify-end grid text-center lg:mt-0 mt-3">
                               <Link to={`event?eventId=${_._id}`} disabled={_.paymentStatus == 'success' ? true : false} className={`${_.paymentStatus == 'success' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-primary-main hover:text-white'}  text-[14px] transition-all duration-150 border border-primary-main  px-[30px] py-[7px] `}>Register</Link>
                              </div>
+
+                             {/* My Check-In QR pass (event ID + my unique ID) */}
+                             {_.paymentStatus === 'success' && userData?.uniqueId && (
+                               <div className="mt-2 pt-3 border-t border-gray-100 flex flex-col items-center gap-2">
+                                 {qrOpenFor === _._id && (
+                                   <>
+                                     <CheckInQr
+                                       eventId={_._id}
+                                       eventTitle={_.eventTitle}
+                                       uniqueId={userData.uniqueId}
+                                       name={userData.fullName}
+                                       size={150}
+                                     />
+                                     <p className="text-[11px] text-gray-400">
+                                       Present this at the gate / registration desk.
+                                     </p>
+                                   </>
+                                 )}
+                                 <button
+                                   type="button"
+                                   onClick={() => setQrOpenFor(qrOpenFor === _._id ? null : _._id)}
+                                   className="text-[13px] text-indigo-600 hover:underline flex items-center gap-1.5"
+                                 >
+                                   <QrCode className="w-4 h-4" />
+                                   {qrOpenFor === _._id ? 'Hide Check-In QR' : 'Show Check-In QR'}
+                                 </button>
+                               </div>
+                             )}
                              </div>
 
                   ))}
