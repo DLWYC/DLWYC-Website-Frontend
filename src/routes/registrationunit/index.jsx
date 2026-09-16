@@ -957,8 +957,7 @@ function EventCheckInPortal() {
                   Check-In Scanner
                 </h3>
                 <p className="text-xs text-gray-500">
-                  Default: scan the attendee's QR pass with your phone. The RFID card
-                  scan is there for when a card reader is connected.
+                  Scan the attendee's QR pass with your phone, or use an RFID card tap.
                 </p>
               </div>
             </div>
@@ -983,9 +982,7 @@ function EventCheckInPortal() {
                 className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800"
               >
                 <IdCard className="w-3.5 h-3.5" />
-                {rfidSectionOpen
-                  ? 'Hide RFID card scan'
-                  : 'RFID card scan (when a reader is connected)'}
+                {rfidSectionOpen ? 'Hide RFID card scan' : 'RFID card scan'}
                 <ChevronRight
                   className={`w-3.5 h-3.5 transition-transform ${
                     rfidSectionOpen ? 'rotate-90' : ''

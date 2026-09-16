@@ -60,9 +60,9 @@ You should see the DLWYC website. Leave the terminal running.
 The page auto-selects the **2025 YOUTH CAMP** event and shows a **Station**
 badge and a **Scan Card** box.
 
-**Simulate a card tap** — expand **"RFID card scan (when a reader is
-connected)"** under the Check-In Scanner, then type (or paste) one of these
-UIDs into the box and press **Enter** (or wait ~1s — it auto-submits):
+**Simulate a card tap** — expand **"RFID card scan"** under the Check-In
+Scanner, then type (or paste) one of these UIDs into the box and press
+**Enter** (or wait ~1s — it auto-submits):
 
 | Card UID | Attendee |
 |----------|----------|
