@@ -1566,10 +1566,4 @@ function EventCheckInPortal() {
       )}
     </div>
   );
-}            </p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
 }
