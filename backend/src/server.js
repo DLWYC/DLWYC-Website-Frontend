@@ -50,14 +50,12 @@ app.use((req, _res, next) => {
 // API routes.
 app.use('/api/registrationUnit', registrationUnitRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/user', userRoutes);
 app.use('/api/payment', paymentRoutes);
 
-// Aliases used by the frontend.
-app.use('/api/userLogin', userRoutes);
-app.use('/api/userRegistration', userRoutes);
-app.use('/api/userDashboard', userRoutes);
-app.use('/api/userRegisteredEvents', userRoutes);
+// User routes are mounted at the API root because the frontend calls them
+// directly as /api/userLogin, /api/userRegistration, /api/userDashboard,
+// /api/userRegisteredEvents/... (see src/lib/AuthContext.jsx).
+app.use('/api', userRoutes);
 
 // Health check.
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
