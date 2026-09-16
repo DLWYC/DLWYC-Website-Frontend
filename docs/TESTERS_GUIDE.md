@@ -60,8 +60,9 @@ You should see the DLWYC website. Leave the terminal running.
 The page auto-selects the **2025 YOUTH CAMP** event and shows a **Station**
 badge and a **Scan Card** box.
 
-**Simulate a card tap** — type (or paste) one of these UIDs into the **Scan
-Card** box and press **Enter** (or wait ~1s — it auto-submits):
+**Simulate a card tap** — expand **"RFID card scan (when a reader is
+connected)"** under the Check-In Scanner, then type (or paste) one of these
+UIDs into the box and press **Enter** (or wait ~1s — it auto-submits):
 
 | Card UID | Attendee |
 |----------|----------|
@@ -106,8 +107,8 @@ attendee's "digital card" and it stores two things:
 
 ### 5b. Scan it
 
-1. On the Registration Unit portal, click **Scan QR Code** (next to the
-   Scan Card box).
+1. On the Registration Unit portal, click the big **Scan QR Code** button
+   (the default action at the top of the Check-In Scanner).
 2. The browser opens **this device's camera** right inside the page — allow
    the camera permission when the browser asks. (This is the intended setup:
    each operator just uses **their own phone**.)
