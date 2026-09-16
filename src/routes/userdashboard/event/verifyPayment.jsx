@@ -86,7 +86,6 @@ const registerUserEvent = useCallback(async (paymentData) => {
         codes: codesGenerated.data.data
       });
 
-      console.log('Payment codes generated and saved successfully');
     }
 
     return response.data;
@@ -121,7 +120,6 @@ const verifyPayment = useCallback(async () => {
     });
 
     const verificationResult = response.data.data;
-    console.log("Verification Result", verificationResult);
 
     if (verificationResult.status !== 'success') {
       throw new Error('Payment verification failed');

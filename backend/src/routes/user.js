@@ -73,16 +73,41 @@ router.get('/userDashboard', (req, res) => {
   });
 });
 
-/** GET /api/userRegisteredEvents/:userId */
+/**
+ * GET /api/userRegisteredEvents/:email/:uniqueId
+ * (The user dashboard calls this with both the email and the unique ID.)
+ * Returns the attendee record enriched with the fields the dashboard's
+ * "allEvent" query consumes (eventId / paymentStatus / registrationDate).
+ */
+function toRegistrationView(a) {
+  const event = db.events.find((e) => e.eventTitle === a.eventDetails?.eventTitle);
+  return {
+    ...a,
+    password: undefined,
+    eventId: event?._id || a.eventDetails?.eventTitle || '',
+    eventTitle: a.eventDetails?.eventTitle || '',
+    paymentStatus: a.eventDetails?.paymentStatus || '',
+    registrationDate: a.createdAt || '',
+  };
+}
+
+router.get('/userRegisteredEvents/:email/:uniqueId', (req, res) => {
+  const { email, uniqueId } = req.params;
+  const attendee = db.attendees.find(
+    (a) =>
+      a.email?.toLowerCase() === (email || '').toLowerCase() ||
+      (a.uniqueId || '').toUpperCase() === (uniqueId || '').toUpperCase()
+  );
+  if (!attendee) return res.json({ message: 'No registrations found', data: [] });
+  res.json({ data: [toRegistrationView(attendee)] });
+});
+
+/** GET /api/userRegisteredEvents/:userId  (single-segment form) */
 router.get('/userRegisteredEvents/:userId', (req, res) => {
   const userId = req.params.userId;
   const attendee = db.attendees.find((a) => a.userId === userId || a.uniqueId === userId);
   if (!attendee) return res.status(404).json({ message: 'No registrations found', data: [] });
-  res.json({ data: [toView(attendee)] });
+  res.json({ data: [toRegistrationView(attendee)] });
 });
-
-function toView(a) {
-  return { ...a, password: undefined };
-}
 
 export default router;

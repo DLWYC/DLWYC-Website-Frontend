@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useSearch } from '@tanstack/react-router'
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar, ScanLine, IdCard, History, Download, Store } from 'lucide-react';
+import { Search, Check, X, ChevronLeft, ChevronRight, Loader2, RefreshCw, Users, CheckCircle, Clock, Mail, CreditCard, Calendar, ScanLine, IdCard, History, Download, Store, QrCode } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Archdeaconries, getArchdeaconryCode } from '@/data/Archdeaconries';
 import axios from 'axios';
@@ -11,6 +11,9 @@ import { toast } from "react-toastify";
 import RegistrationUnitTopNav from '@/components/AppTopNav/RegitrationUnitTopNav';
 import { BACKEND_URL } from '@/lib/env';
 import { toCsv, csvCell, downloadCsv } from '@/lib/csv';
+import { parseQrPayload } from '@/lib/qr';
+import QrScannerModal from '@/components/registrationunit/QrScannerModal';
+import QrPassModal from '@/components/registrationunit/QrPassModal';
 
 // Add fadeIn animation styles
 const styleSheet = document.createElement("style");
@@ -100,6 +103,9 @@ function EventCheckInPortal() {
   const [rfidScan, setRfidScan] = useState('');
   const rfidScanRef = useRef('');
   const [assigningCardId, setAssigningCardId] = useState(null);
+  // QR code scanning state
+  const [qrScannerOpen, setQrScannerOpen] = useState(false);
+  const [qrPassFor, setQrPassFor] = useState(null); // attendee whose pass is shown
   // Recent RFID scan history (from /rfid/logs)
   const [scanLogs, setScanLogs] = useState([]);
   const [isLoadingLogs, setIsLoadingLogs] = useState(false);
@@ -190,7 +196,6 @@ function EventCheckInPortal() {
 
     // Prevent concurrent requests
     if (isFetchingRef.current) {
-      console.log("Fetch already in progress, skipping...");
       return;
     }
 
@@ -202,7 +207,6 @@ function EventCheckInPortal() {
     const minInterval = 10000; // 10 seconds between requests
     
     if (timeSinceLastFetch < minInterval && !showRefreshIndicator) {
-      console.log(`Rate limited: ${Math.round(timeSinceLastFetch/1000)}s since last fetch (minimum ${minInterval/1000}s)`);
       return;
     }
 
@@ -217,7 +221,7 @@ function EventCheckInPortal() {
       }
       
       const response = await axios.get(
-        `${backendUrl}/api/registrationUnit/eventAttendees/${selectedEvent}`,
+        `${backendUrl}/api/registrationUnit/eventAttendees/${encodeURIComponent(selectedEvent)}`,
         {
           timeout: 25000, // 25 second timeout (less than backend's 30s)
         }
@@ -229,7 +233,6 @@ function EventCheckInPortal() {
         if (showRefreshIndicator) {
           toast.success("List refreshed");
         }
-        console.log(`✓ Fetched ${response.data.data.length} attendees`);
       } else {
         console.warn("No data received from server");
         if (!silent) {
@@ -298,7 +301,6 @@ function EventCheckInPortal() {
       const handleVisibilityChange = () => {
         if (!document.hidden) {
           // Page became visible - refresh data after a delay
-          console.log("Page visible - scheduling refresh");
           setTimeout(() => {
             fetchEventAttendees(false, true);
           }, 2000); // Wait 2 seconds before fetching
@@ -310,7 +312,6 @@ function EventCheckInPortal() {
           startPolling();
         } else {
           // Page hidden - stop polling to save resources
-          console.log("Page hidden - pausing auto-refresh");
           if (pollingIntervalRef.current) {
             clearInterval(pollingIntervalRef.current);
             pollingIntervalRef.current = null;
@@ -353,10 +354,11 @@ function EventCheckInPortal() {
 
   // Summary/rollup of the recent scan feed.
   const scanStats = useMemo(() => {
-    const stats = { total: scanLogs.length, checkedIn: 0, checkedOut: 0, unknown: 0 };
+    const stats = { total: scanLogs.length, checkedIn: 0, checkedOut: 0, wrong: 0, unknown: 0 };
     for (const log of scanLogs) {
       if (log.action === 'checkedIn') stats.checkedIn++;
       else if (log.action === 'checkedOut') stats.checkedOut++;
+      else if (log.action === 'wrongEvent') stats.wrong++;
       else stats.unknown++;
     }
     return stats;
@@ -571,19 +573,76 @@ function EventCheckInPortal() {
     return () => clearInterval(id);
   }, [fetchScanLogs]);
 
+  /**
+   * Handle a QR pass scanned with the operator's phone (a connected camera
+   * device would work too, but phones are the intended setup).
+   * Sends the raw code to the backend, which resolves it (event ID + the
+   * attendee's unique ID) and toggles check-in/check-out — then mirrors the
+   * same on-screen confirmation + toast flow used for RFID card taps.
+   */
+  const handleQrScan = useCallback(
+    async (rawText) => {
+      const parsed = parseQrPayload(rawText);
+      if (!parsed || !parsed.uniqueId) {
+        toast.error('That QR code is not a DLWYC check-in code');
+        return;
+      }
+
+      try {
+        const response = await axios.post(
+          `${backendUrl}/api/registrationUnit/qr/scan`,
+          { payload: rawText, eventTitle: selectedEvent },
+          { timeout: 15000 }
+        );
+        const result = response.data || {};
+        const data = result.data || {};
+
+        if (result.action === 'checkedIn' || result.action === 'checkedOut') {
+          // Keep the attendee list in sync with what the server just did.
+          setAttendees((prev) =>
+            prev.map((a) =>
+              a.userId === data.userId
+                ? {
+                    ...a,
+                    eventDetails: {
+                      ...a.eventDetails,
+                      checkedInStatus: data.eventDetails?.checkedInStatus,
+                    },
+                  }
+                : a
+            )
+          );
+          toast[result.action === 'checkedIn' ? 'success' : 'info'](
+            `Checked ${result.action === 'checkedIn' ? 'in' : 'out'}: ${data.fullName}`
+          );
+          showScanConfirm(data.fullName, result.action, data.uniqueId);
+          fetchScanLogs(); // refresh the recent-scans feed right away
+        }
+      } catch (error) {
+        const msg =
+          error.response?.data?.message || 'Could not process that QR code';
+        toast.error(msg);
+        console.error('Error processing QR scan:', error);
+      }
+    },
+    [backendUrl, selectedEvent, showScanConfirm, fetchScanLogs]
+  );
+
   /** Export the recent scan feed (audit trail) as CSV, with a summary header. */
   const handleExportScanLogs = useCallback(() => {
-    const header = ['DLWYC — RFID Scan Audit Trail', ''];
+    const header = ['DLWYC — Scan Audit Trail (RFID + QR)', ''];
     const summary = [
       ['Generated', new Date().toLocaleString()],
       ['Total scans', String(scanStats.total)],
       ['Checked in', String(scanStats.checkedIn)],
       ['Checked out', String(scanStats.checkedOut)],
-      ['Unknown cards', String(scanStats.unknown)],
+      ['Wrong event', String(scanStats.wrong)],
+      ['Unknown', String(scanStats.unknown)],
     ];
-    const cols = ['Time', 'Action', 'Attendee', 'Card UID', 'Event', 'Message'];
+    const cols = ['Time', 'Method', 'Action', 'Attendee', 'Card / QR ID', 'Event', 'Message'];
     const body = scanLogs.map((log) => [
       log.at,
+      log.method === 'qr' ? 'QR' : 'RFID',
       log.action,
       log.fullName || '',
       log.uid || '',
@@ -642,9 +701,10 @@ function EventCheckInPortal() {
   }, [selectedEvent, filteredAttendees, selectedArchdeaconry, searchQuery]);
 
   // Kiosk mode: keep the scan box focused so operators can tap card after card
-  // without clicking the input each time.
+  // without clicking the input each time. Only active while the RFID section
+  // is open (QR scanning is the default and uses no input focus).
   useEffect(() => {
-    if (!autoFocus) return;
+    if (!autoFocus || !rfidSectionOpen) return;
     const handler = () => {
       if (
         rfidInputRef.current &&
@@ -655,7 +715,7 @@ function EventCheckInPortal() {
     };
     window.addEventListener('click', handler);
     return () => window.removeEventListener('click', handler);
-  }, [autoFocus]);
+  }, [autoFocus, rfidSectionOpen]);
 
   /**
    * Bind an RFID UID to an attendee so future scans resolve to them.
@@ -882,7 +942,7 @@ function EventCheckInPortal() {
           </div>
         )}
 
-        {/* RFID Card Scanner */}
+        {/* RFID Card + QR Code Scanner */}
         {selectedEvent && (
           <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
             <div className="flex items-center gap-3 mb-3">
@@ -890,66 +950,101 @@ function EventCheckInPortal() {
                 <ScanLine className="w-5 h-5 text-indigo-600" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-gray-900">Scan RFID Card</h3>
+                <h3 className="text-sm font-semibold text-gray-900">
+                  Check-In Scanner
+                </h3>
                 <p className="text-xs text-gray-500">
-                  Tap a tag on the reader (or type/paste the UID) to check in / check out.
+                  Scan the attendee's QR pass with your phone, or use an RFID card tap.
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-1">
-                <ScanLine className="absolute left-3 top-2.5 text-gray-400" size={18} />
-                <input
-                  ref={rfidInputRef}
-                  type="text"
-                  value={rfidScan}
-                  onChange={(e) => {
-                    setRfidScan(e.target.value);
-                    rfidScanRef.current = e.target.value;
-                    // Auto-submit for USB readers that don't send a terminator:
-                    // if the box holds a complete UID and stops changing, submit.
-                    if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
-                    const v = (e.target.value || '').trim();
-                    if (/^[0-9A-Fa-f]{8,14}$/.test(v)) {
-                      rfidAutoSubmitTimer.current = setTimeout(() => {
-                        handleRfidSubmit();
-                      }, 250);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    // USB keyboard-wedge readers send Enter or Tab as the suffix.
-                    if (e.key === 'Enter' || e.key === 'Tab') {
-                      e.preventDefault();
-                      if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
-                      handleRfidSubmit();
-                    }
-                  }}
-                  placeholder="Tap card or paste UID — it submits automatically"
-                  autoComplete="off"
-                  autoFocus
-                  className="w-full pl-9 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase"
-                />
-              </div>
-              <Button
-                onClick={handleRfidSubmit}
-                size="default"
-                className="bg-indigo-600 hover:bg-indigo-700"
-              >
-                <Check className="w-4 h-4 mr-1" />
-                Submit Scan
-              </Button>
-            </div>
+            {/* QR — the default check-in method (operator's phone camera) */}
+            <Button
+              onClick={() => setQrScannerOpen(true)}
+              size="lg"
+              className="w-full bg-indigo-600 hover:bg-indigo-700"
+              title="Scan an attendee's QR pass with this device's camera"
+            >
+              <QrCode className="w-5 h-5 mr-2" />
+              Scan QR Code
+              <span className="ml-2 text-xs font-normal opacity-80">— phone camera</span>
+            </Button>
 
-            {/* Kiosk mode toggle */}
-            <label className="mt-3 flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
-              <Checkbox
-                checked={autoFocus}
-                onCheckedChange={toggleAutoFocus}
-                className="rfid-ignore-focus"
-              />
-              Kiosk mode — keep the scanner focused so you can tap cards continuously.
-            </label>
+            {/* RFID card — secondary, for when a card reader is connected */}
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={() => setRfidSectionOpen((v) => !v)}
+                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800"
+              >
+                <IdCard className="w-3.5 h-3.5" />
+                {rfidSectionOpen ? 'Hide RFID card scan' : 'RFID card scan'}
+                <ChevronRight
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    rfidSectionOpen ? 'rotate-90' : ''
+                  }`}
+                />
+              </button>
+
+              {rfidSectionOpen && (
+                <div className="mt-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="relative flex-1">
+                      <ScanLine className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                      <input
+                        ref={rfidInputRef}
+                        type="text"
+                        value={rfidScan}
+                        onChange={(e) => {
+                          setRfidScan(e.target.value);
+                          rfidScanRef.current = e.target.value;
+                          // Auto-submit for USB readers that don't send a terminator:
+                          // if the box holds a complete UID and stops changing, submit.
+                          if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
+                          const v = (e.target.value || '').trim();
+                          if (/^[0-9A-Fa-f]{8,14}$/.test(v)) {
+                            rfidAutoSubmitTimer.current = setTimeout(() => {
+                              handleRfidSubmit();
+                            }, 250);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          // USB keyboard-wedge readers send Enter or Tab as the suffix.
+                          if (e.key === 'Enter' || e.key === 'Tab') {
+                            e.preventDefault();
+                            if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
+                            handleRfidSubmit();
+                          }
+                        }}
+                        placeholder="Tap card or paste UID — it submits automatically"
+                        autoComplete="off"
+                        autoFocus
+                        className="w-full pl-9 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase"
+                      />
+                    </div>
+                    <Button
+                      onClick={handleRfidSubmit}
+                      size="default"
+                      className="bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      <Check className="w-4 h-4 mr-1" />
+                      Submit Scan
+                    </Button>
+                  </div>
+
+                  {/* Kiosk mode toggle */}
+                  <label className="mt-3 flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
+                    <Checkbox
+                      checked={autoFocus}
+                      onCheckedChange={toggleAutoFocus}
+                      className="rfid-ignore-focus"
+                    />
+                    Kiosk mode — keep the scanner focused so you can tap cards continuously.
+                  </label>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -963,7 +1058,7 @@ function EventCheckInPortal() {
               <div>
                 <h3 className="text-sm font-semibold text-gray-900">Recent Scans</h3>
                 <p className="text-xs text-gray-500">
-                  Live feed of card taps (refreshes every 10s).
+                  Live feed of card + QR scans (refreshes every 10s).
                 </p>
               </div>
             </div>
@@ -994,11 +1089,11 @@ function EventCheckInPortal() {
             <div className="text-center py-6">
               <ScanLine className="w-8 h-8 text-gray-300 mx-auto mb-2" />
               <p className="text-sm text-gray-500">
-                No scans yet. Tap a card to see activity here.
+                No scans yet. Tap a card or scan a QR code to see activity here.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4">
               <div className="border rounded-lg p-3 text-center">
                 <p className="text-2xl font-bold text-gray-900">{scanStats.total}</p>
                 <p className="text-xs text-gray-500">Total</p>
@@ -1011,6 +1106,10 @@ function EventCheckInPortal() {
                 <p className="text-2xl font-bold text-amber-700">{scanStats.checkedOut}</p>
                 <p className="text-xs text-gray-500">Checked Out</p>
               </div>
+              <div className="border rounded-lg p-3 text-center bg-red-50">
+                <p className="text-2xl font-bold text-red-700">{scanStats.wrong}</p>
+                <p className="text-xs text-gray-500">Wrong Event</p>
+              </div>
               <div className="border rounded-lg p-3 text-center bg-gray-50">
                 <p className="text-2xl font-bold text-gray-600">{scanStats.unknown}</p>
                 <p className="text-xs text-gray-500">Unknown</p>
@@ -1022,6 +1121,7 @@ function EventCheckInPortal() {
               <div className="space-y-2">
                 {scanLogs.map((log, idx) => {
                   const isIn = log.action === 'checkedIn';
+                  const isWrong = log.action === 'wrongEvent';
                   return (
                     <div
                       key={`${log.at}-${idx}`}
@@ -1032,18 +1132,29 @@ function EventCheckInPortal() {
                         className={`text-xs shrink-0 ${
                           isIn
                             ? 'bg-green-100 text-green-700'
-                            : log.action === 'checkedOut'
-                              ? 'bg-amber-100 text-amber-700'
-                              : 'bg-gray-100 text-gray-600'
+                            : isWrong
+                              ? 'bg-red-100 text-red-700'
+                              : log.action === 'checkedOut'
+                                ? 'bg-amber-100 text-amber-700'
+                                : 'bg-gray-100 text-gray-600'
                         }`}
                       >
-                        {isIn ? 'IN' : log.action === 'checkedOut' ? 'OUT' : 'UNKNOWN'}
+                        {isIn ? 'IN' : isWrong ? 'WRONG' : log.action === 'checkedOut' ? 'OUT' : 'UNKNOWN'}
                       </Badge>
                       <div className="min-w-0 flex-1">
                         <p className="text-sm text-gray-900 truncate font-medium">
-                          {log.fullName || log.message || 'Unknown card'}
+                          {log.fullName || log.message || 'Unknown scan'}
                         </p>
                         <p className="text-xs text-gray-500 font-mono truncate">
+                          <span
+                            className={`mr-1.5 rounded px-1 py-0.5 text-[10px] font-semibold ${
+                              log.method === 'qr'
+                                ? 'bg-violet-100 text-violet-700'
+                                : 'bg-indigo-100 text-indigo-700'
+                            }`}
+                          >
+                            {log.method === 'qr' ? 'QR' : 'RFID'}
+                          </span>
                           {log.uid}{log.eventTitle ? ` · ${log.eventTitle}` : ''}
                         </p>
                       </div>
@@ -1240,7 +1351,7 @@ function EventCheckInPortal() {
                           </p>
                         </div>
 
-                        {/* RFID Tag */}
+                        {/* RFID Tag + QR pass */}
                         <div className="flex items-center gap-2">
                           <IdCard className="w-4 h-4 text-gray-400 flex-shrink-0" />
                           {attendee.cardUID || attendee.rfidTag ? (
@@ -1264,6 +1375,15 @@ function EventCheckInPortal() {
                                 : '+ Assign card'}
                             </button>
                           )}
+                          <button
+                            type="button"
+                            onClick={() => setQrPassFor(attendee)}
+                            className="ml-auto flex items-center gap-1 text-[11px] text-indigo-600 hover:underline"
+                            title="View / print this attendee's check-in QR code"
+                          >
+                            <QrCode className="w-3.5 h-3.5" />
+                            QR
+                          </button>
                         </div>
 
                         {/* Email */}
@@ -1375,6 +1495,24 @@ function EventCheckInPortal() {
           )}
         </div>
       </div>
+
+      {/* QR scanner modal — the device's camera, in the browser (phones are
+          the intended setup) */}
+      <QrScannerModal
+        open={qrScannerOpen}
+        onClose={() => setQrScannerOpen(false)}
+        onScan={handleQrScan}
+      />
+
+      {/* Attendee QR pass modal (event ID + the attendee's unique ID) */}
+      {qrPassFor && (
+        <QrPassModal
+          attendee={qrPassFor}
+          eventId={events.find((e) => e.eventTitle === selectedEvent)?._id || selectedEvent}
+          eventTitle={selectedEvent}
+          onClose={() => setQrPassFor(null)}
+        />
+      )}
 
       {/* On-screen check-in/out confirmation (shown to the attendee) */}
       {scanConfirm && (

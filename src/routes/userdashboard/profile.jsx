@@ -137,7 +137,6 @@ function UserProfile() {
       }
     );
 
-    console.log("Response:", response?.data);
     
     if (response.data.success) {
       // Update context with new data (if this function exists)
