@@ -81,10 +81,10 @@ Added an **RFID Card Scanner** box and per-attendee card features:
 - **Report** button — downloads the selected event's attendee list with
   check-in status as a CSV, **respecting the current archdeaconry + search
   filters**, and appends a totals row (handy for food/attendance billing).
-- **Scan QR Code** button — opens an in-page browser camera scanner (phone or
-  plugged-in USB camera) that reads an attendee's check-in QR pass and runs
-  the same check-in/out + confirmation flow. See the **QR code check-in**
-  section below.
+- **Scan QR Code** button — opens an in-page browser camera scanner
+  (the operator's **phone camera** is the intended setup) that reads an
+  attendee's check-in QR pass and runs the same check-in/out + confirmation
+  flow. See the **QR code check-in** section below.
 - Each attendee card also has a **QR** button to view / print that person's
   check-in QR pass (event ID + their unique ID).
 
@@ -186,7 +186,7 @@ sessions). Options:
 > matching `?event=` URL. Exports (`Report`) already break down attendance per
 > event, so food billing stays clean.
 
-## QR code check-in (phone / plugged-in camera)
+## QR code check-in (mobile device camera)
 
 The same check-in/out flow also works with **QR codes**. The QR pass is the
 attendee's "digital card" and encodes exactly two things:
@@ -217,11 +217,16 @@ Both the generator and parser live in **`src/lib/qr.js`**
 
 The portal's **Scan QR Code** button opens a browser camera scanner
 (`src/components/registrationunit/QrScannerModal.jsx`, built on
-`html5-qrcode`). It runs **entirely on the device** — the phone's camera (or a
-plugged-in **USB camera**, which just shows up in the in-modal camera picker)
-captures the frame and decodes the QR locally. On a successful decode it posts
-to `POST /api/registrationUnit/qr/scan`, and the same green/amber
-confirmation + Recent Scans feed (tagged **QR**) that RFID uses is shown.
+`html5-qrcode`). The intended setup is **mobile devices**: each operator
+scans with their own phone, and everything runs **entirely on the device** —
+the phone's camera captures the frame and decodes the QR locally, nothing is
+uploaded. On a successful decode it posts to
+`POST /api/registrationUnit/qr/scan`, and the same green/amber confirmation
++ Recent Scans feed (tagged **QR**) that RFID uses is shown.
+
+> A separate camera device is **not** part of the plan — but if you ever
+> specifically want one, it simply appears in the scanner's camera picker,
+> so no extra work would be needed.
 
 > **Camera requires a secure context.** Browsers only expose the camera over
 > **HTTPS** (or `localhost`). So: on a computer, `http://localhost:3000`

@@ -579,7 +579,8 @@ function EventCheckInPortal() {
   }, [fetchScanLogs]);
 
   /**
-   * Handle a QR pass scanned with the phone/USB camera.
+   * Handle a QR pass scanned with the operator's phone (a connected camera
+   * device would work too, but phones are the intended setup).
    * Sends the raw code to the backend, which resolves it (event ID + the
    * attendee's unique ID) and toggles check-in/check-out — then mirrors the
    * same on-screen confirmation + toast flow used for RFID card taps.
@@ -1475,7 +1476,8 @@ function EventCheckInPortal() {
         </div>
       </div>
 
-      {/* QR scanner modal — camera in the browser (phone or plugged-in USB cam) */}
+      {/* QR scanner modal — the device's camera, in the browser (phones are
+          the intended setup) */}
       <QrScannerModal
         open={qrScannerOpen}
         onClose={() => setQrScannerOpen(false)}

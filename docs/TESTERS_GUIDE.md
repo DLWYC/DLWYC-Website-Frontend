@@ -1,8 +1,8 @@
 # DLWYC — RFID + QR Check-in/Out: Tester's Guide
 
 Use this guide to test the **event check-in / check-out** feature (RFID card
-taps **and** QR code scans from a phone or plugged-in camera), including
-food-station setup, the scan confirmation, and CSV exports.
+taps **and** QR code scans from a phone — mobile devices are the intended
+setup), including food-station setup, the scan confirmation, and CSV exports.
 
 > Target audience: the person reviewing/testing the app (your boss).
 > The whole thing runs **locally on a Windows laptop** — no internet service,
@@ -109,7 +109,8 @@ attendee's "digital card" and it stores two things:
 1. On the Registration Unit portal, click **Scan QR Code** (next to the
    Scan Card box).
 2. The browser opens **this device's camera** right inside the page — allow
-   the camera permission when the browser asks.
+   the camera permission when the browser asks. (This is the intended setup:
+   each operator just uses **their own phone**.)
 3. Point it at the QR pass (from another phone/screen). As soon as it's
    read, the same **green "checked in!" / amber "checked out"** confirmation
    appears and **Recent Scans** updates (QR scans show a violet **QR** tag).
@@ -117,9 +118,12 @@ attendee's "digital card" and it stores two things:
 
 > **Phone cameras need HTTPS.** On a phone, the page must be opened over an
 > HTTPS connection for the camera to work (browsers block cameras on plain
-> HTTP). On a computer, the camera works on `http://localhost` — and when you
-> plug in a **USB webcam / external camera**, it appears in the camera list
-> inside the scanner, so a station can use a plugged-in camera the same way.
+> HTTP). For the actual event, host the portal on an HTTPS address (any
+> hosting provider, or a local tunnel) and everyone's phones work as-is.
+>
+> Optional, only if you specifically want it: a separate camera device
+> plugged into a computer also appears in the scanner's camera list — but
+> the plan is to stick with mobile devices.
 
 ### 5c. Guards
 
@@ -174,7 +178,7 @@ Open the `.csv` files in Excel or Google Sheets.
 ```
 [ RFID reader ]  --types the card UID-->   [ Browser: Scan Card box ]
                                               |
-[ Phone / USB camera ]  --scans QR pass-->   [ Browser: Scan QR Code ]
+[ Phone camera ]        --scans QR pass-->   [ Browser: Scan QR Code ]
                                               |
                                         resolves to the
                                         same check-in/out
@@ -201,6 +205,6 @@ see `docs/windows-setup.md` and `docs/rfid-integration.md`.
 | Page won't load at :3000 | Make sure `npm run dev:full` is running and shows no red errors |
 | Login says "Invalid credentials" | Use exactly `admin@dlwyc.org` / `admin123` |
 | Nothing happens on scan | The event must be selected (Station badge visible) and the UID must be assigned to an attendee |
-| QR scanner says camera is unavailable on a phone | Phone browsers only allow cameras over **HTTPS** — open the portal via an HTTPS link (a production host or a tunnel). On a computer, `localhost` works, and a plugged-in USB camera shows up in the camera list |
+| QR scanner says camera is unavailable on a phone | Phone browsers only allow cameras over **HTTPS** — open the portal via an HTTPS link (a production host or a tunnel). On a computer, `localhost` works |
 | QR scanner says "permission was blocked" | Click the camera/lock icon in the browser address bar and allow camera access, then press Start camera |
 | Port already in use | Close other apps using ports 3000/4000, or restart your machine |
