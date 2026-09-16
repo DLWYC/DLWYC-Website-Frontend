@@ -704,9 +704,10 @@ function EventCheckInPortal() {
   }, [selectedEvent, filteredAttendees, selectedArchdeaconry, searchQuery]);
 
   // Kiosk mode: keep the scan box focused so operators can tap card after card
-  // without clicking the input each time.
+  // without clicking the input each time. Only active while the RFID section
+  // is open (QR scanning is the default and uses no input focus).
   useEffect(() => {
-    if (!autoFocus) return;
+    if (!autoFocus || !rfidSectionOpen) return;
     const handler = () => {
       if (
         rfidInputRef.current &&
@@ -717,7 +718,7 @@ function EventCheckInPortal() {
     };
     window.addEventListener('click', handler);
     return () => window.removeEventListener('click', handler);
-  }, [autoFocus]);
+  }, [autoFocus, rfidSectionOpen]);
 
   /**
    * Bind an RFID UID to an attendee so future scans resolve to them.
@@ -953,78 +954,103 @@ function EventCheckInPortal() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-gray-900">
-                  Scan RFID Card or QR Code
+                  Check-In Scanner
                 </h3>
                 <p className="text-xs text-gray-500">
-                  Tap a tag on the reader (or type/paste the UID), or scan an attendee's QR
-                  pass with the phone camera to check in / check out.
+                  Default: scan the attendee's QR pass with your phone. The RFID card
+                  scan is there for when a card reader is connected.
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative flex-1">
-                <ScanLine className="absolute left-3 top-2.5 text-gray-400" size={18} />
-                <input
-                  ref={rfidInputRef}
-                  type="text"
-                  value={rfidScan}
-                  onChange={(e) => {
-                    setRfidScan(e.target.value);
-                    rfidScanRef.current = e.target.value;
-                    // Auto-submit for USB readers that don't send a terminator:
-                    // if the box holds a complete UID and stops changing, submit.
-                    if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
-                    const v = (e.target.value || '').trim();
-                    if (/^[0-9A-Fa-f]{8,14}$/.test(v)) {
-                      rfidAutoSubmitTimer.current = setTimeout(() => {
-                        handleRfidSubmit();
-                      }, 250);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    // USB keyboard-wedge readers send Enter or Tab as the suffix.
-                    if (e.key === 'Enter' || e.key === 'Tab') {
-                      e.preventDefault();
-                      if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
-                      handleRfidSubmit();
-                    }
-                  }}
-                  placeholder="Tap card or paste UID — it submits automatically"
-                  autoComplete="off"
-                  autoFocus
-                  className="w-full pl-9 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase"
-                />
-              </div>
-              <Button
-                onClick={handleRfidSubmit}
-                size="default"
-                className="bg-indigo-600 hover:bg-indigo-700"
-              >
-                <Check className="w-4 h-4 mr-1" />
-                Submit Scan
-              </Button>
-              <Button
-                onClick={() => setQrScannerOpen(true)}
-                size="default"
-                variant="outline"
-                className="border-indigo-200 text-indigo-700 hover:bg-indigo-50"
-                title="Scan an attendee's QR pass with this device's camera"
-              >
-                <QrCode className="w-4 h-4 mr-1" />
-                Scan QR Code
-              </Button>
-            </div>
+            {/* QR — the default check-in method (operator's phone camera) */}
+            <Button
+              onClick={() => setQrScannerOpen(true)}
+              size="lg"
+              className="w-full bg-indigo-600 hover:bg-indigo-700"
+              title="Scan an attendee's QR pass with this device's camera"
+            >
+              <QrCode className="w-5 h-5 mr-2" />
+              Scan QR Code
+              <span className="ml-2 text-xs font-normal opacity-80">— phone camera</span>
+            </Button>
 
-            {/* Kiosk mode toggle */}
-            <label className="mt-3 flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
-              <Checkbox
-                checked={autoFocus}
-                onCheckedChange={toggleAutoFocus}
-                className="rfid-ignore-focus"
-              />
-              Kiosk mode — keep the scanner focused so you can tap cards continuously.
-            </label>
+            {/* RFID card — secondary, for when a card reader is connected */}
+            <div className="mt-3">
+              <button
+                type="button"
+                onClick={() => setRfidSectionOpen((v) => !v)}
+                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800"
+              >
+                <IdCard className="w-3.5 h-3.5" />
+                {rfidSectionOpen
+                  ? 'Hide RFID card scan'
+                  : 'RFID card scan (when a reader is connected)'}
+                <ChevronRight
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    rfidSectionOpen ? 'rotate-90' : ''
+                  }`}
+                />
+              </button>
+
+              {rfidSectionOpen && (
+                <div className="mt-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <div className="relative flex-1">
+                      <ScanLine className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                      <input
+                        ref={rfidInputRef}
+                        type="text"
+                        value={rfidScan}
+                        onChange={(e) => {
+                          setRfidScan(e.target.value);
+                          rfidScanRef.current = e.target.value;
+                          // Auto-submit for USB readers that don't send a terminator:
+                          // if the box holds a complete UID and stops changing, submit.
+                          if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
+                          const v = (e.target.value || '').trim();
+                          if (/^[0-9A-Fa-f]{8,14}$/.test(v)) {
+                            rfidAutoSubmitTimer.current = setTimeout(() => {
+                              handleRfidSubmit();
+                            }, 250);
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          // USB keyboard-wedge readers send Enter or Tab as the suffix.
+                          if (e.key === 'Enter' || e.key === 'Tab') {
+                            e.preventDefault();
+                            if (rfidAutoSubmitTimer.current) clearTimeout(rfidAutoSubmitTimer.current);
+                            handleRfidSubmit();
+                          }
+                        }}
+                        placeholder="Tap card or paste UID — it submits automatically"
+                        autoComplete="off"
+                        autoFocus
+                        className="w-full pl-9 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent uppercase"
+                      />
+                    </div>
+                    <Button
+                      onClick={handleRfidSubmit}
+                      size="default"
+                      className="bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      <Check className="w-4 h-4 mr-1" />
+                      Submit Scan
+                    </Button>
+                  </div>
+
+                  {/* Kiosk mode toggle */}
+                  <label className="mt-3 flex items-center gap-2 text-xs text-gray-600 cursor-pointer select-none">
+                    <Checkbox
+                      checked={autoFocus}
+                      onCheckedChange={toggleAutoFocus}
+                      className="rfid-ignore-focus"
+                    />
+                    Kiosk mode — keep the scanner focused so you can tap cards continuously.
+                  </label>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
@@ -1535,6 +1561,12 @@ function EventCheckInPortal() {
             <p className="text-xs text-gray-400 font-mono bg-gray-50 border rounded-lg px-3 py-2">
               {scanConfirm.uid}
             </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}            </p>
           </div>
         </div>
       )}
