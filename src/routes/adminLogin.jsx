@@ -40,11 +40,10 @@ function RouteComponent() {
          navigate({to: '/registrationunit'});
       }
       catch(error){
-        console.log("This is error at Login", error)
+        console.error("This is error at Login", error)
         toast.error(error?.error || error?.data || "Login Failed🤧")
       }
       
-      console.log("herer", email)
      }
    
 return (

@@ -40,16 +40,14 @@ function RouteComponent() {
          navigate({to: '/userdashboard'});
       }
       catch(error){
-        console.log("This is error at Login", error)
+        console.error("This is error at Login", error)
         toast.error(error?.error || error?.data || "Login Failed🤧")
       }
       
-      console.log("Login Successful")
      }
    
 
   const handleGoogleLogin = (credentialResponse) => {
-    console.log(credentialResponse);
     localStorage.setItem("token", credentialResponse.credential);
 
   };

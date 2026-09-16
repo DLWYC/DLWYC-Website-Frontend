@@ -8,13 +8,11 @@ import { toast } from "react-toastify";
 
 
 const Confirmation = ({values}) => {
-  console.log("Values CONFIRMTION PAGE", values)
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const backendURL = import.meta.env.VITE_BACKEND_URL || ''
   const queryClient = useQueryClient()
   const {userData, userRegisteredEvents} = useAuth()
-  // console.log("all Cached Data", queryClient.getQueryData(['allEvent', userData?.uniqueId, userRegisteredEvents]), "ALL", queryClient.getQueriesData())
 
 
   const ERROR_MESSAGES = {
@@ -24,7 +22,6 @@ const Confirmation = ({values}) => {
   VALIDATION_ERROR: 'Please Go Back And Fill The Details.'
 };
 
-    //  console.log("ONFIRMATION PAGE:", values)
       const updateValues = {
                 "payersId": values?.payersId, 
                 "paymentCode": values?.paymentID, 
@@ -61,7 +58,6 @@ const Confirmation = ({values}) => {
         }
       );
       
-      console.log('Code status updated:', response?.data?.data?.message);
       return response.data;
     } catch (error) {
       console.error('Code update failed:', error);
@@ -75,7 +71,6 @@ const Confirmation = ({values}) => {
     try {
       const response = await axios.post(`${backendURL}/api/userRegisteredEvents`, values);
       
-      console.log('User registered:', response.data);
       return response.data;
     } catch (error) {
       console.error('Registration failed:', error);
@@ -96,7 +91,6 @@ const Confirmation = ({values}) => {
 
      const confirmRegistration = useCallback(async (e) =>{
           e.preventDefault()
-          console.log("Update Values", updateValues)
        // Prevent double submission
     if (isLoading) {
       console.warn('Registration already in progress');
@@ -109,24 +103,18 @@ const Confirmation = ({values}) => {
       // Validate data first
       validateRegistrationData(values, updateValues);
       
-      console.log('Starting registration process...');
-      console.log('Update Values:', updateValues);
-      console.log('Registration Values:', values);
 
       // Step 1: Update code status
       const updateReponse = await updateCodeStatus(updateValues);
-      console.log("updateReponse", updateReponse)
       if(updateReponse?.success == true){
         
         
         // Step 2: Register user
         const registrationResult = await registerUser(values);
-        console.log("registrationResult", registrationResult)
           
           
           // Success
           toast.success("Registration completed successfully");
-          console.log('Registration completed successfully');
 
            // CRITICAL: Invalidate queries to refresh data
       await queryClient.invalidateQueries({

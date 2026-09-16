@@ -50,7 +50,6 @@ const handleFilter = () => {
   setFilteredEvents(newFilteredEvents);
 };
  
-// console.log(filtere)
 
 
 

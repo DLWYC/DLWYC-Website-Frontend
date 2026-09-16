@@ -138,7 +138,6 @@ const SignUpForm = () => {
         const response = await axios.post(`${backendUrl}/api/userRegistration`, formData);
 
         const data = await response?.data;
-        console.log("User data", data)
 
         if (data?.message === "Registration Successful") {
           toast.success('Account created successfully!');

@@ -158,7 +158,6 @@ const ViewPayment = () => {
   return sorted;
   }, [filteredData, sortConfig]);
 
-  console.log("Sorted Data", sortedData)
 
   // Paginate data
   const paginatedData = useMemo(() => {
