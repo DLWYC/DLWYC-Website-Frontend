@@ -31,25 +31,41 @@ the backend, so **no VITE_BACKEND_URL is needed** for local development.
 | `PATCH /api/registrationUnit/eventAttendees/:userId/undoCheckIn` | Undo check-in |
 | `PATCH /api/registrationUnit/eventAttendees/:userId/rfid` | Assign a card `{ cardUID }` (rejects already-bound cards) |
 | `POST /api/registrationUnit/rfid/scan` | RFID toggle `{ cardUID, eventTitle }` → `{ action }` (used by the Raspberry Pi reader service) |
-| `GET /api/registrationUnit/rfid/logs` | Recent scan history |
+| `POST /api/registrationUnit/qr/scan` | QR toggle `{ payload }` (raw QR text) or `{ eventId, uniqueId }`; optional `{ eventTitle }` station guard → `{ action }`, logs with `method: 'qr'` |
+| `GET /api/registrationUnit/rfid/logs` | Recent scan history (RFID + QR) |
+
+> QR pass format (see `src/lib/qr.js`): `DLWYC-CHKIN|<eventId>|<uniqueId>`.
+> `action` is one of `checkedIn`, `checkedOut`, `wrongEvent` (409) or
+> `unknown` (404).
 
 ### Other (functional basics for the rest of the app)
 - `GET /api/admin/events`
-- `POST /api/userLogin`, `POST /api/userRegistration`, `GET /api/userDashboard`, `GET /api/userRegisteredEvents/:id`
+- `POST /api/userLogin`, `POST /api/userRegistration`, `GET /api/userDashboard`
+- `GET /api/userRegisteredEvents/:email/:uniqueId` (the dashboard's two-segment form) and `GET /api/userRegisteredEvents/:id` — returns the attendee enriched with `eventId` / `paymentStatus` / `registrationDate`
 - Payment: `verify-code`, `payment-history/:id`, `verify-payment`, `generate-code`, etc.
 
-## Demo login
+## Demo logins
 
 ```
 Registration Unit:  admin@dlwyc.org / admin123
+User (attendee):    attendee1@example.com / attendee123
+                    attendee2@example.com / attendee123
 ```
+
+The user logins let you open the user dashboard and see a real check-in QR
+pass.
 
 ## Seed data & cards
 
 The DB is seeded with two events and 25 attendees. The first 8 attendees of the
 camp event already have **card UIDs** assigned (e.g. `4500D62C8B`,
 `B100AF3021`), so you can scan/toggle them immediately. Tap a card UID through
-the portal's **Scan Card** box or call `/rfid/scan` to check someone in/out.
+the portal's **RFID card scan** box or call `/rfid/scan` to check someone
+in/out.
+
+> **Existing databases:** if `db.json` was seeded before the QR feature, the
+> app auto-migrates it on startup (adds `eventDate`/`eventTime` to events and
+> creates the demo user accounts) — no manual steps needed.
 
 ## Swapping in a real backend / database
 

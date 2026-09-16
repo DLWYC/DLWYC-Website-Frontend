@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
-import { X, Camera, CameraOff, RefreshCw, ScanLine, ChevronDown } from 'lucide-react';
+import { X, Camera, CameraOff, RefreshCw, ScanLine } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const REGION_ID = 'dlw-qr-scan-region';

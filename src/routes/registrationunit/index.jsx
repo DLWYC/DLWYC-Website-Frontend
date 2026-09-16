@@ -196,7 +196,6 @@ function EventCheckInPortal() {
 
     // Prevent concurrent requests
     if (isFetchingRef.current) {
-      console.log("Fetch already in progress, skipping...");
       return;
     }
 
@@ -208,7 +207,6 @@ function EventCheckInPortal() {
     const minInterval = 10000; // 10 seconds between requests
     
     if (timeSinceLastFetch < minInterval && !showRefreshIndicator) {
-      console.log(`Rate limited: ${Math.round(timeSinceLastFetch/1000)}s since last fetch (minimum ${minInterval/1000}s)`);
       return;
     }
 
@@ -223,7 +221,7 @@ function EventCheckInPortal() {
       }
       
       const response = await axios.get(
-        `${backendUrl}/api/registrationUnit/eventAttendees/${selectedEvent}`,
+        `${backendUrl}/api/registrationUnit/eventAttendees/${encodeURIComponent(selectedEvent)}`,
         {
           timeout: 25000, // 25 second timeout (less than backend's 30s)
         }
@@ -235,7 +233,6 @@ function EventCheckInPortal() {
         if (showRefreshIndicator) {
           toast.success("List refreshed");
         }
-        console.log(`✓ Fetched ${response.data.data.length} attendees`);
       } else {
         console.warn("No data received from server");
         if (!silent) {
@@ -304,7 +301,6 @@ function EventCheckInPortal() {
       const handleVisibilityChange = () => {
         if (!document.hidden) {
           // Page became visible - refresh data after a delay
-          console.log("Page visible - scheduling refresh");
           setTimeout(() => {
             fetchEventAttendees(false, true);
           }, 2000); // Wait 2 seconds before fetching
@@ -316,7 +312,6 @@ function EventCheckInPortal() {
           startPolling();
         } else {
           // Page hidden - stop polling to save resources
-          console.log("Page hidden - pausing auto-refresh");
           if (pollingIntervalRef.current) {
             clearInterval(pollingIntervalRef.current);
             pollingIntervalRef.current = null;
@@ -635,17 +630,19 @@ function EventCheckInPortal() {
 
   /** Export the recent scan feed (audit trail) as CSV, with a summary header. */
   const handleExportScanLogs = useCallback(() => {
-    const header = ['DLWYC — RFID Scan Audit Trail', ''];
+    const header = ['DLWYC — Scan Audit Trail (RFID + QR)', ''];
     const summary = [
       ['Generated', new Date().toLocaleString()],
       ['Total scans', String(scanStats.total)],
       ['Checked in', String(scanStats.checkedIn)],
       ['Checked out', String(scanStats.checkedOut)],
-      ['Unknown cards', String(scanStats.unknown)],
+      ['Wrong event', String(scanStats.wrong)],
+      ['Unknown', String(scanStats.unknown)],
     ];
-    const cols = ['Time', 'Action', 'Attendee', 'Card UID', 'Event', 'Message'];
+    const cols = ['Time', 'Method', 'Action', 'Attendee', 'Card / QR ID', 'Event', 'Message'];
     const body = scanLogs.map((log) => [
       log.at,
+      log.method === 'qr' ? 'QR' : 'RFID',
       log.action,
       log.fullName || '',
       log.uid || '',

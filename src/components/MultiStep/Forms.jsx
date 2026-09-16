@@ -35,7 +35,6 @@ const Form = ({ className, array, text, values, setValues, setPaymentCodeStatus,
       })
       setPaymentCodeStatus(response?.data?.message)
       toast.success(response?.data?.message)
-      console.log("REsponse", response?.data?.message)
     }
 
     catch(error){
