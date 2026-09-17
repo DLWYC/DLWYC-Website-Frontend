@@ -5,6 +5,7 @@ import {
   House,
   BookOpen,
   UserRound,
+  Ticket,
   type LucideIcon,
 } from "lucide-react";
 
@@ -37,18 +38,23 @@ export const NavItems: NavItem[] = [
     icon: CalendarDays,
   },
   {
+    title: "Manage Codes",
+    url: "/dashboard/codes",
+    icon: Ticket,
+  },
+  {
     title: "Wallets",
-    url: "/wallets",
+    url: "/dashboard/wallets",
     icon: Wallet,
   },
   {
     title: "Accomodation",
-    url: "/accomodation",
+    url: "/dashboard/accomodation",
     icon: BedDouble,
   },
   {
     title: "Resources",
-    url: "/resources",
+    url: "/dashboard/resources",
     icon: BookOpen,
   },
 ];

@@ -21,6 +21,11 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useState } from "react";
 import { useFreeEventRegistration } from "@/features/dashboard/hooks/useRegisterEvents";
 import { queryClient } from "@/main";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { RegistrationDetails } from "@/components/Registrationdetails";
+import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
+
+
 
 export const Route = createLazyFileRoute("/dashboard/events/")({
   component: EventComponent,
@@ -81,6 +86,9 @@ function EventComponent() {
     isSuccess,
   } = useFreeEventRegistration(selectedEvent?._id);
 
+  const { data: user } = useAuthUser();
+
+
   const isAlreadyRegistered = userRegisteredEvents?.some(
     (event: Event) => selectedEvent?._id === event?.eventId,
   );
@@ -92,7 +100,9 @@ function EventComponent() {
   useEffect(() => {
     const refreshApp = async () => {
       if (isSuccess) {
-        await queryClient.invalidateQueries({ queryKey: ["userRegisteredEvents"] });
+        await queryClient.invalidateQueries({
+          queryKey: ["userRegisteredEvents"],
+        });
         await router.invalidate();
       }
     };
@@ -135,6 +145,8 @@ function EventComponent() {
     setFilter("All");
   };
 
+
+
   return (
     <Drawer direction="right">
       <div className="space-y-4 px-4">
@@ -145,7 +157,8 @@ function EventComponent() {
               All Events
             </p>
             <p className="mt-1 font-grotesk text-[13px] text-primary-main/50">
-              {counts.All} event{counts.All === 1 ? "" : "s"} available right now
+              {counts.All} event{counts.All === 1 ? "" : "s"} available right
+              now
             </p>
           </div>
         </div>
@@ -160,7 +173,11 @@ function EventComponent() {
             className="w-full bg-transparent font-grotesk text-[13px] text-primary-main outline-none placeholder:text-primary-main/40"
           />
           {query && (
-            <button type="button" onClick={() => setQuery("")} aria-label="Clear search">
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              aria-label="Clear search"
+            >
               <X className="h-4 w-4 text-primary-main/40" />
             </button>
           )}
@@ -192,7 +209,8 @@ function EventComponent() {
                 No events match "{query}"
               </p>
               <p className="mt-1 font-grotesk text-[13px] text-primary-main/50">
-                Try a different search term, or clear the {filter !== "All" ? `"${filter}" ` : ""}
+                Try a different search term, or clear the{" "}
+                {filter !== "All" ? `"${filter}" ` : ""}
                 filter.
               </p>
               <button
@@ -208,7 +226,9 @@ function EventComponent() {
               {filteredEvents.map((event) => (
                 <DrawerTrigger
                   key={event._id}
-                  onClick={() => setSelectedEvent(event as unknown as SelectedEvent)}
+                  onClick={() =>
+                    setSelectedEvent(event as unknown as SelectedEvent)
+                  }
                   className="cursor-pointer text-left"
                 >
                   <EventCard events={event} />
@@ -220,67 +240,75 @@ function EventComponent() {
       </div>
 
       {selectedEvent ? (
-        <DrawerContent className="border border-red-500 h-full rounded-0 lg:w-[35%] w-[70%] bg-white gap-3 py-2 px-2">
+        <DrawerContent className="h-full rounded-0 lg:w-[35%] w-[70%] bg-white gap-3 py-2 px-2">
           <DrawerClose asChild>
             <CircleX className="cursor-pointer" width={30} height={30} />
           </DrawerClose>
 
-          <div className="h-full no-scrollbar overflow-y-auto space-y-2">
-            <div className="relative w-full shrink-0 border-none shimmer overflow-hidden h-2/5 rounded-lg bg-primary-main/5">
-              {selectedEvent?.eventImage ? (
-                <img
-                  src={selectedEvent?.eventImage}
-                  alt={"harvest"}
-                  className="h-full w-full border-none object-cover"
+          <Tabs value={isAlreadyRegistered ? "ticket" : "eventDetails"} className="p-0 h-full">
+            <TabsContent value="eventDetails" className="p-0 m-0 space-y-0">
+              <ScrollArea className="h-[80vh] no-scrollbar">
+                <div className="h-full overflow-y-auto ">
+                  <div className="relative w-full shrink-0 border-none shimmer overflow-hidden h-2/5 rounded-lg bg-primary-main/5">
+                    {selectedEvent?.eventImage ? (
+                      <img
+                        src={selectedEvent?.eventImage}
+                        alt={"harvest"}
+                        className="h-full w-full border-none object-cover"
+                      />
+                    ) : null}
+                  </div>
+
+                  <DrawerHeader className="py-2 px-0">
+                    <DrawerTitle className="font-header text-[25px] py-0">
+                      {selectedEvent.eventTitle}
+                    </DrawerTitle>
+
+                    <div className="flex gap-3">
+                      <div className="px-3 py-1 flex flex-col items-center justify-center rounded-[5px] bg-reddish text-white">
+                        <h2 className="font-grotesk text-[14px]">
+                          {format(new Date(selectedEvent.eventDate), "MMM")}
+                        </h2>
+                        <h1 className="font-header text-[20px] font-[500]">
+                          {" "}
+                          {format(new Date(selectedEvent.eventDate), "dd")}
+                        </h1>
+                      </div>
+
+                      <div className="w-full flex flex-col justify-end">
+                        <h2 className="font-header font-bold text-[16px] text-primary-main">
+                          {format(new Date(selectedEvent.eventDate), "EEEE")}
+                        </h2>
+                        <p className="font-grotesk text-primary-main/50 text-[13px] ">
+                          10:30pm - 14:10pm
+                        </p>
+                      </div>
+                    </div>
+                  </DrawerHeader>
+
+                  <DrawerTitle className="text-[15px] font-header ">
+                    About This Event
+                  </DrawerTitle>
+                  <DrawerDescription className="space-y-2 text-primary-main/50 text-[13px] leading-[18px] font-grotesk font-[400]">
+                    {selectedEvent.eventDescription}
+                  </DrawerDescription>
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value={"ticket"}>
+                <RegistrationDetails
+                  eventTitle={selectedEvent?.eventTitle}
+                  eventDate={selectedEvent?.eventDate}
+                  attendeeName={user?.fullName}
+                  qrValue={{eventId: matchingEvent?._1d, fullName: user?.fullName}}
+                  ticketId={matchingEvent?.reference ? matchingEvent?.reference : matchingEvent?.code}
                 />
-              ) : null}
-            </div>
-
-            <DrawerHeader className="py-2 px-0">
-              <DrawerTitle className="font-header text-[25px] py-0">
-                {selectedEvent.eventTitle}
-              </DrawerTitle>
-
-              <div className="flex gap-3">
-                <div className="px-3 py-1 flex flex-col items-center justify-center rounded-[5px] bg-reddish text-white">
-                  <h2 className="font-grotesk text-[14px]">
-                    {format(new Date(selectedEvent.eventDate), "MMM")}
-                  </h2>
-                  <h1 className="font-header text-[20px] font-[500]">
-                    {" "}
-                    {format(new Date(selectedEvent.eventDate), "dd")}
-                  </h1>
-                </div>
-
-                <div className="w-full flex flex-col justify-end">
-                  <h2 className="font-header font-bold text-[16px] text-primary-main">
-                    {format(new Date(selectedEvent.eventDate), "EEEE")}
-                  </h2>
-                  <p className="font-grotesk text-primary-main/50 text-[13px] ">
-                    10:30pm - 14:10pm
-                  </p>
-                </div>
-              </div>
-            </DrawerHeader>
-
-            <DrawerTitle className="text-[15px] font-header ">
-              About This Event
-            </DrawerTitle>
-            <DrawerDescription className="space-y-2 text-primary-main/50 text-[13px] leading-[18px] font-grotesk font-[400]">
-              {selectedEvent.eventDescription}
-            </DrawerDescription>
-          </div>
+            </TabsContent>
+          </Tabs>
 
           <DrawerFooter className="p-0">
-            {isAlreadyRegistered ? (
-              <Link
-                key={matchingEvent?._id}
-                to={`/`}
-                className="bg-reddish text-white text-center rounded-[5px] font-header text-[16px] py-2"
-              >
-                Show Code
-              </Link>
-            ) : selectedEvent?.eventType === "Free" ? (
+            {isAlreadyRegistered ? "" : selectedEvent?.eventType === "Free" ? (
               <Button
                 onClick={() => register()}
                 disabled={isPending}
@@ -295,7 +323,8 @@ function EventComponent() {
                     ? "Try Again"
                     : "Register"}
               </Button>
-            ) : selectedEvent?.registeredCount === selectedEvent?.eventCapacity ? (
+            ) : selectedEvent?.registeredCount ===
+              selectedEvent?.eventCapacity ? (
               <Link
                 // disabled
                 to={`${selectedEvent?._id}`}

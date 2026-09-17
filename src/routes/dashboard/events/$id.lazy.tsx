@@ -143,12 +143,12 @@ function RouteComponent() {
   if (trxref) {
     return (
       <div className="h-full flex items-center justify-center font-rubik">
-        <div className="w-full max-w-[450px] h-[250px] rounded-[20px] bg-white border border-gray-100 overflow-hidden ">
+        <div className="w-full max-w-[420px] rounded-2xl bg-white border border-gray-100 overflow-hidden">
           {verifying && (
-            <div className="h-full pt-9 pb-7 px-6 flex flex-col items-center gap-4 text-center">
+            <div className="p-8 flex flex-col items-center gap-4 text-center">
               <Spinner />
               <div>
-                <p className="text-[16px] font-[500]">
+                <p className="text-[16px] font-[600]">
                   Confirming your payment
                 </p>
                 <p className="text-[13px] text-gray-500 mt-2 leading-relaxed">
@@ -159,21 +159,47 @@ function RouteComponent() {
           )}
 
           {!verifying && status === "success" && (
-            <div className="bg-green-50 h-full flex flex-col items-center justify-center gap-3 text-center">
-              <div className="w-11 h-11 rounded-full bg-green-100 flex items-center justify-center">
-                <Check className="w-5 h-5 text-green-700" />
-              </div>
-              <div>
-                <p className="text-[25px] font-[500] text-[#173404]">
+            <div className="flex flex-col">
+              <div className="p-8 flex flex-col items-center gap-3 text-center border-b border-gray-100">
+                <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                  <Check className="w-5 h-5 text-green-700" />
+                </div>
+                <p className="text-[20px] font-[700] text-[#173404]">
                   Payment Successful
                 </p>
-                <p className="text-[14px] text-[#3B6D11] mt-1.5 leading-relaxed mb-4">
-                  Click the button below to return to the dashboard and view
-                  your registered events
+                <p className="text-[13px] text-gray-500 leading-relaxed">
+                  Your registration is confirmed. A receipt has been sent to
+                  your email.
                 </p>
+              </div>
+
+              {/* Order Summary */}
+              <div className="p-5 border-b border-gray-100">
+                <p className="text-[12px] font-[600] text-primary-main tracking-wide uppercase mb-3">
+                  Order Summary
+                </p>
+                <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                  <span className="text-[13px] font-[500] truncate max-w-[220px]">
+                    {event?.eventTitle}
+                  </span>
+                  <span className="text-[13px] font-[600]">
+                    ₦{total.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between pt-3">
+                  <span className="text-[14px] font-[600] text-primary-main">
+                    Total
+                  </span>
+                  <span className="text-[16px] font-[700] text-reddish">
+                    ₦{total.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-5">
                 <Link
                   to={"/dashboard"}
-                  className=" bg-primary-main text-white py-2 px-4 text-[14px] rounded-md hover:bg-primary-dark"
+                  className="w-full h-12 flex items-center justify-center bg-primary-main text-white text-[14px] font-[600] rounded-[10px] hover:bg-primary-dark transition-colors"
                 >
                   Return to Dashboard
                 </Link>
@@ -182,18 +208,23 @@ function RouteComponent() {
           )}
 
           {!verifying && status === "failed" && (
-            <div className="bg-red-50 pt-9 pb-6 px-6 flex flex-col items-center gap-3.5 text-center">
-              <div className="w-11 h-11 rounded-full bg-red-100 flex items-center justify-center">
+            <div className="p-8 flex flex-col items-center gap-3 text-center">
+              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
                 <X className="w-5 h-5 text-red-700" />
               </div>
-              <div>
-                <p className="text-[16px] font-[500] text-[#501313]">
-                  Couldn't confirm yet
-                </p>
-                <p className="text-[13px] text-[#A32D2D] mt-1.5 leading-relaxed">
-                  If you were charged, it may still be processing
-                </p>
-              </div>
+              <p className="text-[16px] font-[600] text-[#501313]">
+                Couldn't confirm yet
+              </p>
+              <p className="text-[13px] text-gray-500 leading-relaxed">
+                If you were charged, it may still be processing. Check back
+                shortly or contact support.
+              </p>
+              <Link
+                to={"/dashboard"}
+                className="w-full h-11 flex items-center justify-center mt-2 border border-gray-200 text-gray-700 text-[14px] font-[500] rounded-[10px] hover:bg-gray-50 transition-colors"
+              >
+                Back to Dashboard
+              </Link>
             </div>
           )}
         </div>
@@ -376,77 +407,133 @@ function RouteComponent() {
 
         {/* Payment summary + pay */}
         <TabsContent value="payment">
-          <div className="w-full max-w-[420px] mx-auto rounded-2xl bg-white border border-gray-100 p-5 flex flex-col gap-4">
-            <p className="text-[15px] font-[500] font-header">
-              Complete payment
-            </p>
+          <div className="w-full max-w-[420px] mx-auto rounded-2xl bg-white border border-gray-100 overflow-hidden font-rubik">
+            {/* Your Details */}
+            <div className="p-5 border-b border-gray-100">
+              <p className="text-[12px] font-[600] text-primary-main tracking-wide uppercase mb-3">
+                Your Details
+              </p>
 
-            <div>
-              <div className="flex items-center justify-between py-2.5 border-b border-gray-100">
-                <span className="text-[13px] text-gray-500 ">Name</span>
-                <span className="text-[13px] font-[500] ">
+              <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                <span className="text-[13px] text-gray-500">Name</span>
+                <span className="text-[13px] font-[600] text-right">
                   {user?.fullName}
                 </span>
               </div>
-              <div className="flex items-center justify-between py-2.5 border-b border-gray-100">
-                <span className="text-[13px] text-gray-500 ">
+              <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                <span className="text-[13px] text-gray-500">Email</span>
+                <span className="text-[13px] font-[600] text-right truncate max-w-[220px]">
+                  {user?.email}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-[13px] text-gray-500">
                   Number of people
                 </span>
-                <span className="text-[13px] font-[500] ">{quantity}</span>
+                <span className="text-[13px] font-[600]">{quantity}</span>
               </div>
-              <div className="flex items-center justify-between py-2.5 border-b border-gray-100">
-                <span className="text-[13px] text-gray-500 ">Reference</span>
-                <span className="text-[12px] font-[500] font-mono">
-                  {referenceRef.current ?? "Generating..."}
+            </div>
+
+            {/* Order Summary */}
+            <div className="p-5 border-b border-gray-100">
+              <p className="text-[12px] font-[600] text-primary-main tracking-wide uppercase mb-3">
+                Order Summary
+              </p>
+
+              <div className="flex items-center justify-between py-2 border-b border-gray-50">
+                <span className="text-[13px] font-[500] truncate max-w-[220px]">
+                  {event?.eventTitle}
+                </span>
+                <span className="text-[13px] font-[600]">
+                  ₦{event.eventPrice}
                 </span>
               </div>
-              <div className="flex items-center justify-between pt-3.5 pb-1">
-                <span className="text-[13px] text-gray-500 ">Amount</span>
-                <span className="text-[18px] font-[500] text-reddish ">
+
+              <div className="flex items-center justify-between pt-3">
+                <span className="text-[14px] font-[600] text-primary-main">
+                  Total
+                </span>
+                <span className="text-[16px] font-[700] text-reddish">
                   ₦{total.toLocaleString()}
                 </span>
               </div>
             </div>
 
-            <button
-              onClick={handlePayment}
-              disabled={paymentPending || !referenceRef}
-              className="w-full h-11 rounded-[10px] bg-reddish text-white text-[14px] font-[500]  disabled:opacity-60 cursor-pointer"
-            >
-              {paymentPending
-                ? "Redirecting..."
-                : `Pay ₦${total.toLocaleString()}`}
-            </button>
+            {/* Confirmation notice */}
+            <div className="p-5">
+              <button
+                onClick={handlePayment}
+                disabled={paymentPending || !referenceRef}
+                className="w-full h-12 mt-4 rounded-[10px] bg-primary-main text-white text-[14px] font-[600] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
+              >
+                {paymentPending
+                  ? "Redirecting..."
+                  : `Pay ₦${total.toLocaleString()}`}
+              </button>
 
-            <p className="text-center text-[12px] text-gray-400 ">
-              Secured by Paystack
-            </p>
+              <p className="text-center text-[11px] text-gray-400 mt-3">
+                Secured by Paystack
+              </p>
+            </div>
           </div>
         </TabsContent>
 
-        <div className="flex justify-between py-4">
-          <Button
-            type="button"
-            className="w-[30%] font-rubik text-[14px] py-3 text-white bg-reddish disabled:bg-reddish/50 disabled:cursor-not-allowed cursor-pointer"
-            disabled={tabState === "mode"}
-            onClick={handleBack}
-          >
-            Back
-          </Button>
+        {/* SUccessful */}
+        <TabsContent value="successful">
+          <div className="flex flex-col font-rubik bg-white rounded-[15px]">
+            <div className="p-8 flex flex-col items-center gap-3 text-center border-b border-gray-100">
+              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+                <Check className="w-5 h-5 text-green-700" />
+              </div>
+              <p className="text-[20px] font-[700] text-[#173404]">
+                Registration Successful
+              </p>
+              <p className="text-[13px] text-gray-500 leading-relaxed">
+                You have successfully registered for {event?.eventTitle}
+              </p>
+            </div>
 
-          <Button
-            type="button"
-            className="w-[30%] font-rubik text-[14px] py-3 text-white bg-primary-main disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            disabled={
-              tabState === "successful" ||
-              tabState === "verify-code" ||
-              tabState === "payment"
-            }
-            onClick={handleNext}
-          >
-            Next
-          </Button>
-        </div>
+            {/* Order Summary */}
+
+            <div className="p-5">
+              <Link
+                to={"/dashboard"}
+                className="w-full h-12 flex items-center justify-center bg-primary-main text-white text-[14px] font-[600] rounded-[10px] hover:bg-primary-dark transition-colors"
+              >
+                Return to Dashboard
+              </Link>
+            </div>
+          </div>
+        </TabsContent>
+        {/* SUccessful */}
+
+        {tabState === "successful" ? (
+          ""
+        ) : (
+          <div className="flex justify-between py-4">
+            <Button
+              type="button"
+              className="w-[30%] font-rubik text-[14px] py-3 text-white bg-reddish disabled:bg-reddish/50 disabled:cursor-not-allowed cursor-pointer"
+              disabled={tabState === "mode"}
+              onClick={handleBack}
+            >
+              Back
+            </Button>
+
+            <Button
+              type="button"
+              className="w-[30%] font-rubik text-[14px] py-3 text-white bg-primary-main disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              disabled={
+                tabState === "successful" ||
+                tabState === "verify-code" ||
+                tabState === "payment"
+              }
+              onClick={handleNext}
+            >
+              Next
+            </Button>
+          </div>
+        )}
       </Tabs>
     </div>
   );
