@@ -13,7 +13,7 @@ interface RegisterCredentials {
   parish: string
   age: string
   profilePicture?: string
-  membershipType: string
+  profession: string
 }
 
 export function useRegister() {
