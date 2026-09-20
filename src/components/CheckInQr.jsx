@@ -3,21 +3,19 @@ import QRCode from 'qrcode';
 import { buildQrPayload } from '@/lib/qr';
 
 /**
- * Renders an attendee's DLWYC check-in QR pass (event ID + their unique ID).
+ * Renders an attendee's DLWYC check-in QR pass (their full name + event ID).
  *
  * @param {object} props
- * @param {string} props.eventId    the event's _id (e.g. "evt-camp")
+ * @param {string} props.name      the attendee's full name (encoded in the QR)
+ * @param {string} props.eventId   the event's _id (e.g. "evt-camp")
  * @param {string} props.eventTitle event title (shown as caption)
- * @param {string} props.uniqueId   the attendee's own unique ID
- * @param {string} [props.name]     attendee name (caption)
- * @param {number} [props.size]     QR image size in px (default 160)
+ * @param {number} [props.size]    QR image size in px (default 160)
  * @param {boolean}[props.showPayload] also show the raw payload text (for staff)
  */
 export default function CheckInQr({
+  name,
   eventId,
   eventTitle,
-  uniqueId,
-  name,
   size = 160,
   showPayload = false,
 }) {
@@ -25,11 +23,11 @@ export default function CheckInQr({
 
   useEffect(() => {
     let active = true;
-    if (!eventId || !uniqueId) {
+    if (!eventId || !name) {
       setDataUrl(null);
       return;
     }
-    QRCode.toDataURL(buildQrPayload(eventId, uniqueId), {
+    QRCode.toDataURL(buildQrPayload(name, eventId), {
       width: Math.max(size * 2, 320),
       margin: 2,
       errorCorrectionLevel: 'M',
@@ -45,7 +43,7 @@ export default function CheckInQr({
     return () => {
       active = false;
     };
-  }, [eventId, uniqueId, size]);
+  }, [name, eventId, size]);
 
   if (!dataUrl) return null;
 
@@ -66,7 +64,7 @@ export default function CheckInQr({
       )}
       {showPayload && (
         <p className="text-[10px] font-mono text-gray-400 break-all text-center px-2">
-          {buildQrPayload(eventId, uniqueId)}
+          {buildQrPayload(name, eventId)}
         </p>
       )}
     </div>

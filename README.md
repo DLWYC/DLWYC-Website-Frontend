@@ -41,21 +41,36 @@ Demo accounts (also shown on the login pages):
     assignment, bulk check-in, and **Recent Scans** live feed.
   - **Stations** (`/registrationunit/stations`) — each event is a station that
     opens a scan portal pre-locked to that event (`?event=`).
-  - **CSV exports** — scan audit trail (RFID + QR) and the event check-in
-    report (food billing / attendance).
+  - **CSV exports** — scan audit trail (RFID + QR, with a **QR Name** column
+    for QR scans) and the event check-in report (food billing / attendance).
 
 ## QR check-in format
 
-A check-in QR pass encodes the **event ID** and the attendee's **own unique
-ID**:
+A check-in QR pass encodes the attendee's **full name** and the **event ID**
+(the unique ID is no longer part of the QR):
 
 ```
-DLWYC-CHKIN|<eventId>|<uniqueId>      e.g.  DLWYC-CHKIN|evt-camp|DLW/04/2026/0001
+DLWYC-CHKIN|<fullName>|<eventId>      e.g.  DLWYC-CHKIN|Grace Osei|evt-camp
 ```
+
+At the gate the attendee is resolved **by name within that event** —
+case- and whitespace-insensitive (`"  grace   OSEI "` matches `Grace Osei`).
+If **two attendees in the same event share the name**, the scan is rejected
+with an `ambiguous` error (**HTTP 409**) — the system never guesses; check
+that person in by their RFID card or unique ID instead.
+
+> **Backwards compatibility:** the older payload formats
+> `DLWYC-CHKIN|<eventId>|<uniqueId>`,
+> `DLWYC-CHKIN|<fullName>|<eventId>|<uniqueId>` and `DLWYC-CHKIN|<uniqueId>`
+> still work — when a uniqueId is present anywhere in the payload it **wins**
+> and the attendee is resolved by it (so an old QR for a person whose name is
+> duplicated still checks in the right one).
 
 Generated and parsed by `src/lib/qr.js`; scanned by the in-page camera
 scanner (`src/components/registrationunit/QrScannerModal.jsx`) and resolved by
-`POST /api/registrationUnit/qr/scan`.
+`POST /api/registrationUnit/qr/scan`. Every QR scan log entry records the name
+encoded in the QR as **`qrName`** (alongside the resolved attendee), and the
+scan audit CSV export includes a **QR Name** column.
 
 > Phone browsers only allow camera access over **HTTPS** (or `localhost`).
 > For an event, serve the portal over HTTPS and phones work as-is.
