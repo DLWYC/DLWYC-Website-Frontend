@@ -3,6 +3,7 @@
  */
 import { Router } from 'express';
 import { db, save, normalizeUid, logRfidScan } from '../store.js';
+import { resolveQrScan } from '../qrCheckin.js';
 
 const router = Router();
 
@@ -147,66 +148,65 @@ router.post('/rfid/scan', (req, res) => {
 /**
  * POST /api/registrationUnit/qr/scan
  * QR code twin of /rfid/scan. Body:
- *   { payload }                       — the raw QR text (DLWYC-CHKIN|<eventId>|<uniqueId>)
- * or { eventId, uniqueId } directly.
+ *   { payload }                          — the raw QR text
+ * or { fullName, eventId } / { eventId, uniqueId } directly.
  * Optional: { eventTitle } — the station's selected event, used as a guard so a
  * station only checks people in/out for its own event.
- * Resolves the attendee by their own uniqueId, toggles check-in/check-out and
- * logs the scan with method "qr".
+ *
+ * Current QR format: DLWYC-CHKIN|<fullName>|<eventId> — the attendee is
+ * resolved by full name within that event (case- and whitespace-insensitive).
+ * If two attendees in the same event share the name the scan is rejected with
+ * 409 `ambiguous` — never guessed.
+ * Legacy formats DLWYC-CHKIN|<eventId>|<uniqueId>,
+ * DLWYC-CHKIN|<fullName>|<eventId>|<uniqueId> and DLWYC-CHKIN|<uniqueId> still
+ * resolve by uniqueId (a uniqueId in the payload wins over the name).
+ * Toggles check-in/check-out and logs the scan with method "qr"; the name
+ * encoded in the QR is recorded as `qrName` in the log entry.
  */
 router.post('/qr/scan', (req, res) => {
   const body = req.body || {};
-  let eventId = (body.eventId || '').toString().trim();
-  let uniqueId = (body.uniqueId || '').toString().trim().toUpperCase();
+  const result = resolveQrScan(db, body);
 
-  // Accept the raw QR text as well (same format the frontend generates/parses).
-  if (!uniqueId && body.payload) {
-    const raw = (body.payload || '').trim();
-    if (raw.startsWith('{')) {
-      try {
-        const obj = JSON.parse(raw);
-        eventId = eventId || String(obj.eventId || '').trim();
-        uniqueId = String(obj.uniqueId || '').trim().toUpperCase();
-      } catch {
-        /* fall through to pipe format */
-      }
-    }
-    if (!uniqueId) {
-      const parts = raw.split('|').map((s) => s.trim());
-      if (parts[0]?.toUpperCase() === 'DLWYC-CHKIN') {
-        if (parts.length >= 3) {
-          eventId = eventId || parts[1] || '';
-          uniqueId = (parts[2] || '').toUpperCase();
-        } else if (parts.length === 2 && parts[1]) {
-          // Lenient form: prefix + uniqueId only (no event) — the station
-          // guard below still applies.
-          uniqueId = parts[1].toUpperCase();
-        }
-      }
-    }
+  if (result.status === 'invalid') {
+    return res.status(400).json({ message: 'No attendee name or unique ID found in that QR code' });
   }
 
-  if (!uniqueId) {
-    return res.status(400).json({ message: 'No attendee unique ID found in that QR code' });
-  }
-
-  const attendee = db.attendees.find(
-    (a) => (a.uniqueId || '').toUpperCase() === uniqueId
-  );
-
-  if (!attendee) {
+  if (result.status === 'notFound') {
     logRfidScan({
-      uid: uniqueId,
+      uid: result.uid || '',
+      qrName: result.qrName || '',
       method: 'qr',
-      eventTitle: eventId,
+      eventTitle: result.eventTitle || '',
       action: 'unknown',
-      message: 'No attendee for QR',
+      message: result.message,
     });
-    return res.status(404).json({
-      message: 'No attendee found for this QR code',
-      action: 'unknown',
+    return res.status(404).json({ message: result.message, action: 'unknown' });
+  }
+
+  if (result.status === 'ambiguous') {
+    logRfidScan({
+      qrName: result.qrName,
+      method: 'qr',
+      eventTitle: result.eventTitle,
+      action: 'ambiguous',
+      message: result.message,
+    });
+    return res.status(409).json({
+      message: result.message,
+      error: 'ambiguous',
+      action: 'ambiguous',
+      // The people the name matched — so staff can check the right one in
+      // manually. The scan itself is never resolved to one of them.
+      matches: result.matches.map((a) => ({
+        userId: a.userId,
+        fullName: a.fullName,
+        uniqueId: a.uniqueId,
+      })),
     });
   }
+
+  const attendee = result.attendee;
+  const qrName = result.qrName;
 
   // Event guard: the event encoded in the QR (or the station's event) must be
   // the event this attendee is registered for.
@@ -215,7 +215,7 @@ router.post('/qr/scan', (req, res) => {
     db.events.find((e) => e._id === id || e.eventTitle === id);
 
   let wrongEvent = null;
-  const qrEvent = eventId ? findEvent(eventId) : null;
+  const qrEvent = result.eventId ? findEvent(result.eventId) : null;
   const stationEvent = (body.eventTitle || '').toString().trim();
   if (qrEvent && qrEvent.eventTitle !== attendeeEvent) {
     wrongEvent = qrEvent.eventTitle;
@@ -225,7 +225,8 @@ router.post('/qr/scan', (req, res) => {
 
   if (wrongEvent) {
     logRfidScan({
-      uid: uniqueId,
+      uid: (attendee.uniqueId || '').toUpperCase(),
+      qrName,
       method: 'qr',
       eventTitle: attendeeEvent,
       action: 'wrongEvent',
@@ -245,7 +246,8 @@ router.post('/qr/scan', (req, res) => {
 
   const action = toggled ? 'checkedIn' : 'checkedOut';
   logRfidScan({
-    uid: uniqueId,
+    uid: (attendee.uniqueId || '').toUpperCase(),
+    qrName,
     method: 'qr',
     eventTitle: attendeeEvent,
     action,

@@ -77,7 +77,8 @@ Added an **RFID Card Scanner** box and per-attendee card features:
 - **Recent Scans** panel — a live feed of every card tap (from `/rfid/logs`),
   refreshed every 10s, with a **summary/rollup** (total / checked-in /
   checked-out / unknown cards). The **Export** button downloads the scan feed
-  as a CSV audit trail with a summary header.
+  as a CSV audit trail with a summary header and a **QR Name** column
+  (the name encoded in each scanned QR).
 - **Report** button — downloads the selected event's attendee list with
   check-in status as a CSV, **respecting the current archdeaconry + search
   filters**, and appends a totals row (handy for food/attendance billing).
@@ -86,7 +87,7 @@ Added an **RFID Card Scanner** box and per-attendee card features:
   attendee's check-in QR pass and runs the same check-in/out + confirmation
   flow. See the **QR code check-in** section below.
 - Each attendee card also has a **QR** button to view / print that person's
-  check-in QR pass (event ID + their unique ID).
+  check-in QR pass (attendee name + event ID).
 
 ## Backend — now included in this repo
 
@@ -117,11 +118,17 @@ assigned card UIDs you can scan immediately.
    toggles check-in/check-out, returning `{ action: 'checkedIn'|'checkedOut' }`.
 
 4. **`POST /api/registrationUnit/qr/scan`** (QR code twin of `/rfid/scan`).
-   Body: `{ payload }` — the raw QR text — or `{ eventId, uniqueId }`
-   directly. Optional `{ eventTitle }` scopes the scan to the station's
-   event. Resolves the attendee by their **own unique ID**, toggles
-   check-in/check-out, and logs with `method: 'qr'`. Returns the same
-   `{ action: 'checkedIn'|'checkedOut'|'wrongEvent'|'unknown' }` shape.
+   Body: `{ payload }` — the raw QR text — or `{ fullName, eventId }` /
+   `{ eventId, uniqueId }` directly. Optional `{ eventTitle }` scopes the scan
+   to the station's event. Current QRs (`DLWYC-CHKIN|<fullName>|<eventId>`)
+   are resolved by full name **within the QR's event** (case- and
+   whitespace-insensitive); a name shared by two attendees in that event is
+   rejected with **409 `ambiguous`** — never guessed. Legacy payloads that
+   carry a uniqueId still resolve **by uniqueId** (uniqueId wins over the
+   name). Toggles check-in/check-out and logs with `method: 'qr'`, recording
+   the QR's encoded name as `qrName`. Returns the same
+   `{ action: 'checkedIn'|'checkedOut'|'wrongEvent'|'ambiguous'|'unknown' }`
+   shape.
 
 ### Remote access for a network reader (Raspberry Pi)
 
@@ -191,23 +198,36 @@ sessions). Options:
 The same check-in/out flow also works with **QR codes**. The QR pass is the
 attendee's "digital card" and encodes exactly two things:
 
-1. the **event ID** (the event's `_id`, e.g. `evt-camp`)
-2. the attendee's **own unique ID** (e.g. `DLW/04/2026/0001`)
+1. the attendee's **full name** (e.g. `Grace Osei`)
+2. the **event ID** (the event's `_id`, e.g. `evt-camp`)
 
 Wire format (plain text, any QR generator/scanner can handle it):
 
 ```
-DLWYC-CHKIN|<eventId>|<uniqueId>
+DLWYC-CHKIN|<fullName>|<eventId>
 ```
 
-A JSON object `{ "eventId": "...", "uniqueId": "..." }` is accepted too.
-Both the generator and parser live in **`src/lib/qr.js`**
-(`buildQrPayload` / `parseQrPayload`).
+The attendee is resolved **by name within that event** — case- and
+whitespace-insensitive, so extra spaces or different capitalization still
+match. If **two attendees in the same event share the name**, the scan is
+rejected with **HTTP 409 `ambiguous`** (and an `ambiguous` entry in Recent
+Scans) — the system never guesses; check that person in with their RFID card
+or unique ID instead.
+
+> **Backwards compatibility:** the older formats
+> `DLWYC-CHKIN|<eventId>|<uniqueId>`,
+> `DLWYC-CHKIN|<fullName>|<eventId>|<uniqueId>` and `DLWYC-CHKIN|<uniqueId>`
+> keep working — when a uniqueId is present in the payload it **wins** and the
+> attendee is resolved by it. A JSON object
+> `{ "fullName": "...", "eventId": "..." }` (or legacy
+> `{ "eventId": "...", "uniqueId": "..." }`) is accepted too.
+> Both the generator and parser live in **`src/lib/qr.js`**
+> (`buildQrPayload` / `parseQrPayload`).
 
 ### Where the QR comes from
 
 - **Registration Unit portal** — each attendee card has a **QR** button that
-  opens a modal showing that person's pass (event ID + their unique ID). Use
+  opens a modal showing that person's pass (attendee name + event ID). Use
   **Print pass** for a physical pass.
 - **User dashboard** — after an attendee logs in, their registered event card
   has a **Show Check-In QR** toggle. This is the QR they'd present on their
@@ -239,6 +259,8 @@ uploaded. On a successful decode it posts to
 
 - If the QR's event doesn't match the attendee's registered event (or the
   station's selected event), the scan is rejected with a **WRONG** log entry.
+- If the name in the QR matches **more than one attendee** in the event, the
+  scan is rejected with an **`ambiguous`** (409) log entry — never guessed.
 - Non-DLWYC QR codes are rejected in the frontend with a clear toast.
 
 ## Data model

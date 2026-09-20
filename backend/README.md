@@ -34,9 +34,16 @@ the backend, so **no VITE_BACKEND_URL is needed** for local development.
 | `POST /api/registrationUnit/qr/scan` | QR toggle `{ payload }` (raw QR text) or `{ eventId, uniqueId }`; optional `{ eventTitle }` station guard → `{ action }`, logs with `method: 'qr'` |
 | `GET /api/registrationUnit/rfid/logs` | Recent scan history (RFID + QR) |
 
-> QR pass format (see `src/lib/qr.js`): `DLWYC-CHKIN|<eventId>|<uniqueId>`.
-> `action` is one of `checkedIn`, `checkedOut`, `wrongEvent` (409) or
-> `unknown` (404).
+> QR pass format (see `src/lib/qr.js`): `DLWYC-CHKIN|<fullName>|<eventId>` —
+> resolved by full name **within that event** (case- and
+> whitespace-insensitive). A name shared by two attendees in the same event is
+> rejected as `ambiguous` (409) — never guessed. Legacy payloads
+> `DLWYC-CHKIN|<eventId>|<uniqueId>`,
+> `DLWYC-CHKIN|<fullName>|<eventId>|<uniqueId>` and `DLWYC-CHKIN|<uniqueId>`
+> still resolve by uniqueId (a uniqueId in the payload wins over the name).
+> `action` is one of `checkedIn`, `checkedOut`, `wrongEvent` (409),
+> `ambiguous` (409) or `unknown` (404). Scan log entries record the name
+> encoded in the QR as `qrName` (empty for uniqueId-only payloads).
 
 ### Other (functional basics for the rest of the app)
 - `GET /api/admin/events`
