@@ -40,16 +40,14 @@ function RouteComponent() {
          navigate({to: '/userdashboard'});
       }
       catch(error){
-        console.log("This is error at Login", error)
+        console.error("This is error at Login", error)
         toast.error(error?.error || error?.data || "Login Failed🤧")
       }
       
-      console.log("Login Successful")
      }
    
 
   const handleGoogleLogin = (credentialResponse) => {
-    console.log(credentialResponse);
     localStorage.setItem("token", credentialResponse.credential);
 
   };
@@ -60,6 +58,13 @@ return (
       <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
         <div className="space-y-4">
+          {/* Demo credentials hint so testers can see their check-in QR pass */}
+          <div className="bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-lg px-4 py-3 text-sm">
+            <p className="font-semibold mb-1">Demo login (see your Check-In QR)</p>
+            <p className="font-mono">attendee1@example.com</p>
+            <p className="font-mono">attendee123</p>
+          </div>
+
           <input
             type="email"
             placeholder="Email"

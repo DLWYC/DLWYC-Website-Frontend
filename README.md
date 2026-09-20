@@ -1,301 +1,121 @@
-Welcome to your new TanStack app! 
+# DLWYC Website Frontend
 
-# Getting Started
+The web frontend for **Diocese of Lagos Worshiping Youth Convention (DLWYC)** —
+the public website, user dashboard, and the **Registration Unit** portal with
+event **check-in / check-out by RFID card and QR code** (phone camera).
 
-To run this application:
-
-```bash
-npm install
-npm run start
-```
-
-# Building For Production
-
-To build this application for production:
+## Quick start (one command)
 
 ```bash
-npm run build
+npm run setup      # installs frontend + backend dependencies (do once)
+npm run dev:full   # starts the backend (:4000) + the website (:3000) together
 ```
 
-## Testing
+Then open **http://localhost:3000**.
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+Demo accounts (also shown on the login pages):
+
+| Portal | Email | Password |
+|---|---|---|
+| Registration Unit (admin) | `admin@dlwyc.org` | `admin123` |
+| User dashboard (attendee) | `attendee1@example.com` | `attendee123` |
+
+> No database or external service is required: the backend auto-seeds a JSON
+> data file (`backend/data/db.json`, gitignored) with 2 demo events and 25
+> attendees on first start.
+
+## What's inside
+
+- **Public website** — homepage, about (chairmen/chaplains), events, gallery.
+- **User dashboard** — event registration, payments, hostel allocation, and the
+  attendee's **Check-In QR pass** (event ID + their unique ID) under each
+  registered event.
+- **Registration Unit portal** (`/registrationunit`, login required) —
+  - **QR scanning (default)**: tap *Scan QR Code* and the browser opens the
+    operator's **phone camera in-page**; each scan checks the attendee in or
+    out with an on-screen confirmation.
+  - **RFID card scanning**: collapsible *RFID card scan* box — works with a
+    USB keyboard-wedge reader or a typed/pasted UID (and, later, the
+    Raspberry Pi service in `rfid-reader/`).
+  - Attendee list with filters, per-attendee **QR pass view/print**, card
+    assignment, bulk check-in, and **Recent Scans** live feed.
+  - **Stations** (`/registrationunit/stations`) — each event is a station that
+    opens a scan portal pre-locked to that event (`?event=`).
+  - **CSV exports** — scan audit trail (RFID + QR, with a **QR Name** column
+    for QR scans) and the event check-in report (food billing / attendance).
+
+## QR check-in format
+
+A check-in QR pass encodes the attendee's **full name** and the **event ID**
+(the unique ID is no longer part of the QR):
+
+```
+DLWYC-CHKIN|<fullName>|<eventId>      e.g.  DLWYC-CHKIN|Grace Osei|evt-camp
+```
+
+At the gate the attendee is resolved **by name within that event** —
+case- and whitespace-insensitive (`"  grace   OSEI "` matches `Grace Osei`).
+If **two attendees in the same event share the name**, the scan is rejected
+with an `ambiguous` error (**HTTP 409**) — the system never guesses; check
+that person in by their RFID card or unique ID instead.
+
+> **Backwards compatibility:** the older payload formats
+> `DLWYC-CHKIN|<eventId>|<uniqueId>`,
+> `DLWYC-CHKIN|<fullName>|<eventId>|<uniqueId>` and `DLWYC-CHKIN|<uniqueId>`
+> still work — when a uniqueId is present anywhere in the payload it **wins**
+> and the attendee is resolved by it (so an old QR for a person whose name is
+> duplicated still checks in the right one).
+
+Generated and parsed by `src/lib/qr.js`; scanned by the in-page camera
+scanner (`src/components/registrationunit/QrScannerModal.jsx`) and resolved by
+`POST /api/registrationUnit/qr/scan`. Every QR scan log entry records the name
+encoded in the QR as **`qrName`** (alongside the resolved attendee), and the
+scan audit CSV export includes a **QR Name** column.
+
+> Phone browsers only allow camera access over **HTTPS** (or `localhost`).
+> For an event, serve the portal over HTTPS and phones work as-is.
+
+## Repository layout
+
+```
+src/                  React + TanStack Router + Tailwind frontend
+  routes/registrationunit/    Check-in portal, scanner modals, stations
+  components/registrationunit/  QR scanner (camera) + QR pass modals
+  lib/qr.js             QR payload build/parse
+backend/              Express API + JSON-file store (auto-seeded)
+rfid-reader/          Raspberry Pi reader service + Arduino USB-keyboard sketch
+docs/                 Tester's guide, RFID/QR integration, Windows setup
+```
+
+## Configuration
+
+| Variable | Where | Meaning |
+|---|---|---|
+| `VITE_BACKEND_URL` | frontend (`.env`) | Leave **empty** for local dev (Vite proxies `/api` to `:4000`). Set it to point at a hosted backend. |
+| `VITE_BASE_URL` | frontend (`.env`) | Used by a few legacy calls (e.g. forgot-password). |
+| `PORT`, `DB_FILE` | backend (env) | Backend port (default 4000) and data file location. |
+| `CORS_ORIGINS` | backend (env) | Comma-separated allowed origins; open by default for local use. |
+
+See `.env.example` for the frontend template and `backend/README.md` for all
+API endpoints.
+
+> **Production notes:** the Vite dev proxy only exists in development — for a
+> production frontend you either set `VITE_BACKEND_URL` or proxy `/api` at the
+> web server (a commented example is in `nginx.conf`). Payment provider keys
+> are backend secrets — never `VITE_*` variables.
+
+## Development
 
 ```bash
-npm run test
+npm run build        # vite build + tsc
+npm run lint         # eslint
+npm run format       # prettier
+npm run test         # vitest
 ```
 
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-
-## Linting & Formatting
-
-
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) for linting and formatting. Eslint is configured using [tanstack/eslint-config](https://tanstack.com/config/latest/docs/eslint). The following scripts are available:
-
-```bash
-npm run lint
-npm run format
-npm run check
-```
-
-
-
-## Routing
-This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add another a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import { Link } from "@tanstack/react-router";
-
-export const Route = createRootRoute({
-  component: () => (
-    <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
-
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/people",
-  loader: async () => {
-    const response = await fetch("https://swapi.dev/api/people");
-    return response.json() as Promise<{
-      results: {
-        name: string;
-      }[];
-    }>;
-  },
-  component: () => {
-    const data = peopleRoute.useLoaderData();
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    );
-  },
-});
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-### React-Query
-
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
-
-First add your dependencies:
-
-```bash
-npm install @tanstack/react-query @tanstack/react-query-devtools
-```
-
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
-
-```tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-// ...
-
-const queryClient = new QueryClient();
-
-// ...
-
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
-}
-```
-
-You can also add TanStack Query Devtools to the root route (optional).
-
-```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-});
-```
-
-Now you can use `useQuery` to fetch your data.
-
-```tsx
-import { useQuery } from "@tanstack/react-query";
-
-import "./App.css";
-
-function App() {
-  const { data } = useQuery({
-    queryKey: ["people"],
-    queryFn: () =>
-      fetch("https://swapi.dev/api/people")
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
-  });
-
-  return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-export default App;
-```
-
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
-
-## State Management
-
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
-
-First you need to add TanStack Store as a dependency:
-
-```bash
-npm install @tanstack/store
-```
-
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-function App() {
-  const count = useStore(countStore);
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  );
-}
-
-export default App;
-```
-
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
-
-Let's check this out by doubling the count using derived state.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store, Derived } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
-});
-doubledStore.mount();
-
-function App() {
-  const count = useStore(countStore);
-  const doubledCount = useStore(doubledStore);
-
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  );
-}
-
-export default App;
-```
-
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
-
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
-
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+## Documentation
+
+- `docs/TESTERS_GUIDE.md` — step-by-step testing of the check-in flows
+- `docs/rfid-integration.md` — RFID hardware options + QR integration details
+- `docs/windows-setup.md` — getting the RFID reader working on a Windows laptop
+- `backend/README.md` — API endpoints, seed data, demo logins

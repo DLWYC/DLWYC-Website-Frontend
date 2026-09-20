@@ -40,11 +40,10 @@ function RouteComponent() {
          navigate({to: '/registrationunit'});
       }
       catch(error){
-        console.log("This is error at Login", error)
+        console.error("This is error at Login", error)
         toast.error(error?.error || error?.data || "Login Failed🤧")
       }
       
-      console.log("herer", email)
      }
    
 return (
@@ -53,6 +52,13 @@ return (
       <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-lg">
         <h2 className="text-2xl font-bold text-center mb-6">Registration Unit Login</h2>
         <div className="space-y-4">
+          {/* Demo credentials hint so testers know what to log in with */}
+          <div className="bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-lg px-4 py-3 text-sm">
+            <p className="font-semibold mb-1">Demo login</p>
+            <p className="font-mono">admin@dlwyc.org</p>
+            <p className="font-mono">admin123</p>
+          </div>
+
           <input
             type="email"
             placeholder="Email"

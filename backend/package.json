@@ -1,0 +1,16 @@
+{
+  "name": "dlwyc-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local backend for the DLWYC app — serves the Registration Unit + RFID check-in/check-out flow with a JSON file store.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}
