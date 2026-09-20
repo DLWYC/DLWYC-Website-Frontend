@@ -187,15 +187,14 @@ const handleFilter = () => {
                               <Link to={`event?eventId=${_._id}`} disabled={_.paymentStatus == 'success' ? true : false} className={`${_.paymentStatus == 'success' ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-primary-main hover:text-white'}  text-[14px] transition-all duration-150 border border-primary-main  px-[30px] py-[7px] `}>Register</Link>
                              </div>
 
-                             {/* My Check-In QR pass (event ID + my unique ID) */}
-                             {_.paymentStatus === 'success' && userData?.uniqueId && (
+                             {/* My Check-In QR pass (my name + the event ID) */}
+                             {_.paymentStatus === 'success' && userData?.fullName && (
                                <div className="mt-2 pt-3 border-t border-gray-100 flex flex-col items-center gap-2">
                                  {qrOpenFor === _._id && (
                                    <>
                                      <CheckInQr
                                        eventId={_._id}
                                        eventTitle={_.eventTitle}
-                                       uniqueId={userData.uniqueId}
                                        name={userData.fullName}
                                        size={150}
                                      />

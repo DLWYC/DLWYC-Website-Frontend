@@ -576,14 +576,15 @@ function EventCheckInPortal() {
   /**
    * Handle a QR pass scanned with the operator's phone (a connected camera
    * device would work too, but phones are the intended setup).
-   * Sends the raw code to the backend, which resolves it (event ID + the
-   * attendee's unique ID) and toggles check-in/check-out — then mirrors the
-   * same on-screen confirmation + toast flow used for RFID card taps.
+   * Sends the raw code to the backend, which resolves it (attendee name +
+   * event ID, or a legacy unique-ID payload) and toggles check-in/check-out —
+   * then mirrors the same on-screen confirmation + toast flow used for RFID
+   * card taps.
    */
   const handleQrScan = useCallback(
     async (rawText) => {
       const parsed = parseQrPayload(rawText);
-      if (!parsed || !parsed.uniqueId) {
+      if (!parsed || (!parsed.fullName && !parsed.uniqueId)) {
         toast.error('That QR code is not a DLWYC check-in code');
         return;
       }
@@ -623,6 +624,7 @@ function EventCheckInPortal() {
           error.response?.data?.message || 'Could not process that QR code';
         toast.error(msg);
         console.error('Error processing QR scan:', error);
+        fetchScanLogs(); // rejected scans (ambiguous/wrong event/unknown) show in the feed too
       }
     },
     [backendUrl, selectedEvent, showScanConfirm, fetchScanLogs]
@@ -639,12 +641,13 @@ function EventCheckInPortal() {
       ['Wrong event', String(scanStats.wrong)],
       ['Unknown', String(scanStats.unknown)],
     ];
-    const cols = ['Time', 'Method', 'Action', 'Attendee', 'Card / QR ID', 'Event', 'Message'];
+    const cols = ['Time', 'Method', 'Action', 'Attendee', 'QR Name', 'Card / QR ID', 'Event', 'Message'];
     const body = scanLogs.map((log) => [
       log.at,
       log.method === 'qr' ? 'QR' : 'RFID',
       log.action,
       log.fullName || '',
+      log.qrName || '',
       log.uid || '',
       log.eventTitle || '',
       log.message || '',
@@ -1504,7 +1507,7 @@ function EventCheckInPortal() {
         onScan={handleQrScan}
       />
 
-      {/* Attendee QR pass modal (event ID + the attendee's unique ID) */}
+      {/* Attendee QR pass modal (attendee name + event ID) */}
       {qrPassFor && (
         <QrPassModal
           attendee={qrPassFor}

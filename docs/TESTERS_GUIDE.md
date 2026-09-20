@@ -91,8 +91,20 @@ overlay, and the attendee toggles back out.
 The same check-in/out flow now works with **QR codes** — the QR is the
 attendee's "digital card" and it stores two things:
 
-1. the **event ID** (e.g. `evt-camp`)
-2. the attendee's **own unique ID** (e.g. `DLW/04/2026/0001`)
+1. the attendee's **full name** (e.g. `Grace Osei`)
+2. the **event ID** (e.g. `evt-camp`)
+
+At the desk the person is resolved **by name within that event**
+(case- and whitespace-insensitive). If **two attendees in the same event have
+the same name**, the scan is rejected with an **ambiguous** error (HTTP 409)
+and an **ambiguous** entry in Recent Scans — the system never guesses; check
+that person in with their RFID card or unique ID instead.
+
+> Older QR passes that carry a **unique ID** (formats
+> `DLWYC-CHKIN|<eventId>|<uniqueId>`,
+> `DLWYC-CHKIN|<fullName>|<eventId>|<uniqueId>` and
+> `DLWYC-CHKIN|<uniqueId>`) still work — the unique ID wins and resolves the
+> right person even if their name is duplicated.
 
 ### 5a. Get an attendee's QR pass (two ways)
 

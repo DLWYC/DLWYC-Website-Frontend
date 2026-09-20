@@ -5,12 +5,12 @@ import CheckInQr from '@/components/CheckInQr';
 import { buildQrPayload } from '@/lib/qr';
 
 /**
- * Shows one attendee's check-in QR pass (event ID + their unique ID).
+ * Shows one attendee's check-in QR pass (attendee name + event ID).
  * Staff can present it on screen or print it as a physical pass.
  */
 export default function QrPassModal({ attendee, eventId, eventTitle, onClose }) {
   if (!attendee) return null;
-  const payload = buildQrPayload(eventId || eventTitle, attendee.uniqueId);
+  const payload = buildQrPayload(attendee.fullName, eventId || eventTitle);
 
   const copyPayload = async () => {
     try {
@@ -70,7 +70,7 @@ export default function QrPassModal({ attendee, eventId, eventTitle, onClose }) 
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-900">Check-In QR Pass</h3>
-              <p className="text-xs text-gray-500">Event ID + attendee unique ID</p>
+              <p className="text-xs text-gray-500">Attendee name + event ID</p>
             </div>
           </div>
           <button
@@ -87,7 +87,6 @@ export default function QrPassModal({ attendee, eventId, eventTitle, onClose }) 
           <CheckInQr
             eventId={eventId || eventTitle}
             eventTitle={eventTitle}
-            uniqueId={attendee.uniqueId}
             name={attendee.fullName}
             size={220}
             showPayload
