@@ -34,7 +34,7 @@ function UserProfile() {
   
   
 
-  const backendURL = import.meta.env.VITE_BACKEND_URL
+  const backendURL = import.meta.env.VITE_BACKEND_URL || ''
   const userToken = localStorage.getItem('token');
 
   const fileInputRef = useRef(null);
@@ -137,7 +137,6 @@ function UserProfile() {
       }
     );
 
-    console.log("Response:", response?.data);
     
     if (response.data.success) {
       // Update context with new data (if this function exists)

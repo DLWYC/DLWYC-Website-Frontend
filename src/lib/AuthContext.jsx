@@ -6,7 +6,7 @@ const AuthContext = createContext();
 
 export function AuthProvider({children}){
      const queryClient = useQueryClient()
-     const backendUrl = import.meta.env.VITE_BACKEND_URL
+     const backendUrl = import.meta.env.VITE_BACKEND_URL || ''
 
   // #:::::::::::::::  GET USER LOGIN FUNCTION :::::::::::::::::#
 const login = useMutation({
@@ -21,7 +21,7 @@ const login = useMutation({
   },
   onError: (err) =>{ // Removed async - not needed here
       const errType = err.response?.data?.errors
-      console.log("Error Type: ", errType)
+      console.error("Error Type: ", errType)
       throw errType
   }
 })
@@ -51,7 +51,6 @@ const {data: user, isLoading: isLoadingUserData, error: errorLoadingUserData} = 
       // Safe logging with optional chaining and fallback
       const userData = userDashboardData.data.data;
       const lastName = userData?.fullName?.split(" ")?.[1] || userData?.fullName || "N/A";
-      console.log("User Dashboard Name: ", lastName);
       
       return userData;
       
@@ -90,7 +89,7 @@ const registrationUnitLogin = useMutation({
   },
   onError: (err) =>{ // Removed async - not needed here
       const errType = err.response?.data?.errors
-      console.log("Error Type: ", errType)
+      console.error("Error Type: ", errType)
       throw errType
   }
 })
@@ -106,7 +105,6 @@ const registrationUnitLogin = useMutation({
         return UserPaymentRecord.data.data
     },
     onError: (error)=>{
-      // console.log("Error: ", error)
     },
     enabled: !!user?.uniqueId,
     refetchOnWindowFocus: false,
@@ -123,11 +121,10 @@ const registrationUnitLogin = useMutation({
     queryKey: ['userRegisteredEvents', user?.uniqueId],
     queryFn: async () =>{
       const userRegisteredEvents = await axios.get(`${backendUrl}/api/userRegisteredEvents/${user?.email}/${user?.uniqueId}`)
-      console.log("User Registered Events:",userRegisteredEvents?.data?.message)
         return userRegisteredEvents?.data?.data
     },
     onError: (error)=>{
-      console.log("Error: ", error)
+      console.error("Error: ", error)
     },
     enabled: !!user?.uniqueId,
     refetchOnWindowFocus: false,

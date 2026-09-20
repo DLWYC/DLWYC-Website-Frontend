@@ -15,7 +15,6 @@ function IndividualEvents() {
     if (eventDetail) {
       setEvents(eventDetail);
     } else {
-      // console.log("Event not found");
       setEvents([]);
     }
   }, [id]);

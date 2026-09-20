@@ -17,7 +17,7 @@ function RouteComponent() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { userData } = useAuth();
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_BACKEND_URL || ''
    const hasVerified = useRef(false);
 
    // Get reference from URL params (?reference=xyz)
@@ -86,7 +86,6 @@ const registerUserEvent = useCallback(async (paymentData) => {
         codes: codesGenerated.data.data
       });
 
-      console.log('Payment codes generated and saved successfully');
     }
 
     return response.data;
@@ -121,7 +120,6 @@ const verifyPayment = useCallback(async () => {
     });
 
     const verificationResult = response.data.data;
-    console.log("Verification Result", verificationResult);
 
     if (verificationResult.status !== 'success') {
       throw new Error('Payment verification failed');

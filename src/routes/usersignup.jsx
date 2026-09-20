@@ -12,7 +12,7 @@ export const Route = createFileRoute('/usersignup')({
 
 
 const SignUpForm = () => {
-     const backendUrl = import.meta.env.VITE_BACKEND_URL
+     const backendUrl = import.meta.env.VITE_BACKEND_URL || ''
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -138,7 +138,6 @@ const SignUpForm = () => {
         const response = await axios.post(`${backendUrl}/api/userRegistration`, formData);
 
         const data = await response?.data;
-        console.log("User data", data)
 
         if (data?.message === "Registration Successful") {
           toast.success('Account created successfully!');

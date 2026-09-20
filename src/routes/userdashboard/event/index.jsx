@@ -1,4 +1,4 @@
-import { useQueryClient, useQuery } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../../../lib/AuthContext'
@@ -23,7 +23,6 @@ function SingleEvent() {
   useEffect(() => {
     // Get cached events data
     const events = queryClient.getQueryData(['allEvent', userData?.uniqueId, userRegisteredEvents])
-    console.log("Event Id: ", eventID)
     // Check if events exists and is an array before using .find()
     if (events && Array.isArray(events)) {
       const event = events.find((event) => event?._id === eventID)
@@ -35,7 +34,6 @@ function SingleEvent() {
     setLoading(false)
   }, [queryClient, search , userData?.uniqueId, userRegisteredEvents])
 
-  console.log('Cached Event: ', cachedEvent)
 
   // Loading state
   if (loading) {
