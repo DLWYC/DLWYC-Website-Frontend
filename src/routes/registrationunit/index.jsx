@@ -140,6 +140,8 @@ function EventCheckInPortal() {
   const pollingIntervalRef = useRef(null);
   const lastFetchTimeRef = useRef(0);
   const isFetchingRef = useRef(false);
+  // Collapsible RFID card scan box (open by default).
+  const [rfidSectionOpen, setRfidSectionOpen] = useState(true);
   const rfidInputRef = useRef(null);
   const rfidAutoSubmitTimer = useRef(null);
   const [lastRefreshTime, setLastRefreshTime] = useState(null);
