@@ -1,10 +1,10 @@
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeSVG } from "qrcode.react";
 import { format } from "date-fns";
-
+import { DrawerClose } from "@/components/ui/drawer";
 
 interface QrValue {
-     eventId: string,
-     fullName: string
+  eventId: string;
+  fullName: string;
 }
 
 export interface RegistrationDetailsProps {
@@ -15,7 +15,7 @@ export interface RegistrationDetailsProps {
   /** Full name of the registered attendee */
   attendeeName: string;
   /** Congratulatory / confirmation message */
-//   message: string;
+  //   message: string;
   /** Value encoded in the QR code — typically a check-in URL or ticket token */
   qrValue: QrValue;
   /** Optional human-readable id shown beside the attendee */
@@ -30,7 +30,7 @@ export function RegistrationDetails({
   eventTitle,
   eventDate,
   attendeeName,
-//   message,
+  //   message,
   qrValue,
   ticketId,
   onBack,
@@ -39,21 +39,12 @@ export function RegistrationDetails({
   onDownload,
 }: RegistrationDetailsProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-[#f6f7fa] font-rubik">
+    <div className="flex min-h-screen flex-col bg-[#f6f7fa] font-rubik rounded-md">
       {/* Top bar */}
-      <header className="relative flex items-center justify-center px-5 py-5">
-        {/* <button
-          type="button"
-          onClick={onBack}
-          aria-label="Go back"
-          className="absolute left-4 flex h-9 w-9 items-center justify-center rounded-full text-[#091e54] transition hover:bg-[#091e54]/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#091e54]/40"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <line x1="19" y1="12" x2="5" y2="12" />
-            <polyline points="12 19 5 12 12 5" />
-          </svg>
-        </button> */}
-        <h1 className="text-lg font-semibold text-[#091e54]">Registration Details</h1>
+      <header className="relative flex items-center justify-center px-5 py-2">
+        <h1 className="text-lg font-semibold text-[#091e54]">
+          Registration Details
+        </h1>
       </header>
 
       {/* Ticket card */}
@@ -66,7 +57,9 @@ export function RegistrationDetails({
                 {eventTitle}
               </h2>
               {eventDate && (
-                <p className="mt-1 text-sm text-slate-400">{format(eventDate, "EEE, MMM dd")}</p>
+                <p className="mt-1 text-sm text-slate-400">
+                  {format(eventDate, "EEE, MMM dd")}
+                </p>
               )}
             </div>
             {onShare && (
@@ -76,7 +69,17 @@ export function RegistrationDetails({
                 aria-label="Share registration"
                 className="shrink-0 rounded-full p-1.5 text-[#091e54] transition hover:bg-[#091e54]/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#091e54]/40"
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
                   <circle cx="18" cy="5" r="3" />
                   <circle cx="6" cy="12" r="3" />
                   <circle cx="18" cy="19" r="3" />
@@ -90,17 +93,17 @@ export function RegistrationDetails({
           <hr className="my-5 border-t border-dashed border-slate-200" />
 
           {/* Attendee + ticket id */}
-          <dl className="grid grid-cols-2 gap-x-4 gap-y-5">
+          <dl className="grid grid-cols-2 gap-x-4 gap-y-4">
             <div>
               <dt className="text-xs text-slate-400">Attendee</dt>
-              <dd className="mt-1 text-base font-medium text-[#091e54]">
+              <dd className="mt-1 text-[15px] font-medium text-[#091e54]">
                 {attendeeName}
               </dd>
             </div>
             {ticketId && (
               <div>
                 <dt className="text-xs text-slate-400">Ticket ID</dt>
-                <dd className="mt-1 text-base font-medium text-[#091e54]">
+                <dd className="mt-1 text-[15px] font-medium text-[#091e54]">
                   {ticketId}
                 </dd>
               </div>
@@ -116,7 +119,7 @@ export function RegistrationDetails({
           <div className="mt-5 flex justify-center rounded-2xl border border-slate-200 p-6">
             <QRCodeSVG
               value={JSON.stringify(qrValue)}
-              size={180}
+              size={140}
               fgColor="#091e54"
               bgColor="#ffffff"
               level="M"
@@ -124,24 +127,25 @@ export function RegistrationDetails({
           </div>
 
           <p className="mt-5 text-sm leading-relaxed text-slate-500">
-            <span className="font-medium text-[#091e54]">Note:</span> Show this QR
-            code at the entrance to check in.
+            <span className="font-medium text-[#091e54]">Note:</span> Show this
+            QR code at the entrance to check in.
           </p>
         </div>
 
         {/* Actions */}
-        <div className="mx-auto mt-6 flex w-full max-w-md gap-3">
-          <button
+        <div className="mx-auto mt-4 flex w-full max-w-md gap-3">
+          <DrawerClose
+            // asChild
             type="button"
-            onClick={onCancel}
-            className="flex-1 rounded-xl border border-slate-200 bg-white py-3.5 text-sm font-medium text-[#091e54] transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#091e54]/40"
+            // onClick={onCancel}
+            className="flex-1 rounded-xl cursor-pointer border border-slate-200 bg-white py-3.5 text-sm font-medium text-[#091e54] transition hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#091e54]/40"
           >
             Cancel
-          </button>
+          </DrawerClose>
           <button
             type="button"
             onClick={onDownload}
-            className="flex-1 rounded-xl bg-[#091e54] py-3.5 text-sm font-medium text-white transition hover:bg-[#0d2a72] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#091e54]/40"
+            className="flex-1 rounded-xl cursor-pointer bg-[#091e54] py-3.5 text-sm font-medium text-white transition hover:bg-[#0d2a72] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#091e54]/40"
           >
             Download
           </button>

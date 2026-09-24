@@ -17,38 +17,45 @@ import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import { useGetDashboardStats } from "@/features/dashboard/hooks/useGetDashhboardStats";
 import { EventCard } from "@/components/Cards/EventCards";
 import { Link } from "@tanstack/react-router";
+import { Loader } from "@/components/Loader";
+import NotFound from "@/assets/notfound.png";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createLazyFileRoute("/dashboard/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { data: user } = useAuthUser();
-  const { data } = useGetDashboardStats();
+  const { data: user, isLoading: loadingUserDetails } = useAuthUser();
+  const { data: stats, isLoading: loadingStats } = useGetDashboardStats();
+  console.log("Latest", stats?.latestEvent);
+
+  // 🟢 2. SAFEGUARD: Fallback if the fetch fails completely or returns null
+  if (!user) {
+    return <p className="text-red-500">Failed to load user profile.</p>;
+  }
 
   return (
     <div className="flex flex-col space-y-5">
       {/* TopSection */}
       <div className="flex gap-6 lg:flex-row flex-col justify-between ">
+        {/* {loadingUserDetails } */}
         <div className="flex lg:w-[70%] rounded-[10px] h-[40vh] bg-white px-6 items-center relative">
           <div className="space-y-3 ">
-            <h2 className="text-[40px] font-header mb-5">
-              Hi, {user.fullName}
+            <h2 className="text-[34px] font-header mb-5">
+              Good Day, {user.fullName}
             </h2>
-            <p className="font-grotesk text-[13px] leading-[21px] tracking-[1.2px] font-[300]">
-              Welcome.
-            </p>
 
             <div className="flex gap-4 items-center wrap-normal">
-              <p className="font-header lg:text-[12px] text-[14px] font-[400]">
+              <p className="font-header lg:text-[14px] text-[14px] font-normal">
                 UniqueID:{" "}
-                <span className="text-primary-main font-[400]">
+                <span className="text-primary-main font-normal">
                   {user.uniqueID}
                 </span>
               </p>
-              <p className="font-header lg:text-[12px] text-[14px] font-[400]">
+              <p className="font-header lg:text-[14px] text-[14px] font-normal">
                 Email:{" "}
-                <span className="text-primary-main font-[400]">
+                <span className="text-primary-main font-normal">
                   {user.email}
                 </span>
               </p>
@@ -58,7 +65,7 @@ function RouteComponent() {
           <img
             src={user.gender == "Male" ? Male : Female}
             alt="male avatar"
-            className="w-[35%] absolute object-cover right-0 z-[40] -bottom-[100px]"
+            className="w-[35%] absolute object-cover right-0 z-40 -bottom-25"
           />
         </div>
 
@@ -77,7 +84,7 @@ function RouteComponent() {
                   <ItemTitle className="font-header text-[14px]">
                     Basic Item
                   </ItemTitle>
-                  <ItemDescription className="font-grotesk text-[12px]  leading-[17px] tracking-[0.3px] font-[300]">
+                  <ItemDescription className="font-grotesk text-[12px]  leading-4.25 tracking-[0.3px] font-light">
                     A simple item with title and description.
                   </ItemDescription>
                 </ItemContent>
@@ -97,7 +104,7 @@ function RouteComponent() {
           <CalendarDays />
 
           <h2 className="text-[40px] font-header font-bold">
-            {data?.totalEvents}
+            {loadingStats ? <Loader /> : stats?.totalEvents}
           </h2>
           <p className="font-grotesk text-[17px] leading-[21px] tracking-[0.3px] font-[500]">
             Upcoming Events.
@@ -119,13 +126,13 @@ function RouteComponent() {
 
       {/* Events */}
       <div className="rounded-[10px] lg:flex gap-3">
-        <div className="rounded-xl lg:w-[66%] p-4 bg-card border border-border/60">
+        <div className="rounded-xl lg:w-[66%] p-4 bg-card ">
           <div className="flex items-center justify-between mb-3">
             <p className="font-header text-lg font-semibold tracking-tight">
               Latest Events
             </p>
             <Link
-              className="text-xs text-muted-foreground border border-primary-main cursor-pointer py-2 px-4 font-grotesk font-[400]"
+              className="text-xs text-muted-foreground border  cursor-pointer py-2 px-4 font-grotesk font-[400]"
               to={"/dashboard/events"}
             >
               View all
@@ -135,9 +142,22 @@ function RouteComponent() {
           <Separator className="mb-3" />
 
           <div className="flex flex-col gap-2">
-            {data?.latestEvent.map((event: any) => (
-              <EventCard events={event} key={event?.eventTitle} />
-            ))}
+            {stats?.latestEvent?.length == 0 ? (
+              <div className="flex flex-col justify-center items-center h-[410px] space-y-5">
+                <img
+                  src={NotFound}
+                  alt="No events found"
+                  className="w-[90px]"
+                />
+                <p className="text-primary-main font-rubik">
+                  No Event Currently
+                </p>
+              </div>
+            ) : (
+              stats?.latestEvent.map((event: any) => (
+                <EventCard events={event} key={event?.eventTitle} />
+              ))
+            )}
           </div>
         </div>
 

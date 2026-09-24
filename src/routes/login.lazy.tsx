@@ -133,7 +133,7 @@ function LoginView() {
             <button
               onClick={handleSubmit}
               disabled={isPending}
-              className="w-full bg-primary-main hover:bg-reddish active:scale-[0.98] text-white py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer duration-150 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className={`w-full bg-primary-main hover:bg-reddish active:scale-[0.98] text-white py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer duration-150 ${isPending ? 'disabled' : ''} disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
             >
               {isPending ? (
                 <>

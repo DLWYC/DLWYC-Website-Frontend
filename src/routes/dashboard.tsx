@@ -1,16 +1,27 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { api } from "@/config/api";
+import { fetchUserQueryOptions } from "@/features/auth/hooks/useAuthUser";
 
 export const Route = createFileRoute("/dashboard")({
-  beforeLoad: async ({ context }) => {
+  beforeLoad: async ({ context, location }) => {
     try {
-      await context.queryClient.ensureQueryData({
-        queryKey: ["authUser"],
-        queryFn: () => api.get("/user/profile").then((res) => res.data),
-        staleTime: 5 * 60 * 1000, 
+      const user = await context.queryClient.ensureQueryData(
+        fetchUserQueryOptions(),
+      );
+
+      if (!user) {
+        throw redirect({
+          to: "/login",
+          search: { redirect: location.href },
+        });
+      }
+    } catch (error) {
+      throw redirect({
+        to: "/login",
+        search: { redirect: location.href },
       });
-    } catch {
-      throw redirect({ to: "/login" });
     }
+  },
+  loader: async ({ context }) => {
+    return context.queryClient.ensureQueryData(fetchUserQueryOptions());
   },
 });
