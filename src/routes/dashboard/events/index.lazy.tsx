@@ -22,7 +22,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useFreeEventRegistration } from "@/features/dashboard/hooks/useRegisterEvents";
 import { queryClient } from "@/main";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { RegistrationDetails } from "@/components/Registrationdetails";
+import { TicketComponent } from "@/components/Ticket";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 
 
@@ -149,7 +149,7 @@ function EventComponent() {
 
   return (
     <Drawer direction="right">
-      <div className="space-y-4 px-4">
+      <div className="space-y-3 px-4">
         {/* Header */}
         <div className="flex items-end justify-between gap-4">
           <div>
@@ -240,14 +240,14 @@ function EventComponent() {
       </div>
 
       {selectedEvent ? (
-        <DrawerContent className="h-full rounded-0 lg:w-[35%] w-[70%] bg-white gap-3 py-2 px-2">
-          <DrawerClose asChild>
+        <DrawerContent className="h-full rounded-0 lg:w-[35%] w-[70%] px-2 bg-white space-y-2">
+          <DrawerClose asChild className="mt-2">
             <CircleX className="cursor-pointer" width={30} height={30} />
           </DrawerClose>
 
           <Tabs value={isAlreadyRegistered ? "ticket" : "eventDetails"} className="p-0 h-full">
-            <TabsContent value="eventDetails" className="p-0 m-0 space-y-0">
-              <ScrollArea className="h-[80vh] no-scrollbar">
+            <TabsContent value="eventDetails" className="p-0 m-0 space-y-2">
+              <ScrollArea className="h-[85vh] no-scrollbar">
                 <div className="h-full overflow-y-auto ">
                   <div className="relative w-full shrink-0 border-none shimmer overflow-hidden h-2/5 rounded-lg bg-primary-main/5">
                     {selectedEvent?.eventImage ? (
@@ -297,12 +297,13 @@ function EventComponent() {
             </TabsContent>
 
             <TabsContent value={"ticket"}>
-                <RegistrationDetails
+                <TicketComponent
                   eventTitle={selectedEvent?.eventTitle}
                   eventDate={selectedEvent?.eventDate}
                   attendeeName={user?.fullName}
                   qrValue={{eventId: matchingEvent?._1d, fullName: user?.fullName}}
-                  ticketId={matchingEvent?.reference ? matchingEvent?.reference : matchingEvent?.code}
+                  ticketId={matchingEvent?.reference ? matchingEvent?.reference : matchingEvent?.registrationCode}
+                  DrawerClose={DrawerClose}
                 />
             </TabsContent>
           </Tabs>
