@@ -9,7 +9,6 @@
     "lint": "oxlint",
     "preview": "vite preview"
   },
-   "packageManager": "pnpm@9.1.0", 
   "dependencies": {
     "@radix-ui/react-avatar": "^1.2.1",
     "@radix-ui/react-collapsible": "^1.1.15",
