@@ -19,14 +19,13 @@ import { EventCard } from "@/components/Cards/EventCards";
 import { Link } from "@tanstack/react-router";
 import { Loader } from "@/components/Loader";
 import NotFound from "@/assets/notfound.png";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createLazyFileRoute("/dashboard/")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const { data: user, isLoading: loadingUserDetails } = useAuthUser();
+  const { data: user } = useAuthUser();
   const { data: stats, isLoading: loadingStats } = useGetDashboardStats();
   console.log("Latest", stats?.latestEvent);
 

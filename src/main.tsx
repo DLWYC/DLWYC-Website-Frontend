@@ -4,10 +4,8 @@ import { RouterProvider, createRouter } from "@tanstack/react-router";
 import {
   QueryClient,
   QueryClientProvider,
-  useQuery,
 } from "@tanstack/react-query"; // 🟢 Add this line
 import { routeTree } from "./routeTree.gen";
-import { fetchUserQueryOptions } from "./features/auth/hooks/useAuthUser";
 import "./index.css";
 
 // 1. 🟢 Create and EXPORT the global query engine
