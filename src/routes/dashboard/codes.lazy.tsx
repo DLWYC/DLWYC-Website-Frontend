@@ -597,7 +597,7 @@ function ViewPayment() {
                                 globalIndex,
                               )}
                             </td>
-                          ))}
+                          ))}KW
                           <td className="px-6 py-4 whitespace-nowrap">
                           {row.stauts === "Not Used" ?
                         (
