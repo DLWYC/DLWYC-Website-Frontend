@@ -8,17 +8,10 @@ interface QrValue {
 }
 
 export interface RegistrationDetailsProps {
-  /** Name of the event, e.g. "Lagos Design & Engineering Summit" */
   eventTitle: string;
-  /** Optional date line shown under the event title */
   eventDate?: Date;
-  /** Full name of the registered attendee */
   attendeeName: string;
-  /** Congratulatory / confirmation message */
-  //   message: string;
-  /** Value encoded in the QR code — typically a check-in URL or ticket token */
   qrValue: QrValue;
-  /** Optional human-readable id shown beside the attendee */
   ticketId?: string;
   onBack?: () => void;
   onShare?: () => void;
@@ -33,9 +26,7 @@ export function RegistrationDetails({
   //   message,
   qrValue,
   ticketId,
-  onBack,
   onShare,
-  onCancel,
   onDownload,
 }: RegistrationDetailsProps) {
   return (
