@@ -1,5 +1,5 @@
 import { api } from "@/config/api";
-import { useQuery, useQueryClient, queryOptions } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export interface EventOption {
   _id: string;
