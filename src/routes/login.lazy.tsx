@@ -51,7 +51,9 @@ function LoginView() {
       <div className="flex flex-col justify-center items-center w-full lg:w-[40%] px-5 sm:px-12 py-12 bg-white">
         <div className="max-w-sm w-full mx-auto">
           <div className="mb-5">
+            <Link to={'/'}>
             <img src={Logo} alt="DLWYC Logo" className="h-10 w-auto" />
+            </Link>
           </div>
 
           <h1 className="text-[25px] font-bold text-primary-main pt-1 pb-1 mb-1 text-center">

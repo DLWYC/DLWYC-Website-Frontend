@@ -11,8 +11,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WorkforceRouteImport } from './routes/workforce'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as LeadershipRouteImport } from './routes/leadership'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as EventsRouteImport } from './routes/events'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ArchdeaconLeadersRouteImport } from './routes/archdeacon-leaders'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardEventsIdRouteImport } from './routes/dashboard/events/$id'
 
@@ -20,6 +27,9 @@ const SignupLazyRouteImport = createFileRoute('/signup')()
 const ResetPasswordLazyRouteImport = createFileRoute('/resetPassword')()
 const ForgotPasswordLazyRouteImport = createFileRoute('/forgotPassword')()
 const DashboardIndexLazyRouteImport = createFileRoute('/dashboard/')()
+const DashboardSettingsLazyRouteImport = createFileRoute(
+  '/dashboard/settings',
+)()
 const DashboardCodesLazyRouteImport = createFileRoute('/dashboard/codes')()
 const DashboardEventsIndexLazyRouteImport =
   createFileRoute('/dashboard/events/')()
@@ -41,16 +51,51 @@ const ForgotPasswordLazyRoute = ForgotPasswordLazyRouteImport.update({
 } as any).lazy(() =>
   import('./routes/forgotPassword.lazy').then((d) => d.Route),
 )
+const WorkforceRoute = WorkforceRouteImport.update({
+  id: '/workforce',
+  path: '/workforce',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
+const LeadershipRoute = LeadershipRouteImport.update({
+  id: '/leadership',
+  path: '/leadership',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/dashboard.lazy').then((d) => d.Route))
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArchdeaconLeadersRoute = ArchdeaconLeadersRouteImport.update({
+  id: '/archdeacon-leaders',
+  path: '/archdeacon-leaders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -62,6 +107,13 @@ const DashboardIndexLazyRoute = DashboardIndexLazyRouteImport.update({
   getParentRoute: () => DashboardRoute,
 } as any).lazy(() =>
   import('./routes/dashboard/index.lazy').then((d) => d.Route),
+)
+const DashboardSettingsLazyRoute = DashboardSettingsLazyRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => DashboardRoute,
+} as any).lazy(() =>
+  import('./routes/dashboard/settings.lazy').then((d) => d.Route),
 )
 const DashboardCodesLazyRoute = DashboardCodesLazyRouteImport.update({
   id: '/codes',
@@ -88,23 +140,39 @@ const DashboardEventsIdRoute = DashboardEventsIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/archdeacon-leaders': typeof ArchdeaconLeadersRoute
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/events': typeof EventsRoute
+  '/gallery': typeof GalleryRoute
+  '/leadership': typeof LeadershipRoute
   '/login': typeof LoginRoute
+  '/workforce': typeof WorkforceRoute
   '/forgotPassword': typeof ForgotPasswordLazyRoute
   '/resetPassword': typeof ResetPasswordLazyRoute
   '/signup': typeof SignupLazyRoute
   '/dashboard/codes': typeof DashboardCodesLazyRoute
+  '/dashboard/settings': typeof DashboardSettingsLazyRoute
   '/dashboard/': typeof DashboardIndexLazyRoute
   '/dashboard/events/$id': typeof DashboardEventsIdRoute
   '/dashboard/events/': typeof DashboardEventsIndexLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/archdeacon-leaders': typeof ArchdeaconLeadersRoute
+  '/contact': typeof ContactRoute
+  '/events': typeof EventsRoute
+  '/gallery': typeof GalleryRoute
+  '/leadership': typeof LeadershipRoute
   '/login': typeof LoginRoute
+  '/workforce': typeof WorkforceRoute
   '/forgotPassword': typeof ForgotPasswordLazyRoute
   '/resetPassword': typeof ResetPasswordLazyRoute
   '/signup': typeof SignupLazyRoute
   '/dashboard/codes': typeof DashboardCodesLazyRoute
+  '/dashboard/settings': typeof DashboardSettingsLazyRoute
   '/dashboard': typeof DashboardIndexLazyRoute
   '/dashboard/events/$id': typeof DashboardEventsIdRoute
   '/dashboard/events': typeof DashboardEventsIndexLazyRoute
@@ -112,12 +180,20 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/archdeacon-leaders': typeof ArchdeaconLeadersRoute
+  '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRouteWithChildren
+  '/events': typeof EventsRoute
+  '/gallery': typeof GalleryRoute
+  '/leadership': typeof LeadershipRoute
   '/login': typeof LoginRoute
+  '/workforce': typeof WorkforceRoute
   '/forgotPassword': typeof ForgotPasswordLazyRoute
   '/resetPassword': typeof ResetPasswordLazyRoute
   '/signup': typeof SignupLazyRoute
   '/dashboard/codes': typeof DashboardCodesLazyRoute
+  '/dashboard/settings': typeof DashboardSettingsLazyRoute
   '/dashboard/': typeof DashboardIndexLazyRoute
   '/dashboard/events/$id': typeof DashboardEventsIdRoute
   '/dashboard/events/': typeof DashboardEventsIndexLazyRoute
@@ -126,35 +202,59 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
+    | '/archdeacon-leaders'
+    | '/contact'
     | '/dashboard'
+    | '/events'
+    | '/gallery'
+    | '/leadership'
     | '/login'
+    | '/workforce'
     | '/forgotPassword'
     | '/resetPassword'
     | '/signup'
     | '/dashboard/codes'
+    | '/dashboard/settings'
     | '/dashboard/'
     | '/dashboard/events/$id'
     | '/dashboard/events/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/archdeacon-leaders'
+    | '/contact'
+    | '/events'
+    | '/gallery'
+    | '/leadership'
     | '/login'
+    | '/workforce'
     | '/forgotPassword'
     | '/resetPassword'
     | '/signup'
     | '/dashboard/codes'
+    | '/dashboard/settings'
     | '/dashboard'
     | '/dashboard/events/$id'
     | '/dashboard/events'
   id:
     | '__root__'
     | '/'
+    | '/about'
+    | '/archdeacon-leaders'
+    | '/contact'
     | '/dashboard'
+    | '/events'
+    | '/gallery'
+    | '/leadership'
     | '/login'
+    | '/workforce'
     | '/forgotPassword'
     | '/resetPassword'
     | '/signup'
     | '/dashboard/codes'
+    | '/dashboard/settings'
     | '/dashboard/'
     | '/dashboard/events/$id'
     | '/dashboard/events/'
@@ -162,8 +262,15 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ArchdeaconLeadersRoute: typeof ArchdeaconLeadersRoute
+  ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRouteWithChildren
+  EventsRoute: typeof EventsRoute
+  GalleryRoute: typeof GalleryRoute
+  LeadershipRoute: typeof LeadershipRoute
   LoginRoute: typeof LoginRoute
+  WorkforceRoute: typeof WorkforceRoute
   ForgotPasswordLazyRoute: typeof ForgotPasswordLazyRoute
   ResetPasswordLazyRoute: typeof ResetPasswordLazyRoute
   SignupLazyRoute: typeof SignupLazyRoute
@@ -192,6 +299,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForgotPasswordLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/workforce': {
+      id: '/workforce'
+      path: '/workforce'
+      fullPath: '/workforce'
+      preLoaderRoute: typeof WorkforceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -199,11 +313,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/leadership': {
+      id: '/leadership'
+      path: '/leadership'
+      fullPath: '/leadership'
+      preLoaderRoute: typeof LeadershipRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/archdeacon-leaders': {
+      id: '/archdeacon-leaders'
+      path: '/archdeacon-leaders'
+      fullPath: '/archdeacon-leaders'
+      preLoaderRoute: typeof ArchdeaconLeadersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -218,6 +374,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexLazyRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/settings': {
+      id: '/dashboard/settings'
+      path: '/settings'
+      fullPath: '/dashboard/settings'
+      preLoaderRoute: typeof DashboardSettingsLazyRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/codes': {
@@ -246,6 +409,7 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardCodesLazyRoute: typeof DashboardCodesLazyRoute
+  DashboardSettingsLazyRoute: typeof DashboardSettingsLazyRoute
   DashboardIndexLazyRoute: typeof DashboardIndexLazyRoute
   DashboardEventsIdRoute: typeof DashboardEventsIdRoute
   DashboardEventsIndexLazyRoute: typeof DashboardEventsIndexLazyRoute
@@ -253,6 +417,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardCodesLazyRoute: DashboardCodesLazyRoute,
+  DashboardSettingsLazyRoute: DashboardSettingsLazyRoute,
   DashboardIndexLazyRoute: DashboardIndexLazyRoute,
   DashboardEventsIdRoute: DashboardEventsIdRoute,
   DashboardEventsIndexLazyRoute: DashboardEventsIndexLazyRoute,
@@ -264,8 +429,15 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ArchdeaconLeadersRoute: ArchdeaconLeadersRoute,
+  ContactRoute: ContactRoute,
   DashboardRoute: DashboardRouteWithChildren,
+  EventsRoute: EventsRoute,
+  GalleryRoute: GalleryRoute,
+  LeadershipRoute: LeadershipRoute,
   LoginRoute: LoginRoute,
+  WorkforceRoute: WorkforceRoute,
   ForgotPasswordLazyRoute: ForgotPasswordLazyRoute,
   ResetPasswordLazyRoute: ResetPasswordLazyRoute,
   SignupLazyRoute: SignupLazyRoute,
