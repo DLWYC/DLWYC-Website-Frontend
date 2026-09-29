@@ -18,7 +18,10 @@ import { cn } from "@/lib/utils";
 import Churches from "@/data/churches";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import UserProfileImage from "@/components/UserProfileImage";
-import { useProfileImageUploader } from "@/features/dashboard/hooks/useProfileUpdate";
+import {
+  useProfileImageUploader,
+  useUpdateProfile,
+} from "@/features/dashboard/hooks/useProfileUpdate";
 
 export const Route = createLazyFileRoute("/dashboard/settings")({
   component: RouteComponent,
@@ -61,33 +64,6 @@ interface BasicInformation {
   email: string;
 }
 
-// ---------------------------------------------------------------------------
-// API — avatar upload
-// ---------------------------------------------------------------------------
-// The backend endpoint reads the incoming file off `req.file` (e.g. a
-// multer single-file upload configured as `upload.single('file')`), so the
-// FormData field name below MUST stay "file".
-
-// async function uploadAvatar(file: File) {
-//   const formData = new FormData();
-//   formData.append("file", file);
-
-//   const response = await fetch("/api/profile/avatar", {
-//     method: "POST",
-//     body: formData,
-//   });
-
-//   if (!response.ok) {
-//     throw new Error("Failed to upload avatar");
-//   }
-
-//   return response.json() as Promise<{ avatarUrl: string }>;
-// }
-
-// ---------------------------------------------------------------------------
-// Root component
-// ---------------------------------------------------------------------------
-
 function RouteComponent() {
   const { data: user } = useAuthUser();
 
@@ -106,7 +82,6 @@ function RouteComponent() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]">
         <ProfileSummaryCard
           fullName={basicInfo.fullName}
-          occupation={basicInfo.occupation}
           avatarUrl={avatarUrl}
           onAvatarChange={setAvatarUrl}
         />
@@ -121,18 +96,14 @@ function RouteComponent() {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Profile summary card (avatar + name + edit-avatar dialog)
-// ---------------------------------------------------------------------------
-
 function ProfileSummaryCard({
   fullName,
-  occupation,
+  // occupation,
   avatarUrl,
   onAvatarChange,
 }: {
   fullName: string;
-  occupation: string;
+  // occupation: string;
   avatarUrl: string;
   onAvatarChange: (url: string) => void;
 }) {
@@ -142,15 +113,6 @@ function ProfileSummaryCard({
     <Card className="h-fit">
       <CardContent className="flex flex-col items-center gap-3 p-6 text-center ">
         <div className="relative">
-          {/* <Avatar className="h-24 w-24">
-            <AvatarImage src={avatarUrl} alt={fullName} />
-            <AvatarFallback className="text-[20px] bg-primary-main text-white font-rubik">
-              {fullName
-                .split(" ")
-                .map((part) => part[0])
-                .join("")}
-            </AvatarFallback>
-          </Avatar> */}
           <UserProfileImage imageWidth={70} />
           <Button
             type="button"
@@ -165,11 +127,11 @@ function ProfileSummaryCard({
 
         <div>
           <p className="text-base font-semibold">{fullName}</p>
-          <p className="text-sm text-muted-foreground">{occupation}</p>
+          {/* <p className="text-sm text-muted-foreground">{occupation}</p>  */}
         </div>
 
         <Badge variant="secondary" className="mt-1">
-          Standard Member
+          {/* Standard Member */}
         </Badge>
       </CardContent>
 
@@ -228,8 +190,6 @@ function EditAvatarDialog({
     try {
       const response = await uploadAvatar(selectedFile);
 
-      console.log("Upload response:", response);
-
       onUploaded(response.url);
 
       onOpenChange(false);
@@ -277,7 +237,7 @@ function EditAvatarDialog({
             type="button"
             variant="outline"
             onClick={() => fileInputRef.current?.click()}
-            className="flex-1 rounded-xl cursor-pointer bg-[#091e54] py-3.5 text-sm font-medium text-white transition hover:bg-[#0d2a72] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#091e54]/40 cursor-pointer"
+            className="flex-1 rounded-xl bg-[#091e54] py-3.5 text-sm font-medium text-white transition hover:bg-[#0d2a72] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#091e54]/40 cursor-pointer"
           >
             <ImageUp className="mr-2 h-4 w-4" />
             {selectedFile ? "Choose a different photo" : "Choose a photo"}
@@ -324,7 +284,7 @@ function BasicInformationForm({
   value: BasicInformation;
   onChange: (value: BasicInformation) => void;
 }) {
-  const [isSaving, setIsSaving] = useState(false);
+  const { mutate, isPending } = useUpdateProfile();
 
   // Parishes are scoped to whichever archdeaconry is currently selected.
   const parishOptions =
@@ -338,19 +298,9 @@ function BasicInformationForm({
     onChange({ ...value, [key]: fieldValue });
   }
 
-  async function handleSave() {
-    setIsSaving(true);
-    try {
-      // Replace with your real endpoint, e.g.:
-      // await fetch('/api/profile/basic-information', {
-      //   method: 'PATCH',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(value),
-      // })
-      await new Promise((resolve) => setTimeout(resolve, 600));
-    } finally {
-      setIsSaving(false);
-    }
+  function handleSave() {
+    // Simply pass the current form state into the mutation
+    mutate(value);
   }
 
   return (
@@ -424,30 +374,6 @@ function BasicInformationForm({
             </select>
           </InputWrapper>
         </Field>
-        <Field label="Gender" htmlFor="gender">
-          <InputWrapper>
-            <select
-              name="gender"
-              value={value.gender}
-              onChange={(v: any) => update("gender", v)}
-              className={selectCls}
-            >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          </InputWrapper>
-        </Field>
-
-        <Field label="Family" htmlFor="family">
-          <InputWrapper>
-            <input
-              id="family"
-              value={value.family}
-              onChange={(e) => update("family", e.target.value)}
-              className={inputCls}
-            />
-          </InputWrapper>
-        </Field>
 
         <Field label="Occupation" htmlFor="occupation">
           <InputWrapper>
@@ -478,9 +404,9 @@ function BasicInformationForm({
           type="button"
           className="flex-1 rounded-xl cursor-pointer bg-[#091e54] py-3.5 text-sm font-medium text-white transition hover:bg-[#0d2a72] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#091e54]/40"
           onClick={handleSave}
-          disabled={isSaving}
+          disabled={isPending}
         >
-          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Save Changes
         </Button>
       </div>

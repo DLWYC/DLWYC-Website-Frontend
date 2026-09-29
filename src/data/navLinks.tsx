@@ -1,9 +1,9 @@
 import {
   CalendarDays,
-  Wallet,
-  BedDouble,
+  // Wallet,
+  // BedDouble,
   House,
-  BookOpen,
+  // BookOpen,
   UserRound,
   Ticket,
   type LucideIcon,
@@ -42,21 +42,21 @@ export const NavItems: NavItem[] = [
     url: "/dashboard/codes",
     icon: Ticket,
   },
-  {
-    title: "Wallets",
-    url: "/dashboard/wallets",
-    icon: Wallet,
-  },
-  {
-    title: "Accomodation",
-    url: "/dashboard/accomodation",
-    icon: BedDouble,
-  },
-  {
-    title: "Resources",
-    url: "/dashboard/resources",
-    icon: BookOpen,
-  },
+  // {
+  //   title: "Wallets",
+  //   url: "/dashboard/wallets",
+  //   icon: Wallet,
+  // },
+  // {
+  //   title: "Accomodation",
+  //   url: "/dashboard/accomodation",
+  //   icon: BedDouble,
+  // },
+  // {
+  //   title: "Resources",
+  //   url: "/dashboard/resources",
+  //   icon: BookOpen,
+  // },
 ];
 
 export const userDashboardTopMenu = [
