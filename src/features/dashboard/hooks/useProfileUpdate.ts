@@ -1,20 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-// import { useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { api } from "@/config/api";
 import { toast } from "react-toastify";
-
-// interface RegisterCredentials {
-//   fullName: string;
-//   email: string;
-//   password: string;
-//   phoneNumber: string;
-//   gender: string;
-//   archdeaconry: string;
-//   parish: string;
-//   age: string;
-//   profilePicture?: string;
-//   profession: string;
-// }
 
 export function useProfileImageUploader() {
   const queryClient = useQueryClient();
@@ -23,9 +10,7 @@ export function useProfileImageUploader() {
     mutationFn: async (userImage: File) => {
       const formData = new FormData();
       formData.append("file", userImage);
-      console.log("Form Data: ", userImage, formData)
       const res = await api.patch("/user/uploadProfileImage", formData);
-      console.log("Response: ", res.data)
       return res.data;
     },
     onSuccess: (res) => {
@@ -38,6 +23,51 @@ export function useProfileImageUploader() {
         error?.response?.data?.message ||
         "Profile Image Update failed. Please try again.";
       toast.error(msg);
+    },
+  });
+}
+
+// Define the shape of data your form uses
+interface BasicInformation {
+  fullName: string;
+  age: string | number;
+  archdeaconry: string;
+  parish: string;
+  occupation: string;
+  email: string;
+}
+
+export function useUpdateProfile() {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate()
+
+  return useMutation({
+    mutationFn: async (formData: BasicInformation) => {
+      // Map frontend 'occupation' to backend 'profession'
+      const payload = {
+        fullName: formData.fullName,
+        email: formData.email,
+        age: Number(formData.age),
+        archdeaconry: formData.archdeaconry,
+        parish: formData.parish,
+        profession: formData.occupation,
+      };
+
+      const res = await api.patch("user/profile/update", payload);
+      return res.data;
+
+    },
+    onSuccess: (data) => {
+      // 1. Tell TanStack Query to refetch user data everywhere on the site
+      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+
+      // 2. Optional: If you want to flash a success state or redirect somewhere using TanStack Router
+      navigate({ to: '/dashboard' });
+
+      toast.success(data.message || "Profile updated successfully!");
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "An error occurred while saving.");
     },
   });
 }
