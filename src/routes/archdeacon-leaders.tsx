@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { FaArrowLeft } from 'react-icons/fa'
-import ArchdeaconLeaders from '../sections/ArchdeaconLeaders'
+import ArchdeaconLeaders from '@/sections/ArchdeaconLeaders'
 
 export const Route = createFileRoute('/archdeacon-leaders')({
   component: ArchdeaconLeadersPage,

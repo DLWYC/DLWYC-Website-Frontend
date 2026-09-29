@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { FaArrowLeft } from 'react-icons/fa'
-import Leadership from '../sections/Leadership'
+import Leadership from '@/sections/Leadership'
 
 export const Route = createFileRoute('/leadership')({
   component: LeadershipPage,
