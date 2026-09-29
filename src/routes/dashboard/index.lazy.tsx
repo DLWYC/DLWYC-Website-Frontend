@@ -3,8 +3,8 @@ import { memo, Suspense, type ReactNode, useMemo } from "react";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight, CalendarDays} from "lucide-react";
 
-import Male from "@/assets/male.png";
-import Female from "@/assets/female.png";
+// import Male from "@/assets/male.png";
+// import Female from "@/assets/female.png";
 import NotFound from "@/assets/notfound.png";
 
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,35 +37,35 @@ function getGreeting() {
 /*  Hero pieces                                                               */
 /* -------------------------------------------------------------------------- */
 
-const QuickCard = memo(function QuickCard({
-  to,
-  // index,
-  // title,
-  // meta,
-  className,
-  children,
-}: {
-  to: string;
-  index: string;
-  title: string;
-  meta: ReactNode;
-  className: string;
-  children: ReactNode;
-}) {
-  return (
-    <Link
-      to={to as any}
-      className={`relative flex min-h-[220px] min-w-[140px] flex-1 flex-col overflow-hidden rounded-xl p-4 text-black outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 lg:min-h-65 ${className}`}
-    >
-      <span className="font-grotesk text-xs"> <CalendarDays /> </span>
-      {/* <span className="mt-2 font-header text-lg font-medium leading-tight">
-        {title}
-      </span>
-      <span className="mt-1 font-grotesk text-xs ">{meta}</span> */}
-      {children}
-    </Link>
-  );
-});
+// const QuickCard = memo(function QuickCard({
+//   to,
+//   // index,
+//   // title,
+//   // meta,
+//   className,
+//   children,
+// }: {
+//   to: string;
+//   index: string;
+//   title: string;
+//   meta: ReactNode;
+//   className: string;
+//   children: ReactNode;
+// }) {
+//   return (
+//     <Link
+//       to={to as any}
+//       className={`relative flex min-h-[220px] min-w-[140px] flex-1 flex-col overflow-hidden rounded-xl p-4 text-black outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 lg:min-h-65 ${className}`}
+//     >
+//       <span className="font-grotesk text-xs"> <CalendarDays /> </span>
+//       {/* <span className="mt-2 font-header text-lg font-medium leading-tight">
+//         {title}
+//       </span>
+//       <span className="mt-1 font-grotesk text-xs ">{meta}</span> */}
+//       {children}
+//     </Link>
+//   );
+// });
 
 function HeroSkeleton() {
   return (
@@ -168,10 +168,10 @@ function RouteComponent() {
   const latestEvents: any[] = stats?.latestEvent ?? [];
   const totalEvents: number = stats?.totalEvents ?? 0;
 
-  const headline =
-    totalEvents === 0
-      ? "No upcoming events right now"
-      : `You have ${totalEvents} upcoming ${totalEvents === 1 ? "event" : "events"}`;
+  // const headline =
+  //   totalEvents === 0
+  //     ? "No upcoming events right now"
+  //     : `You have ${totalEvents} upcoming ${totalEvents === 1 ? "event" : "events"}`;
 
   return (
     <div className="flex flex-col gap-4">

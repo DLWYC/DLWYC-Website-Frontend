@@ -7,7 +7,7 @@ const TOTAL_IMAGES = 96
 
 type GalleryImage = {
   src: string
-  alt: stringa
+  alt: string
 }
 
 type BentoPattern = 'large' | 'medium' | 'tall' | 'wide'
