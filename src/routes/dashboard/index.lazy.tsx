@@ -1,7 +1,7 @@
 
-import { memo, Suspense, type ReactNode, useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
-import { ArrowUpRight, CalendarDays} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 // import Male from "@/assets/male.png";
 // import Female from "@/assets/female.png";
@@ -166,7 +166,7 @@ function RouteComponent() {
   const firstName = user?.fullName?.split(" ")[0];
 
   const latestEvents: any[] = stats?.latestEvent ?? [];
-  const totalEvents: number = stats?.totalEvents ?? 0;
+  // const totalEvents: number = stats?.totalEvents ?? 0;
 
   // const headline =
   //   totalEvents === 0
