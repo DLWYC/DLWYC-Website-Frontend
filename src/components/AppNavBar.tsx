@@ -12,6 +12,7 @@ import { userDashboardTopMenu } from "@/data/navLinks";
 import UserProfileImage from "./UserProfileImage";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 import {handleLogout} from "@/config/api"
+import { Link } from "@tanstack/react-router";
 
 export function AppNavBar() {
   const {data: user} = useAuthUser()
@@ -50,10 +51,10 @@ export function AppNavBar() {
 
               {userDashboardTopMenu.map((item, idx) => (
                 <DropdownMenuItem key={idx}>
-                  <a className="cursor-pointer w-full py-2 gap-3 flex items-center text-[13px]">
+                  <Link to={`${item.url}`} className="cursor-pointer w-full py-2 gap-3 flex items-center text-[13px]">
                     {item.icon && <item.icon />}
                     {item.name}
-                  </a>
+                  </Link>
                 </DropdownMenuItem>
               ))}
 

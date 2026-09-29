@@ -19,7 +19,7 @@ const links = [
   { name: 'Contact Us', to: '/contact' },
 ]
 
-const loginLink = { name: 'Login', href: 'https://dlwyouth.org/userlogin' }
+const loginLink = { name: 'Login', href: '/login' }
 
 function Navbar() {
   const [open, setOpen] = useState(false)
@@ -33,10 +33,6 @@ function Navbar() {
   }, [])
 
   const isHome = location.pathname === '/'
-  // Transparent + white text only at the very top of the home page (over the
-  // hero image). Everywhere else (scrolled, or any other page) it's a solid
-  // white bar with dark text — this also keeps the dropdown menu readable,
-  // since that panel is always a solid white background.
   const isTransparent = isHome && !scrolled
 
   return (
@@ -46,8 +42,8 @@ function Navbar() {
       transition={{ duration: 0.6 }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         isTransparent
-          ? 'bg-white/10 backdrop-blur-xl border-b border-white/20'
-          : 'bg-white/95 backdrop-blur-xl border-b border-slate-200 shadow-sm'
+          ? 'backdrop-blur-lg bg-white/70'
+          : 'bg-white/95 backdrop-blur-xl shadow-sm'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,8 +85,8 @@ function Navbar() {
                 </Link>
               )
             ))}
-            <a href={loginLink.href} target="_blank" rel="noopener noreferrer"
-              className="ml-2 xl:ml-4 px-5 xl:px-6 py-2 xl:py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-500 transition-colors font-geom shrink-0">{loginLink.name}</a>
+            <Link to={loginLink.href} rel="noopener noreferrer"
+              className="ml-2 xl:ml-4 px-5 xl:px-6 py-2 xl:py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-500 transition-colors font-geom shrink-0">{loginLink.name}</Link>
           </div>
 
           <button

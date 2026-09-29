@@ -12,9 +12,6 @@ interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
 const axiosBaseConfig: AxiosRequestConfig = {
   baseURL: config.baseURL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 };
 
 // 2. Instantiate clean architectural instances

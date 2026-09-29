@@ -60,6 +60,6 @@ export const NavItems: NavItem[] = [
 ];
 
 export const userDashboardTopMenu = [
-  { name: "My Account", icon: UserRound, url: '/userdashboard/profile' },
+  { name: "My Account", icon: UserRound, url: '/dashboard/settings' },
   // { name: "Settings", icon: SettingsIcon, url: '/userdashboard/profile' },
 ]

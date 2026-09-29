@@ -84,7 +84,6 @@ function RouteComponent() {
   const handlePayment = useCallback(() => {
     const activeRef = referenceRef.current;
     if (paymentPending || !activeRef || !user?.email) {
-      console.log("resss", paymentPending, activeRef, user?.email);
       return;
     } // guards the double-click race
 
