@@ -599,7 +599,7 @@ function ViewPayment() {
                             </td>
                           ))}
                           <td className="px-6 py-4 whitespace-nowrap">
-                          {row.stauts === "Not Used" ?
+                          {row.status === "Not Used" ?
                         (
                             <button
                               className={`flex items-center gap-2 px-3 py-1 text-[15px] text-white rounded-lg hover:bg-opacity-90 transition-colors cursor-pointer`}
