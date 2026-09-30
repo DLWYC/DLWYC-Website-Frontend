@@ -6,37 +6,37 @@ const familyValues = [
     letter: "F",
     title: "Faith",
     desc: "Trusting God and stepping forward together in our calling.",
-    image: "/gallery/pix17.jpg",
+    image: "/pix17.jpg",
   },
   {
     letter: "A",
     title: "Acceptance",
     desc: "Welcoming every member of our community with grace and care.",
-    image: "/gallery/pix18.jpg",
+    image: "/pix18.jpg",
   },
   {
     letter: "M",
     title: "Mission",
     desc: "Serving others with purpose and advancing the Kingdom together.",
-    image: "/gallery/pix19.jpg",
+    image: "/pix19.jpg",
   },
   {
     letter: "I",
     title: "Integrity",
     desc: "Walking in honesty, humility, and authentic relationship.",
-    image: "/gallery/pix20.jpg",
+    image: "/pix20.jpg",
   },
   {
     letter: "L",
     title: "Love",
     desc: "Extending genuine care and compassion to one another.",
-    image: "/gallery/pix21.jpg",
+    image: "/pix21.jpg",
   },
   {
     letter: "Y",
     title: "Youth",
     desc: "Empowering young people to grow, lead, and shine in faith.",
-    image: "/gallery/pix22.jpg",
+    image: "/pix22.jpg",
   },
 ];
 
