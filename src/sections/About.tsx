@@ -23,14 +23,14 @@ function About() {
               <div className="space-y-4">
                 <div className="rounded-2xl overflow-hidden shadow-xl shadow-black/40">
                   <img
-                    src="./gallery/pix8.jpg"
+                    src="/gallery/pix8.jpg"
                     alt="Youth fellowship"
                     className="w-full h-48 sm:h-56 object-cover hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <div className="rounded-2xl overflow-hidden shadow-xl shadow-black/40">
                   <img
-                    src="./gallery/pix9.jpg"
+                    src="/gallery/pix9.jpg"
                     alt="Youth gathering"
                     className="w-full h-48 sm:h-56 object-cover hover:scale-105 transition-transform duration-500"
                   />
@@ -39,7 +39,7 @@ function About() {
               <div className="pt-8">
                 <div className="rounded-2xl overflow-hidden shadow-xl shadow-black/40">
                   <img
-                    src="./gallery/pix10.jpg"
+                    src="/gallery/pix10.jpg"
                     alt="Youth worship"
                     className="w-full h-64 sm:h-72 object-cover hover:scale-105 transition-transform duration-500"
                   />

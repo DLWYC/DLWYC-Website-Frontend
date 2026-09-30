@@ -2,14 +2,14 @@ import { Link } from "@tanstack/react-router";
 
 function WorkforceSection() {
   const columnA = [
-    "./gallery/pix3.jpg",
-    "./gallery/pix4.jpg",
-    "./gallery/pix5.jpg",
+    "/gallery/pix3.jpg",
+    "/gallery/pix4.jpg",
+    "/gallery/pix5.jpg",
   ];
   const columnB = [
-    "./gallery/pix6.jpg",
-    "./gallery/pix7.jpg",
-    "./gallery/pix8.jpg",
+    "/gallery/pix6.jpg",
+    "/gallery/pix7.jpg",
+    "/gallery/pix8.jpg",
   ];
 
   return (

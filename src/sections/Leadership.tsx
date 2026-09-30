@@ -6,25 +6,25 @@ const leaders = [
   {
     name: "Rev. Canon [Chaplain Name]",
     role: "Chaplain / Youth Coordinator",
-    image: "./gallery/pix24.jpg",
+    image: "/gallery/pix24.jpg",
     bio: "Overseeing the spiritual direction and administrative leadership of the chaplaincy.",
   },
   {
     name: "[Assistant Chaplain Name]",
     role: "Assistant Chaplain",
-    image: "./gallery/pix25.jpg",
+    image: "/gallery/pix25.jpg",
     bio: "Coordinating Bible study programs and discipleship initiatives across all parish youth groups.",
   },
   {
     name: "[Youth President Name]",
     role: "Youth President",
-    image: "./gallery/pix26.jpg",
+    image: "/gallery/pix26.jpg",
     bio: "Leading the youth executive council and driving engagement in all chaplaincy activities.",
   },
   {
     name: "[Secretary Name]",
     role: "Secretary / Admin Head",
-    image: "./gallery/pix27.jpg",
+    image: "/gallery/pix27.jpg",
     bio: "Managing chaplaincy communications, records, and administrative operations.",
   },
 ];

@@ -8,10 +8,10 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
 const images = [
-  "./gallery/pix1.jpg",
-  "./gallery/pix2.jpg",
-  "./gallery/pix3.jpg",
-  "./gallery/pix4.jpg",
+  "/gallery/pix1.jpg",
+  "/gallery/pix2.jpg",
+  "/gallery/pix3.jpg",
+  "/gallery/pix4.jpg",
 ];
 
 export const Route = createFileRoute("/about")({
@@ -130,14 +130,14 @@ function AboutPage() {
                 <div className="space-y-4">
                   <div className="rounded-2xl overflow-hidden shadow-xl shadow-black/30">
                     <img
-                      src="./gallery/pix5.jpg"
+                      src="/gallery/pix5.jpg"
                       alt="Youth fellowship"
                       className="w-full h-48 sm:h-56 object-cover hover:scale-105 transition-transform duration-500"
                     />
                   </div>
                   <div className="rounded-2xl overflow-hidden shadow-xl shadow-black/30">
                     <img
-                      src="./gallery/pix6.jpg"
+                      src="/gallery/pix6.jpg"
                       alt="Youth gathering"
                       className="w-full h-48 sm:h-56 object-cover hover:scale-105 transition-transform duration-500"
                     />
@@ -146,7 +146,7 @@ function AboutPage() {
                 <div className="pt-8">
                   <div className="rounded-2xl overflow-hidden shadow-xl shadow-black/30">
                     <img
-                      src="./gallery/pix7.jpg"
+                      src="/gallery/pix7.jpg"
                       alt="Youth worship"
                       className="w-full h-64 sm:h-72 object-cover hover:scale-105 transition-transform duration-500"
                     />
