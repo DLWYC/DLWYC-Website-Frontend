@@ -29,7 +29,7 @@ const events: Event[] = [
     description:
       "Our annual gathering featuring powerful worship, impactful teachings, and networking opportunities for youths across all parishes.",
     featured: false,
-    image: "/gallery/pix13.jpg",
+    image: "/pix13.jpg",
     fullDetails:
       "The Diocesan Youth Convention is our flagship annual event. Expect three days of powerful worship sessions, anointed guest speakers, breakout workshops on career and ministry, evening concerts, and a grand awards night. All parishes are expected to register their delegates by July 30th. Accommodation and feeding will be provided for out-of-town delegates.",
   },
@@ -41,7 +41,7 @@ const events: Event[] = [
     description:
       "Seven days of intensive prayer and fasting, seeking God's direction for the new chaplaincy year.",
     featured: false,
-    image: "/gallery/pix14.jpg",
+    image: "/pix14.jpg",
     fullDetails:
       "Join us for seven evenings of corporate prayer, fasting, and prophetic declarations. Each night carries a specific theme: Monday — Consecration, Tuesday — Breakthrough, Wednesday — Healing, Thursday — Family & Relationships, Friday — Career & Purpose, Saturday — Deliverance, Sunday — Thanksgiving & Celebration. Come expectant.",
   },
@@ -53,7 +53,7 @@ const events: Event[] = [
     description:
       "A weekend retreat for all youth, youth executives and leaders focusing on spiritual renewal and strategic planning.",
     featured: true,
-    image: "/gallery/pix15.jpg",
+    image: "/pix15.jpg",
     fullDetails:
       "An exclusive retreat for all Youth,  parish Presidents, Secretaries, Prayer Coordinators, and Choir Leaders etc. across the 300+ parishes. Sessions include strategic planning for the chaplaincy year, conflict resolution training, financial stewardship for youth groups, and a night of spiritual impartation. Transport leaves Secretariat at 7:00 AM on Friday.",
   },
@@ -65,7 +65,7 @@ const events: Event[] = [
     description:
       "Celebrating the birth of Christ with carols, drama presentations, and recognition of outstanding youth members.",
     featured: false,
-    image: "/gallery/pix16.jpg",
+    image: "/pix16.jpg",
     fullDetails:
       "End the year in grand style! The Christmas Carol features drama, dance, spoken word, and special renditions from our diocesan youth choir. The Awards Night recognizes outstanding youths in categories like Evangelism, Creative Arts, Academic Excellence, and Community Service. Red-carpet arrivals begin at 3:00 PM. Dress Code: White & Gold.",
   },

@@ -18,7 +18,7 @@ function Hero() {
       {/* Background */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/gallery/pix23.jpg')" }}
+        style={{ backgroundImage: "url('/pix23.jpg')" }}
       >
         <video
           autoPlay
@@ -28,7 +28,7 @@ function Hero() {
           preload="auto"
           className="w-full h-full object-cover"
         >
-          <source src="./gallery/video.mp4" type="video/mp4" />
+          <source src="./video.mp4" type="video/mp4" />
         </video>
       </div>
 

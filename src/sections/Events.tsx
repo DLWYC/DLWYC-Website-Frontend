@@ -12,7 +12,7 @@ const events = [
     description:
       "Our annual gathering featuring powerful worship, impactful teachings, and networking opportunities for youths across all parishes.",
     featured: true,
-    image: "/gallery/pix13.jpg",
+    image: "/pix13.jpg",
   },
   {
     title: "Youth Week of Prayer",
@@ -22,7 +22,7 @@ const events = [
     description:
       "Seven days of intensive prayer and fasting, seeking God's direction for the new chaplaincy year.",
     featured: false,
-    image: "/gallery/pix14.jpg",
+    image: "/pix14.jpg",
   },
   {
     title: "Leadership Retreat",
@@ -32,7 +32,7 @@ const events = [
     description:
       "A weekend retreat for youth executives and leaders focusing on spiritual renewal and strategic planning.",
     featured: false,
-    image: "/gallery/pix15.jpg",
+    image: "/pix15.jpg",
   },
   {
     title: "Christmas Carol & Awards Night",
@@ -42,7 +42,7 @@ const events = [
     description:
       "Celebrating the birth of Christ with carols, drama presentations, and recognition of outstanding youth members.",
     featured: false,
-    image: "/gallery/pix16.jpg",
+    image: "/pix16.jpg",
   },
 ];
 

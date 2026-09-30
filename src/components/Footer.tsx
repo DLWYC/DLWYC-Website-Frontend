@@ -16,7 +16,7 @@ function Footer() {
           <div>
             <div className="flex items-center gap-3 mb-5">
               <img
-                src={`/gallery/Logo1.svg`}
+                src={`/Logo1.svg`}
                 alt="DLWYC Logo"
                 className="h-14 w-auto shrink-0 object-contain"
               />

@@ -8,12 +8,12 @@ import { FaCalendarAlt, FaQuoteLeft } from "react-icons/fa";
 
 export function BuiltForImpact() {
   const legacyImages = [
-    "/gallery/pix11.jpg",
-    "/gallery/pix12.jpg",
-    "/gallery/pix13.jpg",
-    "/gallery/pix14.jpg",
-    "/gallery/pix15.jpg",
-    "/gallery/pix16.jpg",
+    "/pix11.jpg",
+    "/pix12.jpg",
+    "/pix13.jpg",
+    "/pix14.jpg",
+    "/pix15.jpg",
+    "/pix16.jpg",
   ];
 
   // Duplicate images so Swiper loop + autoplay works reliably
@@ -129,7 +129,7 @@ export function PastorQuote() {
             className="overflow-hidden rounded-[1.2rem] h-full"
           >
             <img
-              src="/gallery/bishop.jpg"
+              src="/bishop.jpg"
               alt="The Diocesan Bishop"
               className="h-full w-full object-cover"
             />

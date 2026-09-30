@@ -1,16 +1,8 @@
 import { Link } from "@tanstack/react-router";
 
 function WorkforceSection() {
-  const columnA = [
-    "/gallery/pix3.jpg",
-    "/gallery/pix4.jpg",
-    "/gallery/pix5.jpg",
-  ];
-  const columnB = [
-    "/gallery/pix6.jpg",
-    "/gallery/pix7.jpg",
-    "/gallery/pix8.jpg",
-  ];
+  const columnA = ["/pix3.jpg", "/pix4.jpg", "/pix5.jpg"];
+  const columnB = ["/pix6.jpg", "/pix7.jpg", "/pix8.jpg"];
 
   return (
     <section id="join" className="bg-white py-24 lg:py-32 overflow-hidden">

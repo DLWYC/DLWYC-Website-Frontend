@@ -24,67 +24,67 @@ const leaders = [
   {
     name: "Chairman Name",
     role: "Bariga Archdeaconry",
-    image: "/gallery/arch-1.jpg",
+    image: "/arch-1.jpg",
   },
   {
     name: "Onyenze O. Mark",
     role: "Festac Archdeaconry",
-    image: "/gallery/arch-2.jpg",
+    image: "/arch-2.jpg",
   },
   {
     name: "Ndupuechi William Michael",
     role: "Ikeja Archdeaconry",
-    image: "/gallery/arch-3.jpg",
+    image: "/arch-3.jpg",
   },
   {
     name: "Chairman Name",
     role: "Ikorodu-North Archdeaconry",
-    image: "/gallery/arch-4.jpg",
+    image: "/arch-4.jpg",
   },
   {
     name: "Okoye Wisdom",
     role: "Ikotun Archdeaconry",
-    image: "/gallery/arch-5.jpg",
+    image: "/arch-5.jpg",
   },
   {
     name: "Chairman Name",
     role: "Imota Archdeaconry",
-    image: "/gallery/arch-6.jpg",
+    image: "/arch-6.jpg",
   },
   {
     name: "Uzochukwu Akunne",
     role: "Isolo Archdeaconry",
-    image: "/gallery/arch-7.jpg",
+    image: "/arch-7.jpg",
   },
   {
     name: "Okpalefe Dominic",
     role: "Ojo Archdeaconry",
-    image: "/gallery/arch-8.jpg",
+    image: "/arch-8.jpg",
   },
   {
     name: "Chairman Name",
     role: "Ojodu Archdeaconry",
-    image: "/gallery/arch-9.jpg",
+    image: "/arch-9.jpg",
   },
   {
     name: "ADETAYO BABATUNDE DANIEL",
     role: "Opebi Archdeaconry",
-    image: "/gallery/arch-10.jpg",
+    image: "/arch-10.jpg",
   },
   {
     name: "CHRISTIAN ORAKA",
     role: "Oto-Awori Archdeaconry",
-    image: "/gallery/arch-11.jpg",
+    image: "/arch-11.jpg",
   },
   {
     name: "Damilola Ogunojuwo",
     role: "Owutu Archdeaconry",
-    image: "/gallery/arch-12.jpg",
+    image: "/arch-12.jpg",
   },
   {
     name: "Chairman Name",
     role: "Satellite Archdeaconry",
-    image: "/gallery/arch-13.jpg",
+    image: "/arch-13.jpg",
   },
 ];
 

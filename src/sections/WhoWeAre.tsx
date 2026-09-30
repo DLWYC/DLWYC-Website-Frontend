@@ -5,12 +5,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
-const images = [
-  "/gallery/pix34.jpg",
-  "/gallery/pix35.jpg",
-  "/gallery/pix36.jpg",
-  "/gallery/pix37.jpg",
-];
+const images = ["/pix34.jpg", "/pix35.jpg", "/pix36.jpg", "/pix37.jpg"];
 
 function WhoWeAre() {
   return (
