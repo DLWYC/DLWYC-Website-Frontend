@@ -1,77 +1,82 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FaMapMarkerAlt, FaClock, FaArrowRight, FaArrowLeft, FaTimes } from 'react-icons/fa'
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaMapMarkerAlt,
+  FaClock,
+  FaArrowRight,
+  FaArrowLeft,
+  FaTimes,
+} from "react-icons/fa";
 
 type Event = {
-  title: string
-  date: string
-  time: string
-  location: string
-  description: string
-  featured: boolean
-  image: string
-  fullDetails: string
-}
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  featured: boolean;
+  image: string;
+  fullDetails: string;
+};
 
 const events: Event[] = [
   {
-    title: 'Diocesan Youth Harvest 2026',
-    date: 'August 15-17, 2026',
-    time: '9:00 AM Daily',
-    location: 'Cathedral Church Grounds',
+    title: "Diocesan Youth Harvest 2026",
+    date: "August 15-17, 2026",
+    time: "9:00 AM Daily",
+    location: "Cathedral Church Grounds",
     description:
-      'Our annual gathering featuring powerful worship, impactful teachings, and networking opportunities for youths across all parishes.',
+      "Our annual gathering featuring powerful worship, impactful teachings, and networking opportunities for youths across all parishes.",
     featured: false,
-    image: '/gallery/pix13.jpg',
+    image: "./gallery/pix13.jpg",
     fullDetails:
-      'The Diocesan Youth Convention is our flagship annual event. Expect three days of powerful worship sessions, anointed guest speakers, breakout workshops on career and ministry, evening concerts, and a grand awards night. All parishes are expected to register their delegates by July 30th. Accommodation and feeding will be provided for out-of-town delegates.',
+      "The Diocesan Youth Convention is our flagship annual event. Expect three days of powerful worship sessions, anointed guest speakers, breakout workshops on career and ministry, evening concerts, and a grand awards night. All parishes are expected to register their delegates by July 30th. Accommodation and feeding will be provided for out-of-town delegates.",
   },
   {
-    title: 'Youth Week of Prayer',
-    date: 'July 20-26, 2026',
-    time: '6:00 PM Daily',
-    location: 'St. Paul Anglican Church Hall',
+    title: "Youth Week of Prayer",
+    date: "July 20-26, 2026",
+    time: "6:00 PM Daily",
+    location: "St. Paul Anglican Church Hall",
     description:
       "Seven days of intensive prayer and fasting, seeking God's direction for the new chaplaincy year.",
     featured: false,
-    image: '/gallery/pix14.jpg',
+    image: "./gallery/pix14.jpg",
     fullDetails:
-      'Join us for seven evenings of corporate prayer, fasting, and prophetic declarations. Each night carries a specific theme: Monday — Consecration, Tuesday — Breakthrough, Wednesday — Healing, Thursday — Family & Relationships, Friday — Career & Purpose, Saturday — Deliverance, Sunday — Thanksgiving & Celebration. Come expectant.',
+      "Join us for seven evenings of corporate prayer, fasting, and prophetic declarations. Each night carries a specific theme: Monday — Consecration, Tuesday — Breakthrough, Wednesday — Healing, Thursday — Family & Relationships, Friday — Career & Purpose, Saturday — Deliverance, Sunday — Thanksgiving & Celebration. Come expectant.",
   },
   {
-    title: 'Diocesan Youth Camp 2026',
-    date: 'December 5-7, 2026',
-    time: 'All Day',
-    location: 'Diocesan Camp Ground',
+    title: "Diocesan Youth Camp 2026",
+    date: "December 5-7, 2026",
+    time: "All Day",
+    location: "Diocesan Camp Ground",
     description:
-      'A weekend retreat for all youth, youth executives and leaders focusing on spiritual renewal and strategic planning.',
+      "A weekend retreat for all youth, youth executives and leaders focusing on spiritual renewal and strategic planning.",
     featured: true,
-    image: '/gallery/pix15.jpg',
+    image: "./gallery/pix15.jpg",
     fullDetails:
-      'An exclusive retreat for all Youth,  parish Presidents, Secretaries, Prayer Coordinators, and Choir Leaders etc. across the 300+ parishes. Sessions include strategic planning for the chaplaincy year, conflict resolution training, financial stewardship for youth groups, and a night of spiritual impartation. Transport leaves Secretariat at 7:00 AM on Friday.',
+      "An exclusive retreat for all Youth,  parish Presidents, Secretaries, Prayer Coordinators, and Choir Leaders etc. across the 300+ parishes. Sessions include strategic planning for the chaplaincy year, conflict resolution training, financial stewardship for youth groups, and a night of spiritual impartation. Transport leaves Secretariat at 7:00 AM on Friday.",
   },
   {
-    title: 'Christmas Carol & Awards Night',
-    date: 'December 20, 2026',
-    time: '4:00 PM',
-    location: 'Cathedral Church',
+    title: "Christmas Carol & Awards Night",
+    date: "December 20, 2026",
+    time: "4:00 PM",
+    location: "Cathedral Church",
     description:
-      'Celebrating the birth of Christ with carols, drama presentations, and recognition of outstanding youth members.',
+      "Celebrating the birth of Christ with carols, drama presentations, and recognition of outstanding youth members.",
     featured: false,
-    image: '/gallery/pix16.jpg',
+    image: "./gallery/pix16.jpg",
     fullDetails:
-      'End the year in grand style! The Christmas Carol features drama, dance, spoken word, and special renditions from our diocesan youth choir. The Awards Night recognizes outstanding youths in categories like Evangelism, Creative Arts, Academic Excellence, and Community Service. Red-carpet arrivals begin at 3:00 PM. Dress Code: White & Gold.',
+      "End the year in grand style! The Christmas Carol features drama, dance, spoken word, and special renditions from our diocesan youth choir. The Awards Night recognizes outstanding youths in categories like Evangelism, Creative Arts, Academic Excellence, and Community Service. Red-carpet arrivals begin at 3:00 PM. Dress Code: White & Gold.",
   },
-  
-]
+];
 
-export const Route = createFileRoute('/events')({
+export const Route = createFileRoute("/events")({
   component: EventsPage,
-})
+});
 
 function EventsPage() {
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null)
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   return (
     <section className="min-h-screen py-24 bg-white">
@@ -92,15 +97,15 @@ function EventsPage() {
             Upcoming Events
           </h1>
           <p className="text-slate-600 text-base sm:text-lg leading-relaxed font-grotesk">
-            Join us at our upcoming events designed to inspire, equip, and bring our youth
-            community together.
+            Join us at our upcoming events designed to inspire, equip, and bring
+            our youth community together.
           </p>
         </div>
 
         <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-6 lg:space-y-0">
           {events.map((event, index) => {
-            const dayMatch = event.date.match(/\d+/)
-            const dayNumber = dayMatch ? dayMatch[0] : ''
+            const dayMatch = event.date.match(/\d+/);
+            const dayNumber = dayMatch ? dayMatch[0] : "";
 
             return (
               <motion.div
@@ -110,10 +115,10 @@ function EventsPage() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 className={
-                  'group relative bg-white rounded-2xl overflow-hidden border transition-all duration-300 ' +
+                  "group relative bg-white rounded-2xl overflow-hidden border transition-all duration-300 " +
                   (event.featured
-                    ? 'border-blue-500 shadow-md'
-                    : 'border-slate-200 hover:border-blue-300 hover:shadow-md')
+                    ? "border-blue-500 shadow-md"
+                    : "border-slate-200 hover:border-blue-300 hover:shadow-md")
                 }
               >
                 {event.featured && (
@@ -135,9 +140,11 @@ function EventsPage() {
                     <div className="shrink-0">
                       <div className="w-16 h-16 rounded-2xl bg-blue-100 flex flex-col items-center justify-center text-blue-700">
                         <span className="text-[10px] font-medium uppercase tracking-wider opacity-80 font-grotesk">
-                          {event.date.split(' ')[0]}
+                          {event.date.split(" ")[0]}
                         </span>
-                        <span className="font-geom text-xl font-bold">{dayNumber}</span>
+                        <span className="font-geom text-xl font-bold">
+                          {dayNumber}
+                        </span>
                       </div>
                     </div>
 
@@ -176,7 +183,7 @@ function EventsPage() {
                   </div>
                 </div>
               </motion.div>
-            )
+            );
           })}
         </div>
       </div>
@@ -195,7 +202,7 @@ function EventsPage() {
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
               className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
@@ -265,5 +272,5 @@ function EventsPage() {
         )}
       </AnimatePresence>
     </section>
-  )
+  );
 }

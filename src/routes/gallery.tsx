@@ -1,77 +1,85 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FaArrowLeft, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaArrowLeft,
+  FaTimes,
+  FaChevronLeft,
+  FaChevronRight,
+} from "react-icons/fa";
 
-const TOTAL_IMAGES = 96
+const TOTAL_IMAGES = 96;
 
 type GalleryImage = {
-  src: string
-  alt: string
-}
+  src: string;
+  alt: string;
+};
 
-type BentoPattern = 'large' | 'medium' | 'tall' | 'wide'
+type BentoPattern = "large" | "medium" | "tall" | "wide";
 
-const images: GalleryImage[] = Array.from({ length: TOTAL_IMAGES }, (_, index) => ({
-  src: `/gallery/pix${index + 1}.jpg`,
-  alt: `Gallery image ${index + 1}`,
-}))
+const images: GalleryImage[] = Array.from(
+  { length: TOTAL_IMAGES },
+  (_, index) => ({
+    src: `./gallery/pix${index + 1}.jpg`,
+    alt: `Gallery image ${index + 1}`,
+  }),
+);
 
 const bentoPatterns: BentoPattern[] = [
-  'large',
-  'medium',
-  'tall',
-  'medium',
-  'wide',
-  'medium',
-  'medium',
-  'tall',
-  'medium',
-]
+  "large",
+  "medium",
+  "tall",
+  "medium",
+  "wide",
+  "medium",
+  "medium",
+  "tall",
+  "medium",
+];
 
 function getTileClass(pattern: BentoPattern): string {
   switch (pattern) {
-    case 'large':
-      return 'col-span-2 row-span-2'
-    case 'wide':
-      return 'col-span-2 row-span-1'
-    case 'tall':
-      return 'col-span-1 row-span-2'
+    case "large":
+      return "col-span-2 row-span-2";
+    case "wide":
+      return "col-span-2 row-span-1";
+    case "tall":
+      return "col-span-1 row-span-2";
     default:
-      return 'col-span-1 row-span-1'
+      return "col-span-1 row-span-1";
   }
 }
 
-export const Route = createFileRoute('/gallery')({
+export const Route = createFileRoute("/gallery")({
   component: GalleryPage,
-})
+});
 
 function GalleryPage() {
-  const [selected, setSelected] = useState<GalleryImage | null>(null)
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const [selected, setSelected] = useState<GalleryImage | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   const openImage = (img: GalleryImage, index: number) => {
-    setSelected(img)
-    setSelectedIndex(index)
-  }
+    setSelected(img);
+    setSelectedIndex(index);
+  };
 
   const showNext = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (selectedIndex === null) return
+    e.stopPropagation();
+    if (selectedIndex === null) return;
 
-    const next = (selectedIndex + 1) % images.length
-    setSelected(images[next])
-    setSelectedIndex(next)
-  }
+    const next = (selectedIndex + 1) % images.length;
+    setSelected(images[next]);
+    setSelectedIndex(next);
+  };
 
   const showPrev = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    if (selectedIndex === null) return
+    e.stopPropagation();
+    if (selectedIndex === null) return;
 
-    const prev = (selectedIndex - 1 + images.length) % images.length
-    setSelected(images[prev])
-    setSelectedIndex(prev)
-  }
+    const prev = (selectedIndex - 1 + images.length) % images.length;
+    setSelected(images[prev]);
+    setSelectedIndex(prev);
+  };
 
   return (
     <div className="min-h-screen bg-white py-24">
@@ -104,24 +112,29 @@ function GalleryPage() {
             Moments We Cherish
           </h1>
           <p className="text-slate-600 text-base sm:text-lg leading-relaxed font-grotesk">
-            A glimpse into worship, fellowship, and the everyday joy of life together as a chaplaincy family.
+            A glimpse into worship, fellowship, and the everyday joy of life
+            together as a chaplaincy family.
           </p>
         </motion.div>
 
         {/* Bento Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 auto-rows-[180px] sm:auto-rows-[200px] lg:auto-rows-[220px] gap-3 sm:gap-4">
           {images.map((img, i) => {
-            const pattern = bentoPatterns[i % bentoPatterns.length]
-            const tileClass = getTileClass(pattern)
+            const pattern = bentoPatterns[i % bentoPatterns.length];
+            const tileClass = getTileClass(pattern);
 
             return (
               <motion.button
                 key={i}
                 layout
-                style={{ backgroundColor: 'transparent', border: 'none', padding: 0 }}
+                style={{
+                  backgroundColor: "transparent",
+                  border: "none",
+                  padding: 0,
+                }}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true, margin: '-40px' }}
+                viewport={{ once: true, margin: "-40px" }}
                 transition={{
                   duration: 0.45,
                   delay: (i % 9) * 0.05,
@@ -148,7 +161,7 @@ function GalleryPage() {
                   View
                 </div>
               </motion.button>
-            )
+            );
           })}
         </div>
       </div>
@@ -201,7 +214,7 @@ function GalleryPage() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3, ease: 'easeOut' }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
               src={selected.src}
               alt={selected.alt}
               className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
@@ -216,5 +229,5 @@ function GalleryPage() {
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }

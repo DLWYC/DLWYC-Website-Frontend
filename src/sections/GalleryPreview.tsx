@@ -7,17 +7,17 @@ import "swiper/css/effect-fade";
 import SectionTitle from "@/components/SectionTitle";
 
 const images = [
-  "/gallery/pix24.jpg",
-  "/gallery/pix25.jpg",
-  "/gallery/pix27.jpg",
-  "/gallery/pix28.jpg",
+  "./gallery/pix24.jpg",
+  "./gallery/pix25.jpg",
+  "./gallery/pix27.jpg",
+  "./gallery/pix28.jpg",
 ];
 
 const middleImages = [
-  "/gallery/pix26.jpg",
-  "/gallery/pix29.jpg",
-  "/gallery/pix30.jpg",
-  "/gallery/pix31.jpg",
+  "./gallery/pix26.jpg",
+  "./gallery/pix29.jpg",
+  "./gallery/pix30.jpg",
+  "./gallery/pix31.jpg",
 ];
 
 function GalleryPreview() {
