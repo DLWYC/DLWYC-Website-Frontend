@@ -20,7 +20,7 @@ type BentoPattern = "large" | "medium" | "tall" | "wide";
 const images: GalleryImage[] = Array.from(
   { length: TOTAL_IMAGES },
   (_, index) => ({
-    src: `./gallery/pix${index + 1}.jpg`,
+    src: `/gallery/pix${index + 1}.jpg`,
     alt: `Gallery image ${index + 1}`,
   }),
 );

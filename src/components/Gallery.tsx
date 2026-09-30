@@ -7,7 +7,7 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
 const images = Array.from({ length: 35 }, (_, index) => ({
-  src: `./gallery/pix${index + 1}.jpg`,
+  src: `/gallery/pix${index + 1}.jpg`,
   alt: `Gallery image ${index + 1}`,
 }));
 

@@ -5,12 +5,12 @@ import "swiper/css";
 import "swiper/css/pagination";
 
 const images = [
-  "./gallery/pix28.jpg",
-  "./gallery/pix29.jpg",
-  "./gallery/pix30.jpg",
-  "./gallery/pix31.jpg",
-  "./gallery/pix32.jpg",
-  "./gallery/pix33.jpg",
+  "/gallery/pix28.jpg",
+  "/gallery/pix29.jpg",
+  "/gallery/pix30.jpg",
+  "/gallery/pix31.jpg",
+  "/gallery/pix32.jpg",
+  "/gallery/pix33.jpg",
 ];
 
 function Legacy() {

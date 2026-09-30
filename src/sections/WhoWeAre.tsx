@@ -6,10 +6,10 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
 const images = [
-  "./gallery/pix34.jpg",
-  "./gallery/pix35.jpg",
-  "./gallery/pix36.jpg",
-  "./gallery/pix37.jpg",
+  "/gallery/pix34.jpg",
+  "/gallery/pix35.jpg",
+  "/gallery/pix36.jpg",
+  "/gallery/pix37.jpg",
 ];
 
 function WhoWeAre() {

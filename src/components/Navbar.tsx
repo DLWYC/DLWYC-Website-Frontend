@@ -54,7 +54,7 @@ function Navbar() {
             className="flex items-center gap-2 sm:gap-3 min-w-0"
           >
             <img
-              src="./gallery/Logo1.svg"
+              src="/gallery/Logo1.svg"
               alt="DLWYC Logo"
               className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 object-contain"
             />
