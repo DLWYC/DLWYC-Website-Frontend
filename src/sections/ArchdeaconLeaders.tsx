@@ -3,26 +3,90 @@ import { FaFacebook, FaInstagram, FaYoutube } from "react-icons/fa";
 import SectionTitle from "@/components/SectionTitle";
 
 const socialLinks = [
-  { name: "Facebook", href: "https://www.facebook.com/dlwyouthchaplaincy/", icon: FaFacebook },
-  { name: "Instagram", href: "https://www.instagram.com/dlwyouth/", icon: FaInstagram },
-  { name: "YouTube", href: "https://www.youtube.com/@dlwyouth9725", icon: FaYoutube },
+  {
+    name: "Facebook",
+    href: "https://www.facebook.com/dlwyouthchaplaincy/",
+    icon: FaFacebook,
+  },
+  {
+    name: "Instagram",
+    href: "https://www.instagram.com/dlwyouth/",
+    icon: FaInstagram,
+  },
+  {
+    name: "YouTube",
+    href: "https://www.youtube.com/@dlwyouth9725",
+    icon: FaYoutube,
+  },
 ];
 
 const leaders = [
-  { name: "Chairman Name", role: "Bariga Archdeaconry", image: "/gallery/arch-1.jpg" },
-  { name: "Onyenze O. Mark", role: "Festac Archdeaconry", image: "/gallery/arch-2.jpg" },
-  { name: "Ndupuechi William Michael", role: "Ikeja Archdeaconry", image: "/gallery/arch-3.jpg" },
-  { name: "Chairman Name", role: "Ikorodu-North Archdeaconry", image: "/gallery/arch-4.jpg" },
-  { name: "Okoye Wisdom", role: "Ikotun Archdeaconry", image: "/gallery/arch-5.jpg" },
-  { name: "Chairman Name", role: "Imota Archdeaconry", image: "/gallery/arch-6.jpg" },
-  { name: "Uzochukwu Akunne", role: "Isolo Archdeaconry", image: "/gallery/arch-7.jpg" },
-  { name: "Okpalefe Dominic", role: "Ojo Archdeaconry", image: "/gallery/arch-8.jpg" },
-  { name: "Chairman Name", role: "Ojodu Archdeaconry", image: "/gallery/arch-9.jpg" },
-  { name: "ADETAYO BABATUNDE DANIEL", role: "Opebi Archdeaconry", image: "/gallery/arch-10.jpg" },
-  { name: "CHRISTIAN ORAKA", role: "Oto-Awori Archdeaconry", image: "/gallery/arch-11.jpg" },
-  { name: "Damilola Ogunojuwo", role: "Owutu Archdeaconry", image: "/gallery/arch-12.jpg" },
-  { name: "Chairman Name", role: "Satellite Archdeaconry", image: "/gallery/arch-13.jpg" },
-]
+  {
+    name: "Chairman Name",
+    role: "Bariga Archdeaconry",
+    image: "./gallery/arch-1.jpg",
+  },
+  {
+    name: "Onyenze O. Mark",
+    role: "Festac Archdeaconry",
+    image: "./gallery/arch-2.jpg",
+  },
+  {
+    name: "Ndupuechi William Michael",
+    role: "Ikeja Archdeaconry",
+    image: "./gallery/arch-3.jpg",
+  },
+  {
+    name: "Chairman Name",
+    role: "Ikorodu-North Archdeaconry",
+    image: "./gallery/arch-4.jpg",
+  },
+  {
+    name: "Okoye Wisdom",
+    role: "Ikotun Archdeaconry",
+    image: "./gallery/arch-5.jpg",
+  },
+  {
+    name: "Chairman Name",
+    role: "Imota Archdeaconry",
+    image: "./gallery/arch-6.jpg",
+  },
+  {
+    name: "Uzochukwu Akunne",
+    role: "Isolo Archdeaconry",
+    image: "./gallery/arch-7.jpg",
+  },
+  {
+    name: "Okpalefe Dominic",
+    role: "Ojo Archdeaconry",
+    image: "./gallery/arch-8.jpg",
+  },
+  {
+    name: "Chairman Name",
+    role: "Ojodu Archdeaconry",
+    image: "./gallery/arch-9.jpg",
+  },
+  {
+    name: "ADETAYO BABATUNDE DANIEL",
+    role: "Opebi Archdeaconry",
+    image: "./gallery/arch-10.jpg",
+  },
+  {
+    name: "CHRISTIAN ORAKA",
+    role: "Oto-Awori Archdeaconry",
+    image: "./gallery/arch-11.jpg",
+  },
+  {
+    name: "Damilola Ogunojuwo",
+    role: "Owutu Archdeaconry",
+    image: "./gallery/arch-12.jpg",
+  },
+  {
+    name: "Chairman Name",
+    role: "Satellite Archdeaconry",
+    image: "./gallery/arch-13.jpg",
+  },
+];
 
 function ArchdeaconLeaders() {
   return (
@@ -63,15 +127,19 @@ function ArchdeaconLeaders() {
                 </div>
               </div>
               <div className="p-6">
-                <h3 className="mb-1 font-geom text-lg font-bold text-slate-900">{leader.name}</h3>
-                <p className="font-grotesk text-sm font-semibold text-blue-600">{leader.role}</p>
+                <h3 className="mb-1 font-geom text-lg font-bold text-slate-900">
+                  {leader.name}
+                </h3>
+                <p className="font-grotesk text-sm font-semibold text-blue-600">
+                  {leader.role}
+                </p>
               </div>
             </motion.div>
           ))}
         </div>
       </div>
     </section>
-  )
+  );
 }
 
-export default ArchdeaconLeaders
+export default ArchdeaconLeaders;

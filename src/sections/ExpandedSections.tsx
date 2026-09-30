@@ -7,14 +7,13 @@ import "swiper/css";
 import { FaCalendarAlt, FaQuoteLeft } from "react-icons/fa";
 
 export function BuiltForImpact() {
-
   const legacyImages = [
-    "/gallery/pix11.jpg",
-    "/gallery/pix12.jpg",
-    "/gallery/pix13.jpg",
-    "/gallery/pix14.jpg",
-    "/gallery/pix15.jpg",
-    "/gallery/pix16.jpg",
+    "./gallery/pix11.jpg",
+    "./gallery/pix12.jpg",
+    "./gallery/pix13.jpg",
+    "./gallery/pix14.jpg",
+    "./gallery/pix15.jpg",
+    "./gallery/pix16.jpg",
   ];
 
   // Duplicate images so Swiper loop + autoplay works reliably
@@ -24,7 +23,6 @@ export function BuiltForImpact() {
     <section id="impact" className="py-24 lg:py-[30px] bg-white">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="grid gap-17 lg:grid-cols-[1fr] items-center">
-
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -131,7 +129,7 @@ export function PastorQuote() {
             className="overflow-hidden rounded-[1.2rem] h-full"
           >
             <img
-              src="/gallery/bishop.jpg"
+              src="./gallery/bishop.jpg"
               alt="The Diocesan Bishop"
               className="h-full w-full object-cover"
             />

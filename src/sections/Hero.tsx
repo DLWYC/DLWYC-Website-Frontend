@@ -1,11 +1,14 @@
-import React, { useCallback } from 'react'
-import { motion } from 'framer-motion'
+import React, { useCallback } from "react";
+import { motion } from "framer-motion";
 
 function Hero() {
-  const scrollTo = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    e.preventDefault()
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth' })
-  }, [])
+  const scrollTo = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+      e.preventDefault();
+      document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+    },
+    [],
+  );
 
   return (
     <section
@@ -15,7 +18,7 @@ function Hero() {
       {/* Background */}
       <div
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/gallery/pix23.jpg')" }}
+        style={{ backgroundImage: "url('./gallery/pix23.jpg')" }}
       >
         <video
           autoPlay
@@ -25,7 +28,7 @@ function Hero() {
           preload="auto"
           className="w-full h-full object-cover"
         >
-          <source src="/gallery/video.mp4" type="video/mp4" />
+          <source src="../gallery/video.mp4" type="video/mp4" />
         </video>
       </div>
 
@@ -35,7 +38,6 @@ function Hero() {
 
       {/* Content — pushed down from navbar, centered vertically */}
       <div className="relative z-10 w-full max-w-4xl mx-auto px-6 text-center flex flex-col items-center justify-center flex-1 pt-32 pb-20">
-
         {/* Badge — spaced well from navbar */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -67,7 +69,10 @@ function Hero() {
           transition={{ duration: 0.7, delay: 0.6 }}
           className="text-base text-[15px] text-gray-200 max-w-2xl mx-auto lg:text-[15px] mb-12 leading-[32px] font-grotesk"
         >
-          We are a vibrant community of young Anglicans committed to growing in Christ, serving our communities, discovering purpose, and transforming lives through worship, discipleship, leadership, missions, and meaningful fellowship.
+          We are a vibrant community of young Anglicans committed to growing in
+          Christ, serving our communities, discovering purpose, and transforming
+          lives through worship, discipleship, leadership, missions, and
+          meaningful fellowship.
         </motion.p>
 
         {/* Buttons — centered with gap */}
@@ -79,14 +84,14 @@ function Hero() {
         >
           <a
             href="#about"
-            onClick={(e) => scrollTo(e, '#about')}
+            onClick={(e) => scrollTo(e, "#about")}
             className="px-8 py-3.5 bg-blue-600 text-white font-[14px] font-bold rounded-full hover:bg-blue-500 transition-all duration-300 font-geom shadow-lg shadow-blue-600/25"
           >
             Discover More
           </a>
           <a
             href="#events"
-            onClick={(e) => scrollTo(e, '#events')}
+            onClick={(e) => scrollTo(e, "#events")}
             className="px-8 py-3.5 border border-white/30 text-white font-medium rounded-full hover:bg-white/10 transition-all duration-300 font-grotesk"
           >
             Upcoming Events
@@ -102,14 +107,26 @@ function Hero() {
         className="relative z-10 pb-8"
       >
         <div className="flex flex-col items-center gap-2 text-white/70">
-          <span className="text-[10px] uppercase tracking-widest font-grotesk">Scroll</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-bounce">
+          <span className="text-[10px] uppercase tracking-widest font-grotesk">
+            Scroll
+          </span>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="animate-bounce"
+          >
             <path d="M12 5v14M5 12l7 7 7-7" />
           </svg>
         </div>
       </motion.div>
     </section>
-  )
+  );
 }
 
-export default React.memo(Hero)
+export default React.memo(Hero);

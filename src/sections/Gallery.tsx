@@ -1,15 +1,15 @@
-import { motion, AnimatePresence } from 'framer-motion'
-import { FaTimes } from 'react-icons/fa'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Pagination, Autoplay, EffectFade } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/pagination'
-import 'swiper/css/effect-fade'
+import { motion, AnimatePresence } from "framer-motion";
+import { FaTimes } from "react-icons/fa";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Pagination, Autoplay, EffectFade } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/effect-fade";
 
 const images = Array.from({ length: 35 }, (_, index) => ({
-  src: `/gallery/pix${index + 1}.jpg`,
+  src: `./gallery/pix${index + 1}.jpg`,
   alt: `Gallery image ${index + 1}`,
-}))
+}));
 
 function Gallery({ open, onClose }: { open: boolean; onClose: () => void }) {
   return (
@@ -39,8 +39,15 @@ function Gallery({ open, onClose }: { open: boolean; onClose: () => void }) {
               className="w-full h-[80vh] rounded-2xl overflow-hidden"
             >
               {images.map((img, i) => (
-                <SwiperSlide key={i} className="flex items-center justify-center bg-black">
-                  <img src={img.src} alt={img.alt} className="max-w-full max-h-full object-contain" />
+                <SwiperSlide
+                  key={i}
+                  className="flex items-center justify-center bg-black"
+                >
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    className="max-w-full max-h-full object-contain"
+                  />
                 </SwiperSlide>
               ))}
             </Swiper>
@@ -48,7 +55,7 @@ function Gallery({ open, onClose }: { open: boolean; onClose: () => void }) {
         </motion.div>
       )}
     </AnimatePresence>
-  )
+  );
 }
 
-export default Gallery
+export default Gallery;
