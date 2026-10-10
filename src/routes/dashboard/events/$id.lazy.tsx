@@ -77,7 +77,7 @@ function RouteComponent() {
     [],
   );
   const increment = useCallback(
-    () => setQuantity((q) => Math.min(10, q + 1)),
+    () => setQuantity((q) => Math.min(40, q + 1)),
     [],
   );
 
