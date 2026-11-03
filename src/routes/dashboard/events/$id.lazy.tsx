@@ -19,11 +19,8 @@ import {
 } from "@/components/ui/input-otp";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
-  MapPin,
-  UserIcon,
   Check,
   X,
-  Calendar,
   CreditCard,
   KeyRound,
 } from "lucide-react";
