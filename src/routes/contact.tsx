@@ -4,9 +4,7 @@ import {
   FaMapMarkerAlt,
   FaEnvelope,
   FaClock,
-  FaPaperPlane,
   FaArrowLeft,
-  FaBolt,
   FaCheckCircle,
 } from "react-icons/fa";
 import SectionTitle from "../components/SectionTitle";
@@ -39,34 +37,34 @@ function ContactPage() {
     message: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<SubmitStatus>(null);
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [submitStatus, setSubmitStatus] = useState<SubmitStatus>(null);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name as keyof FormErrors]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
+  // const handleChange = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  // ) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prev) => ({ ...prev, [name]: value }));
+  //   if (errors[name as keyof FormErrors]) {
+  //     setErrors((prev) => ({ ...prev, [name]: "" }));
+  //   }
+  // };
 
-  const validateForm = (): boolean => {
-    const newErrors: FormErrors = {};
+  // const validateForm = (): boolean => {
+  //   const newErrors: FormErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "Valid email required";
-    }
-    if (!formData.subject.trim()) newErrors.subject = "Subject is required";
-    if (!formData.message.trim()) newErrors.message = "Message cannot be empty";
+  //   if (!formData.name.trim()) newErrors.name = "Name is required";
+  //   if (!formData.email.trim()) {
+  //     newErrors.email = "Email is required";
+  //   } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+  //     newErrors.email = "Valid email required";
+  //   }
+  //   if (!formData.subject.trim()) newErrors.subject = "Subject is required";
+  //   if (!formData.message.trim()) newErrors.message = "Message cannot be empty";
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  //   setErrors(newErrors);
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
   // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
   //   e.preventDefault()
@@ -89,10 +87,10 @@ function ContactPage() {
   //   }
   // }
 
-  const inputClass =
-    "w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-grotesk";
-  const labelClass =
-    "block text-sm font-medium text-slate-700 mb-2 font-grotesk";
+  // const inputClass =
+  //   "w-full px-4 py-3 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all font-grotesk";
+  // const labelClass =
+  //   "block text-sm font-medium text-slate-700 mb-2 font-grotesk";
 
   return (
     <section className="min-h-screen py-24 bg-white">
@@ -157,14 +155,14 @@ function ContactPage() {
 
         {/* Contact Form */}
         <div className="max-w-3xl mx-auto bg-white rounded-2xl border border-slate-200 p-8 md:p-12 shadow-sm">
-          {submitStatus === "success" && (
+          {/* {submitStatus === "success" && (
             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3">
               <FaCheckCircle className="text-green-600" size={20} />
               <p className="text-green-700 text-sm font-medium">
                 Message sent successfully! We will get back to you soon.
               </p>
             </div>
-          )}
+          )} */}
 
           {/* <form onSubmit={handleSubmit} className="space-y-6" noValidate>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
