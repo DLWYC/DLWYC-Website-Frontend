@@ -1,16 +1,24 @@
-import { motion } from 'framer-motion'
+import { motion } from "framer-motion";
 
-function SectionTitle({ subtitle, title, description }: { subtitle?: string; title: string; description?: string }) {
+function SectionTitle({
+  subtitle,
+  title,
+  description,
+}: {
+  subtitle?: string;
+  title: string;
+  description?: string;
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
+      viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.6 }}
       className="text-center max-w-3xl mx-auto mb-14 font-rubik"
     >
       {subtitle && (
-        <span className="inline-block text-blue-600 text-sm font-semibold tracking-widest uppercase mb-4 font-grotesk">
+        <span className="inline-block text-primary text-sm font-semibold tracking-widest uppercase mb-4 font-grotesk">
           {subtitle}
         </span>
       )}
@@ -23,7 +31,7 @@ function SectionTitle({ subtitle, title, description }: { subtitle?: string; tit
         </p>
       )}
     </motion.div>
-  )
+  );
 }
 
-export default SectionTitle
+export default SectionTitle;

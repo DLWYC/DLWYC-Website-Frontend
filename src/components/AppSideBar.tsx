@@ -33,7 +33,7 @@ export function AppSidebar() {
               {NavItems.map((link) => (
                 <Link to={link.url} key={link.title}>
                   <SidebarMenuButton
-                    className="text-primary-main/80 hover:bg-primary-main/10 hover:text-primary-main focus:bg-primary-main/10 focus:text-primary-main "
+                    className="text-primary/80 hover:bg-primary-main/10 hover:text-primary focus:bg-primary-main/10 focus:text-primary "
                     key={link.title}
                     isActive={pathname.endsWith(link.url)}
                   >

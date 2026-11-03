@@ -11,11 +11,11 @@ import { Power } from "lucide-react";
 import { userDashboardTopMenu } from "@/data/navLinks";
 import UserProfileImage from "./UserProfileImage";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
-import {handleLogout} from "@/config/api"
+import { handleLogout } from "@/config/api";
 import { Link } from "@tanstack/react-router";
 
 export function AppNavBar() {
-  const {data: user} = useAuthUser()
+  const { data: user } = useAuthUser();
 
   return (
     <div className="flex justify-between items-center sticky top-0 z-50 w-full bg-[#ffffff] px-1 py-2">
@@ -41,7 +41,7 @@ export function AppNavBar() {
                     <h2 className="text-[14px] font-normal text-[#30373eff]">
                       {user.fullName}
                     </h2>
-                    <p className="text-[13px] font-normal text-primary-main">
+                    <p className="text-[13px] font-normal text-primary">
                       {user.email}
                     </p>
                   </div>
@@ -51,7 +51,10 @@ export function AppNavBar() {
 
               {userDashboardTopMenu.map((item, idx) => (
                 <DropdownMenuItem key={idx}>
-                  <Link to={`${item.url}`} className="cursor-pointer w-full py-2 gap-3 flex items-center text-[13px]">
+                  <Link
+                    to={`${item.url}`}
+                    className="cursor-pointer w-full py-2 gap-3 flex items-center text-[13px]"
+                  >
                     {item.icon && <item.icon />}
                     {item.name}
                   </Link>
@@ -60,7 +63,10 @@ export function AppNavBar() {
 
               <DropdownMenuSeparator />
               <div className="text-red-500 gap-3 cursor-pointer px-2 py-1.5 text-[15px]">
-                <p className="flex items-center gap-3" onClick={()=> handleLogout()}>
+                <p
+                  className="flex items-center gap-3"
+                  onClick={() => handleLogout()}
+                >
                   <Power className="text-red-500 size-4" />
                   Log out
                   {/* <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut> */}

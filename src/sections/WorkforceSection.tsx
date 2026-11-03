@@ -9,12 +9,12 @@ function WorkforceSection() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1fr_0.7fr] lg:items-center">
           <div className="space-y-6">
-            <p className="text-sm uppercase tracking-[0.3em] text-blue-600 font-semibold">
+            <p className="text-sm uppercase tracking-[0.3em] text-primary font-semibold">
               Workforce
             </p>
             <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black text-slate-900 leading-[0.95]">
               Join The{" "}
-              <span className="font-serif italic font-normal text-blue-600">
+              <span className="font-serif italic font-normal text-primary">
                 Team
               </span>
             </h2>
@@ -63,7 +63,7 @@ function WorkforceSection() {
                 </span>
               </Link>
               <a
-                href="https://dlwyouth.org/userlogin"
+                href="/login"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-full border border-slate-300 px-7 py-3.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
@@ -75,26 +75,36 @@ function WorkforceSection() {
 
           <div className="grid grid-cols-2 gap-4 h-[420px] sm:h-[480px]">
             <div className="overflow-hidden rounded-[1.5rem]">
-              <div className="flex flex-col gap-4 animate-marquee-vertical-up">
-                {[...columnA, ...columnA].map((src, index) => (
-                  <img
-                    key={index}
-                    src={src}
-                    alt={`Workforce ${index + 1}`}
-                    className="h-56 w-full rounded-[1.5rem] object-cover"
-                  />
+              <div className="flex flex-col animate-marquee-vertical-up">
+                {[0, 1].map((group) => (
+                  <div key={group} className="flex flex-col gap-4">
+                    {columnA.map((src, index) => (
+                      <img
+                        key={src}
+                        src={src}
+                        alt={`Workforce ${index + 1}`}
+                        decoding="async"
+                        className="h-56 w-full rounded-[1.5rem] object-cover"
+                      />
+                    ))}
+                  </div>
                 ))}
               </div>
             </div>
             <div className="overflow-hidden rounded-[1.5rem]">
-              <div className="flex flex-col gap-4 animate-marquee-vertical-down">
-                {[...columnB, ...columnB].map((src, index) => (
-                  <img
-                    key={index}
-                    src={src}
-                    alt={`Workforce ${index + 4}`}
-                    className="h-56 w-full rounded-[1.5rem] object-cover"
-                  />
+              <div className="flex flex-col animate-marquee-vertical-down">
+                {[0, 1].map((group) => (
+                  <div key={group} className="flex flex-col gap-4">
+                    {columnB.map((src, index) => (
+                      <img
+                        key={src}
+                        src={src}
+                        alt={`Workforce ${index + 4}`}
+                        decoding="async"
+                        className="h-56 w-full rounded-[1.5rem] object-cover"
+                      />
+                    ))}
+                  </div>
                 ))}
               </div>
             </div>

@@ -92,7 +92,7 @@ function GalleryPage() {
         >
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 transition-colors mb-10 font-grotesk"
+            className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors mb-10 font-grotesk"
           >
             <FaArrowLeft size={12} /> Back to Home
           </Link>
@@ -105,7 +105,7 @@ function GalleryPage() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="text-center max-w-3xl mx-auto mb-4"
         >
-          <span className="inline-block text-blue-600 text-sm font-semibold tracking-widest uppercase mb-4 font-grotesk">
+          <span className="inline-block text-primary text-sm font-semibold tracking-widest uppercase mb-4 font-grotesk">
             Gallery
           </span>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-5 font-geom">

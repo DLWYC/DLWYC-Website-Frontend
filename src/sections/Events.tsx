@@ -4,45 +4,29 @@ import { FaMapMarkerAlt, FaClock, FaArrowRight } from "react-icons/fa";
 import SectionTitle from "@/components/SectionTitle";
 
 const events = [
+  // {
+  //   title: "Diocesan Youth Camp 2026: RESET",
+  //   date: "ANTICIPATE",
+  //   time: "ANTICIPATE",
+  //   location: "City of God Ipaja",
+  //   description:
+  //     "Join young people, youth executives, and leaders from across the Diocese of Lagos West for a time of worship, teaching, fellowship, and spiritual renewal.",
+  //   featured: true,
+  //   image: "/youth-conference-2026.jpg",
+  // },
   {
-    title: "Diocesan Youth Convention 2026",
-    date: "August 15-17, 2026",
+    title: "Diocesan Youth Harvest 2026",
+    date: "December 20-23, 2026",
     time: "9:00 AM Daily",
-    location: "Cathedral Church Grounds",
+    price: 5000,
+    location: "City Of God, Ipaja",
     description:
       "Our annual gathering featuring powerful worship, impactful teachings, and networking opportunities for youths across all parishes.",
-    featured: true,
-    image: "/pix13.jpg",
-  },
-  {
-    title: "Youth Week of Prayer",
-    date: "July 20-26, 2026",
-    time: "6:00 PM Daily",
-    location: "St. Paul Anglican Church Hall",
-    description:
-      "Seven days of intensive prayer and fasting, seeking God's direction for the new chaplaincy year.",
     featured: false,
-    image: "/pix14.jpg",
-  },
-  {
-    title: "Leadership Retreat",
-    date: "September 5-7, 2026",
-    time: "All Day",
-    location: "Diocesan Camp Ground",
-    description:
-      "A weekend retreat for youth executives and leaders focusing on spiritual renewal and strategic planning.",
-    featured: false,
-    image: "/pix15.jpg",
-  },
-  {
-    title: "Christmas Carol & Awards Night",
-    date: "December 20, 2026",
-    time: "4:00 PM",
-    location: "Cathedral Church",
-    description:
-      "Celebrating the birth of Christ with carols, drama presentations, and recognition of outstanding youth members.",
-    featured: false,
-    image: "/pix16.jpg",
+    image:
+      "https://res.cloudinary.com/djmokqjxb/image/upload/v1793577328/CAMPFLYER_u8lezh.jpg",
+    fullDetails:
+      "The Diocesan Youth Convention is our flagship annual event. Expect three days of powerful worship sessions, anointed guest speakers, breakout workshops on career and ministry, evening concerts, and a grand awards night. All parishes are expected to register their delegates by July 30th. Accommodation and feeding will be provided for out-of-town delegates.",
   },
 ];
 
@@ -74,11 +58,13 @@ function Events() {
                 </div>
               )}
               <div className="flex flex-col lg:flex-row">
-                <div className="w-full lg:w-56 h-48 lg:h-auto shrink-0 overflow-hidden">
+                <div className="w-full lg:w-56 shrink-0 self-start">
                   <img
                     src={event.image}
                     alt={event.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
+                    decoding="async"
+                    className="block w-full h-auto"
                   />
                 </div>
 
@@ -95,7 +81,7 @@ function Events() {
                   </div>
 
                   <div className="flex-1">
-                    <h3 className="font-geom text-xl sm:text-2xl text-left font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                    <h3 className="font-geom text-xl sm:text-2xl text-left font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors">
                       {event.title}
                     </h3>
                     <p className="text-slate-600 text-sm text-left leading-relaxed mb-4 font-grotesk">
@@ -103,19 +89,22 @@ function Events() {
                     </p>
                     <div className="flex flex-wrap gap-4">
                       <span className="inline-flex items-center gap-2 text-xs text-slate-500 font-grotesk">
-                        <FaClock size={12} className="text-blue-600" />
+                        <FaClock size={12} className="text-primary" />
                         {event.time}
                       </span>
                       <span className="inline-flex items-center gap-2 text-xs text-slate-500 font-grotesk">
-                        <FaMapMarkerAlt size={12} className="text-blue-600" />
+                        <FaMapMarkerAlt size={12} className="text-primary" />
                         {event.location}
+                      </span>
+                      <span className="inline-flex items-center gap-2 text-xs text-slate-500 font-grotesk">
+                        Price: ₦{event.price.toLocaleString("en-NG")}
                       </span>
                     </div>
                   </div>
 
                   <div className="shrink-0">
                     <Link
-                      to={"/"}
+                      to="/events"
                       className="inline-flex items-center gap-2 px-5 py-3 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-all duration-300 text-sm group/btn border border-blue-600/20 font-grotesk"
                     >
                       Learn More
@@ -133,7 +122,7 @@ function Events() {
 
         <div className="mt-10 text-center">
           <Link
-            to={"/"}
+            to="/events"
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-blue-50 text-blue-700 font-semibold rounded-full hover:bg-blue-100 transition-colors font-grotesk"
           >
             View All Events

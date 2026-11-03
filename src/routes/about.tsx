@@ -21,7 +21,7 @@ function AboutPage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <Link
             to="/"
-            className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 transition-colors mb-10 font-grotesk"
+            className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors mb-10 font-grotesk"
           >
             <FaArrowLeft size={12} /> Back to Home
           </Link>
@@ -33,12 +33,12 @@ function AboutPage() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.8 }}
             >
-              <span className="text-blue-600 text-sm font-semibold uppercase tracking-widest mb-4 block font-grotesk">
+              <span className="text-primary text-sm font-semibold uppercase tracking-widest mb-4 block font-grotesk">
                 Who We Are
               </span>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight mb-8 font-geom">
                 A Family United by
-                <span className="text-blue-600"> Faith & Purpose.</span>
+                <span className="text-primary"> Faith & Purpose.</span>
               </h1>
               <div className="space-y-5 text-slate-600 leading-relaxed text-base font-grotesk">
                 <p>
@@ -100,7 +100,7 @@ function AboutPage() {
       <section className="py-12 lg:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <p className="text-sm uppercase tracking-[0.35em] text-blue-600 mb-4">
+            <p className="text-sm uppercase tracking-[0.35em] text-primary mb-4">
               Our Impact
             </p>
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-4">

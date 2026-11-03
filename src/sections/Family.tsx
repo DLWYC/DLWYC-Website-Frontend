@@ -6,37 +6,37 @@ const familyValues = [
     letter: "F",
     title: "Faith",
     desc: "Trusting God and stepping forward together in our calling.",
-    image: "/pix17.jpg",
+    image: "/pix94.jpg",
   },
   {
     letter: "A",
     title: "Acceptance",
     desc: "Welcoming every member of our community with grace and care.",
-    image: "/pix18.jpg",
+    image: "/pix80.jpg",
   },
   {
     letter: "M",
     title: "Mission",
     desc: "Serving others with purpose and advancing the Kingdom together.",
-    image: "/pix19.jpg",
+    image: "/pix82.jpg",
   },
   {
     letter: "I",
     title: "Integrity",
     desc: "Walking in honesty, humility, and authentic relationship.",
-    image: "/pix20.jpg",
+    image: "/pix9.jpg",
   },
   {
     letter: "L",
     title: "Love",
     desc: "Extending genuine care and compassion to one another.",
-    image: "/pix21.jpg",
+    image: "/pix50.jpg",
   },
   {
     letter: "Y",
     title: "Youth",
     desc: "Empowering young people to grow, lead, and shine in faith.",
-    image: "/pix22.jpg",
+    image: "/pix79.jpg",
   },
 ];
 
@@ -56,11 +56,11 @@ function Family() {
           transition={{ duration: 0.6 }}
           className="mb-16 text-center"
         >
-          <span className="mb-3 block text-sm font-semibold uppercase tracking-[0.35em] text-blue-600 font-grotesk">
+          <span className="mb-3 block text-sm font-semibold uppercase tracking-[0.35em] text-primary font-grotesk">
             Our Core Values
           </span>
           <h2 className="text-4xl font-bold text-slate-900 sm:text-5xl lg:text-[50px] font-rubik">
-            The FAMILY of <span className="text-blue-600">DLWYC</span>
+            The FAMILY of <span className="text-primary">DLWYC</span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-[15px] text-slate-600 font-grotesk">
             These values guide our relationships, our ministry, and our service
@@ -85,6 +85,8 @@ function Family() {
                 <img
                   src={item.image}
                   alt={item.title}
+                  loading="lazy"
+                  decoding="async"
                   className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-black/50" />

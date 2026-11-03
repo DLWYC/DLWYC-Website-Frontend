@@ -36,7 +36,9 @@ function ContactPage() {
       "mailto:dlwyouth@gmail.com?subject=" + subject + "&body=" + body;
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -50,7 +52,7 @@ function ContactPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 transition-colors mb-10 font-grotesk"
+          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors mb-10 font-grotesk"
         >
           <FaArrowLeft size={12} /> Back to Home
         </Link>
@@ -64,7 +66,7 @@ function ContactPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-3">
-              <FaMapMarkerAlt className="text-blue-600" size={18} />
+              <FaMapMarkerAlt className="text-primary" size={18} />
             </div>
             <h4 className="font-geom font-bold text-slate-900 mb-1">
               Visit Us
@@ -79,7 +81,7 @@ function ContactPage() {
 
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-3">
-              <FaEnvelope className="text-blue-600" size={18} />
+              <FaEnvelope className="text-primary" size={18} />
             </div>
             <h4 className="font-geom font-bold text-slate-900 mb-1">
               Email Us
@@ -91,7 +93,7 @@ function ContactPage() {
 
           <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mb-3">
-              <FaClock className="text-blue-600" size={18} />
+              <FaClock className="text-primary" size={18} />
             </div>
             <h4 className="font-geom font-bold text-slate-900 mb-1">
               Office Hours
@@ -112,7 +114,7 @@ function ContactPage() {
             className="rounded-2xl border border-blue-200 bg-blue-50 p-12 text-center max-w-2xl mx-auto"
           >
             <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
-              <FaPaperPlane className="text-blue-600" size={28} />
+              <FaPaperPlane className="text-primary" size={28} />
             </div>
             <h4 className="font-geom text-xl font-bold text-slate-900 mb-2">
               Message Ready to Send

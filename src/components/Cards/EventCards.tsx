@@ -36,7 +36,10 @@ export function EventCard({ events: event }: EventCardProps) {
 
   const isFree = event.eventType === "Free";
   const pct = event.eventCapacity
-    ? Math.min(100, Math.round((event.registeredCount / event.eventCapacity) * 100))
+    ? Math.min(
+        100,
+        Math.round((event.registeredCount / event.eventCapacity) * 100),
+      )
     : 0;
   const nearlyFull = pct >= 90;
   const eventFull = pct == 100;
@@ -95,10 +98,10 @@ export function EventCard({ events: event }: EventCardProps) {
       <div className="flex flex-1 flex-col justify-between gap-2 p-3 font-grotesk">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[12px] tracking-wide text-primary-main/50">
+            <p className="text-[12px] tracking-wide text-primary/50">
               {dateLabel} · {event.eventTime}
             </p>
-            <h2 className="mt-0.5 font-header text-[18px] leading-tight text-primary-main line-clamp-2">
+            <h2 className="mt-0.5 font-header text-[18px] leading-tight text-primary line-clamp-2">
               {event.eventTitle}
             </h2>
           </div>
@@ -113,7 +116,7 @@ export function EventCard({ events: event }: EventCardProps) {
             className="shrink-0 cursor-pointer rounded-full p-1 transition-colors hover:bg-primary-main/5"
           >
             <Bookmark
-              className={`h-4 w-4 ${saved ? "text-reddish" : "text-primary-main/40"}`}
+              className={`h-4 w-4 ${saved ? "text-reddish" : "text-primary/40"}`}
               fill={saved ? "currentColor" : "none"}
             />
           </span>
@@ -124,18 +127,24 @@ export function EventCard({ events: event }: EventCardProps) {
           word regardless of layout width. Clamping by line lets the CSS
           truncate cleanly at whatever width the card actually renders at.
         */}
-        <p className="text-[13px] leading-snug text-primary-main/60 line-clamp-2">
+        <p className="text-[13px] leading-snug text-primary/60 line-clamp-2">
           {event.eventDescription}
         </p>
 
         <div className="flex items-end justify-between gap-3">
           <div className="flex-1">
-            <div className="flex items-center justify-between text-[11px] text-primary-main/50">
+            <div className="flex items-center justify-between text-[11px] text-primary/50">
               <span className="flex items-center gap-1">
                 <Users className="h-3 w-3" />
                 {event.registeredCount}/{event.eventCapacity}
               </span>
-              <span>{eventFull ? "Sold Out" : nearlyFull ? "almost full" : `${pct}%`}</span>
+              <span>
+                {eventFull
+                  ? "Sold Out"
+                  : nearlyFull
+                    ? "almost full"
+                    : `${pct}%`}
+              </span>
             </div>
             <div className="mt-1 h-1 w-full overflow-hidden rounded-full bg-primary-main/10">
               <div
@@ -154,7 +163,11 @@ export function EventCard({ events: event }: EventCardProps) {
                 : "border-amber-600/60 text-amber-600"
             }`}
           >
-            {isFree ? <Globe className="h-2.5 w-2.5" /> : <Lock className="h-2.5 w-2.5" />}
+            {isFree ? (
+              <Globe className="h-2.5 w-2.5" />
+            ) : (
+              <Lock className="h-2.5 w-2.5" />
+            )}
             {event.eventType}
           </span>
         </div>

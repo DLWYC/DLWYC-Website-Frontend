@@ -92,8 +92,11 @@ function ArchdeaconLeaders() {
   return (
     <section id="archdeacon-leaders" className="bg-white py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionTitle subtitle="Our Team" title="Our Archdeaconry Leaders" />
-
+        <SectionTitle
+          subtitle="Our Leaders"
+          title="Meet Our Archdeaconry Leaders"
+          description="Meet the diocesan Archdeaconry Leaders serving the Diocese of Lagos West Youth Chaplaincy."
+        />
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {leaders.map((leader, index) => (
             <motion.div
@@ -130,7 +133,7 @@ function ArchdeaconLeaders() {
                 <h3 className="mb-1 font-geom text-lg font-bold text-slate-900">
                   {leader.name}
                 </h3>
-                <p className="font-grotesk text-sm font-semibold text-blue-600">
+                <p className="font-grotesk text-sm font-semibold text-primary">
                   {leader.role}
                 </p>
               </div>

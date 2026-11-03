@@ -32,13 +32,13 @@ export function BuiltForImpact() {
           >
             <div className="flex items-center gap-4 mb-8 font-rubik ">
               <div className=" w-full">
-                <p className="text-sm uppercase tracking-[0.3em] text-blue-600">
+                <p className="text-sm uppercase tracking-[0.3em] text-primary">
                   2026 Diocesan Theme
                 </p>
                 <p className="text-4xl font-bold text-slate-900 leading-tight">
                   Who Is On The Lord Side
                 </p>
-                <p className="text-base text-blue-600 mt-1">Exodus 32:26</p>
+                <p className="text-base text-primary mt-1">Exodus 32:26</p>
               </div>
             </div>
             <div className="grid gap-5 sm:grid-cols-3">
@@ -66,7 +66,7 @@ export function BuiltForImpact() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <p className="mb-3 block text-sm font-semibold uppercase tracking-[0.35em] text-blue-600 font-grotesk">
+            <p className="mb-3 block text-sm font-semibold uppercase tracking-[0.35em] text-primary font-grotesk">
               Built for Impact
             </p>
             <h2 className="text-4xl sm:text-[50px] font-bold text-slate-900 mb-6 leading-tight font-rubik">
@@ -142,7 +142,7 @@ export function PastorQuote() {
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-6">
-              <FaQuoteLeft className="text-blue-600 text-xl" />
+              <FaQuoteLeft className="text-primary text-xl" />
             </div>
             <h2 className="text-3xl sm:text-4xl font-black uppercase text-slate-900 mb-6">
               From The Diocesan
@@ -184,7 +184,7 @@ export function FutureSection() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="rounded-[2rem] border font-rubik border-slate-200 bg-gradient-to-r from-blue-50 via-white to-slate-50 p-8 lg:p-12 shadow-sm">
           <div className="">
-            <p className="text-sm uppercase tracking-[0.3em] font-grotesk font-[500] text-blue-600 mb-4">
+            <p className="text-sm uppercase tracking-[0.3em] font-grotesk font-[500] text-primary mb-4">
               We are the future
             </p>
             <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 leading-[60px]">
@@ -251,7 +251,7 @@ export function CalendarEvents() {
     <section id="events" className="py-24 lg:py-32 bg-[#f5f5f0]">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <p className="text-sm uppercase tracking-[0.3em] text-blue-600 mb-4">
+          <p className="text-sm uppercase tracking-[0.3em] text-primary mb-4">
             Calendar & Events
           </p>
           <h2 className="text-4xl sm:text-5xl font-bold text-slate-900">
@@ -280,7 +280,7 @@ export function CalendarEvents() {
                 className="rounded-[1.5rem] border border-slate-200 bg-white p-7 shadow-sm"
               >
                 <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center mb-5">
-                  <FaCalendarAlt className="text-blue-600" />
+                  <FaCalendarAlt className="text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold text-slate-900 mb-3">
                   {event.title}
@@ -289,7 +289,7 @@ export function CalendarEvents() {
                 {event.time && (
                   <p className="text-sm text-slate-400 mb-2">{event.time}</p>
                 )}
-                <p className="text-sm text-blue-600">{event.location}</p>
+                <p className="text-sm text-primary">{event.location}</p>
                 {event.description && (
                   <p className="text-sm text-slate-500 mt-3">
                     {event.description}
