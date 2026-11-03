@@ -1,42 +1,41 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+// import { useState } from "react";
 import {
   FaMapMarkerAlt,
   FaEnvelope,
   FaClock,
   FaArrowLeft,
-  FaCheckCircle,
 } from "react-icons/fa";
 import SectionTitle from "../components/SectionTitle";
 
-type FormData = {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-};
+// type FormData = {
+//   name: string;
+//   email: string;
+//   subject: string;
+//   message: string;
+// };
 
-type FormErrors = {
-  name?: string;
-  email?: string;
-  subject?: string;
-  message?: string;
-};
+// type FormErrors = {
+//   name?: string;
+//   email?: string;
+//   subject?: string;
+//   message?: string;
+// };
 
-type SubmitStatus = "success" | "error" | null;
+// type SubmitStatus = "success" | "error" | null;
 
 export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
 function ContactPage() {
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-  const [errors, setErrors] = useState<FormErrors>({});
+  // const [formData, setFormData] = useState<FormData>({
+  //   name: "",
+  //   email: "",
+  //   subject: "",
+  //   message: "",
+  // });
+  // const [errors, setErrors] = useState<FormErrors>({});
   // const [isSubmitting, setIsSubmitting] = useState(false);
   // const [submitStatus, setSubmitStatus] = useState<SubmitStatus>(null);
 
