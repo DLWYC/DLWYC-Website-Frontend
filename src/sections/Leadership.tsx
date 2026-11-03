@@ -1,31 +1,96 @@
 import { motion } from "framer-motion";
-import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 import SectionTitle from "@/components/SectionTitle";
 
-const leaders = [
+const chaplains = [
   {
-    name: "Rev. Canon [Chaplain Name]",
-    role: "Chaplain / Youth Coordinator",
-    image: "/pix24.jpg",
-    bio: "Overseeing the spiritual direction and administrative leadership of the chaplaincy.",
+    name: "Ven. Ariire Ayo Kolawole",
+    role: "Diocesan Chaplain",
+    image: "/chaplain-01.jpg",
   },
   {
-    name: "[Assistant Chaplain Name]",
-    role: "Assistant Chaplain",
-    image: "/pix25.jpg",
-    bio: "Coordinating Bible study programs and discipleship initiatives across all parish youth groups.",
+    name: "Rev. Dickson Orhewere",
+    role: "Asst. Diocesan Chaplain",
+    image: "/chaplain-02.jpg",
   },
   {
-    name: "[Youth President Name]",
-    role: "Youth President",
-    image: "/pix26.jpg",
-    bio: "Leading the youth executive council and driving engagement in all chaplaincy activities.",
+    name: "Olowofela Akinfolarin",
+    role: "Opebi Archdeaconry",
+    image: "/chaplain-03.jpg",
   },
   {
-    name: "[Secretary Name]",
-    role: "Secretary / Admin Head",
-    image: "/pix27.jpg",
-    bio: "Managing chaplaincy communications, records, and administrative operations.",
+    name: "Rev. Asaolu Johnson",
+    role: "Ojo Archdeaconry",
+    image: "/chaplain-04.jpg",
+  },
+  {
+    name: "Rev. Oniosun John",
+    role: "Ipaja Archdeaconry",
+    image: "/chaplain-05.jpg",
+  },
+  {
+    name: "Rev. Odu",
+    role: "Somolu Archdeaconry",
+    image: "/chaplain-06.jpg",
+  },
+  {
+    name: "Rev. Marcus Bamigbola",
+    role: "Ojodu Archdeaconry",
+    image: "/chaplain-07.jpg",
+  },
+  {
+    name: "Rev. Adeyinka Faloyin",
+    role: "Amuwo-Odofin Archdeaconry",
+    image: "/chaplain-08.jpg",
+  },
+  {
+    name: "Rev. Ogunleye Titilola",
+    role: "Oto-Awori Archdeaconry",
+    image: "/chaplain-09.jpg",
+  },
+  {
+    name: "Rev. Oluwaseun Omojuyigbe",
+    role: "Iju-Ishaga Archdeaconry",
+    image: "/chaplain-10.jpg",
+  },
+  {
+    name: "Rev. Samuel Asaolu",
+    role: "Festac Archdeaconry",
+    image: "/chaplain-11.jpg",
+  },
+  {
+    name: "Rev. Peter Adegbite",
+    role: "Ikotun Archdeaconry",
+    image: "/chaplain-12.jpg",
+  },
+  {
+    name: "Rev. Daramola Ebenezer",
+    role: "Agege Archdeaconry",
+    image: "/chaplain-13.jpg",
+  },
+  {
+    name: "Rev. Samuel Adetona",
+    role: "Ikeja Archdeaconry",
+    image: "/chaplain-14.jpg",
+  },
+  {
+    name: "Rev. David Ogunfowoke",
+    role: "Idimu Archdeaconry",
+    image: "/chaplain-15.jpg",
+  },
+  {
+    name: "Rev. Oluseye Olagoke",
+    role: "Ogudu Archdeaconry",
+    image: "/chaplain-16.jpg",
+  },
+  {
+    name: "Rev. Faleye Samuel",
+    role: "Bariga Archdeaconry",
+    image: "/chaplain-17.jpg",
+  },
+  {
+    name: "Rev. Adedji Adegbokun",
+    role: "Iba Archdeaconry",
+    image: "/chaplain-18.jpg",
   },
 ];
 
@@ -34,15 +99,15 @@ function Leadership() {
     <section id="leadership" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <SectionTitle
-          subtitle="Our Team"
-          title="Leadership"
-          description="Meet the dedicated team of clergy and youth leaders guiding the Diocese of Lagos West Youth Chaplaincy with wisdom, passion, and commitment."
+          subtitle="Our Clergy"
+          title="Meet Our Chaplains"
+          description="Meet the diocesan chaplains serving the Diocese of Lagos West Youth Chaplaincy."
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {leaders.map((leader, index) => (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {chaplains.map((chaplain, index) => (
             <motion.div
-              key={index}
+              key={chaplain.name}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -51,32 +116,17 @@ function Leadership() {
             >
               <div className="relative overflow-hidden">
                 <img
-                  src={leader.image}
-                  alt={leader.name}
+                  src={chaplain.image}
+                  alt={chaplain.name}
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute bottom-4 left-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-4 group-hover:translate-y-0">
-                  {[FaFacebook, FaTwitter, FaInstagram].map((Icon, i) => (
-                    <a
-                      key={i}
-                      href="#"
-                      className="w-9 h-9 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-blue-600 transition-colors"
-                    >
-                      <Icon size={16} />
-                    </a>
-                  ))}
-                </div>
               </div>
               <div className="p-6">
                 <h3 className="font-geom text-lg font-bold text-slate-900 mb-1">
-                  {leader.name}
+                  {chaplain.name}
                 </h3>
-                <p className="text-blue-600 text-sm font-semibold mb-3 font-grotesk">
-                  {leader.role}
-                </p>
-                <p className="text-slate-600 text-sm leading-relaxed font-grotesk">
-                  {leader.bio}
+                <p className="text-primary text-sm font-semibold mb-3 font-grotesk">
+                  {chaplain.role}
                 </p>
               </div>
             </motion.div>

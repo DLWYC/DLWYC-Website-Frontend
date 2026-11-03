@@ -10,8 +10,8 @@ const links = [
     to: "/about",
     children: [
       { name: "Chaplaincy", to: "/about" },
-      { name: "Our Chaplain", to: "/leadership" },
-      { name: "Our Archdeacon Leader", to: "/leadership" },
+      // { name: "Our Chaplain", to: "/leadership" },
+      // { name: "Our Archdeacon Leader", to: "/archdeacon-leaders" },
     ],
   },
   { name: "Event", to: "/events" },
@@ -56,7 +56,7 @@ function Navbar() {
             <img
               src="/Logo1.svg"
               alt="DLWYC Logo"
-              className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 object-contain"
+              className="h-10 shrink-0 object-contain"
             />
           </Link>
 
@@ -69,7 +69,7 @@ function Navbar() {
                     className={`flex items-center gap-1 px-3 xl:px-4 py-2 text-sm transition-colors font-grotesk font-medium ${
                       isTransparent
                         ? "text-black/90 hover:text-black"
-                        : "text-black hover:text-blue-600"
+                        : "text-black hover:text-primary"
                     }`}
                   >
                     {link.name}
@@ -80,7 +80,7 @@ function Navbar() {
                       <Link
                         key={child.name}
                         to={child.to}
-                        className="block rounded-2xl px-4 py-2 text-sm text-black hover:bg-slate-100 hover:text-blue-600 transition-colors font-grotesk"
+                        className="block rounded-2xl px-4 py-2 text-sm text-black hover:bg-slate-100 hover:text-primary transition-colors font-grotesk"
                       >
                         {child.name}
                       </Link>
@@ -94,7 +94,7 @@ function Navbar() {
                   className={`px-3 xl:px-4 py-2 text-sm transition-colors font-grotesk font-medium ${
                     isTransparent
                       ? "text-black/90 hover:text-black"
-                      : "text-black hover:text-blue-600"
+                      : "text-black hover:text-primary"
                   }`}
                 >
                   {link.name}
@@ -138,7 +138,7 @@ function Navbar() {
                     <Link
                       to={link.to}
                       onClick={() => setOpen(false)}
-                      className="block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-black hover:text-blue-600 transition-colors font-grotesk font-medium"
+                      className="block px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base text-black hover:text-primary transition-colors font-grotesk font-medium"
                     >
                       {link.name}
                     </Link>
@@ -154,7 +154,7 @@ function Navbar() {
                         <Link
                           to={child.to}
                           onClick={() => setOpen(false)}
-                          className="block rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 pl-6 sm:pl-8 text-xs sm:text-sm text-black hover:bg-slate-100 hover:text-blue-600 transition-colors font-grotesk"
+                          className="block rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 pl-6 sm:pl-8 text-xs sm:text-sm text-black hover:bg-slate-100 hover:text-primary transition-colors font-grotesk"
                         >
                           {child.name}
                         </Link>

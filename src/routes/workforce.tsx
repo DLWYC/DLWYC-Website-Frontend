@@ -1,45 +1,47 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
-import { useState } from 'react'
-import { FaArrowLeft, FaUsers, FaPaperPlane } from 'react-icons/fa'
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { FaArrowLeft, FaUsers, FaPaperPlane } from "react-icons/fa";
 
 const workforceOptions = [
-  'Prayer & Worship',
-  'Media & Communication',
-  'Outreach & Service',
-  'Hospitality & Logistics',
-  'Creative Arts',
-  'Leadership Support',
-] as const
+  "Prayer & Worship",
+  "Media & Communication",
+  "Outreach & Service",
+  "Hospitality & Logistics",
+  "Creative Arts",
+  "Leadership Support",
+] as const;
 
-type WorkforceOption = (typeof workforceOptions)[number]
+type WorkforceOption = (typeof workforceOptions)[number];
 
-export const Route = createFileRoute('/workforce')({
+export const Route = createFileRoute("/workforce")({
   component: WorkforcePage,
-})
+});
 
 function WorkforcePage() {
-  const [selected, setSelected] = useState<WorkforceOption>(workforceOptions[0])
+  const [selected, setSelected] = useState<WorkforceOption>(
+    workforceOptions[0],
+  );
 
   const inputClass =
-    'mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all'
-  const labelClass = 'text-sm font-semibold text-slate-700'
+    "mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all";
+  const labelClass = "text-sm font-semibold text-slate-700";
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    const subject = encodeURIComponent('Workforce / Summit Inquiry')
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const subject = encodeURIComponent("Workforce / Summit Inquiry");
     const body = encodeURIComponent(
-      `Name: ${formData.get('name')}\nEmail: ${formData.get('email')}\nWhatsApp: ${formData.get('whatsapp')}\nInterest: ${formData.get('option')}`
-    )
-    window.location.href = `mailto:dlwyouth@gmail.com?subject=${subject}&body=${body}`
-  }
+      `Name: ${formData.get("name")}\nEmail: ${formData.get("email")}\nWhatsApp: ${formData.get("whatsapp")}\nInterest: ${formData.get("option")}`,
+    );
+    window.location.href = `mailto:dlwyouth@gmail.com?subject=${subject}&body=${body}`;
+  };
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-6">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-blue-600 hover:underline text-sm mb-6 font-grotesk"
+          className="inline-flex items-center gap-2 text-primary hover:underline text-sm mb-6 font-grotesk"
         >
           <FaArrowLeft size={12} /> Back to Home
         </Link>
@@ -48,11 +50,14 @@ function WorkforcePage() {
           Join Our Workforce
         </h1>
         <p className="text-lg text-slate-600 mb-10">
-          Find your place, serve with passion, and grow in your walk with God. Fill the form
-          below and we will connect you with the right team.
+          Find your place, serve with passion, and grow in your walk with God.
+          Fill the form below and we will connect you with the right team.
         </p>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 md:grid-cols-2">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 gap-6 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 md:grid-cols-2"
+        >
           <div>
             <label className={labelClass}>Name</label>
             <input
@@ -103,9 +108,11 @@ function WorkforcePage() {
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                <FaUsers className="text-blue-600" size={18} />
+                <FaUsers className="text-primary" size={18} />
               </div>
-              <p className="font-semibold text-slate-800">6 teams to choose from</p>
+              <p className="font-semibold text-slate-800">
+                6 teams to choose from
+              </p>
             </div>
             <div className="flex flex-wrap gap-2">
               {workforceOptions.map((option) => (
@@ -115,8 +122,8 @@ function WorkforcePage() {
                   onClick={() => setSelected(option)}
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                     selected === option
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-blue-300'
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-slate-50 text-slate-600 border-slate-200 hover:border-blue-300"
                   }`}
                 >
                   {option}
@@ -138,5 +145,5 @@ function WorkforcePage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

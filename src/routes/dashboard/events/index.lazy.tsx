@@ -25,8 +25,6 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { TicketComponent } from "@/components/Ticket";
 import { useAuthUser } from "@/features/auth/hooks/useAuthUser";
 
-
-
 export const Route = createLazyFileRoute("/dashboard/events/")({
   component: EventComponent,
 });
@@ -88,7 +86,6 @@ function EventComponent() {
 
   const { data: user } = useAuthUser();
 
-
   const isAlreadyRegistered = userRegisteredEvents?.some(
     (event: Event) => selectedEvent?._id === event?.eventId,
   );
@@ -145,18 +142,16 @@ function EventComponent() {
     setFilter("All");
   };
 
-
-
   return (
     <Drawer direction="right">
       <div className="space-y-3 px-4">
         {/* Header */}
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="font-header text-lg font-semibold tracking-tight text-primary-main">
+            <p className="font-header text-lg font-semibold tracking-tight text-primary">
               All Events
             </p>
-            <p className="mt-1 font-grotesk text-[13px] text-primary-main/50">
+            <p className="mt-1 font-grotesk text-[13px] text-primary/50">
               {counts.All} event{counts.All === 1 ? "" : "s"} available right
               now
             </p>
@@ -165,12 +160,12 @@ function EventComponent() {
 
         {/* Search */}
         <div className="flex items-center gap-2 rounded-full border border-primary-main/10 bg-white px-3 py-2">
-          <Search className="h-4 w-4 shrink-0 text-primary-main/40" />
+          <Search className="h-4 w-4 shrink-0 text-primary/40" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search events"
-            className="w-full bg-transparent font-grotesk text-[13px] text-primary-main outline-none placeholder:text-primary-main/40"
+            className="w-full bg-transparent font-grotesk text-[13px] text-primary outline-none placeholder:text-primary/40"
           />
           {query && (
             <button
@@ -178,13 +173,13 @@ function EventComponent() {
               onClick={() => setQuery("")}
               aria-label="Clear search"
             >
-              <X className="h-4 w-4 text-primary-main/40" />
+              <X className="h-4 w-4 text-primary/40" />
             </button>
           )}
         </div>
 
         {/* Filters */}
-        <div className="flex items-center gap-5 font-grotesk text-[13px] text-primary-main/50">
+        <div className="flex items-center gap-5 font-grotesk text-[13px] text-primary/50">
           {FILTERS.map((f) => (
             <button
               key={f}
@@ -192,7 +187,7 @@ function EventComponent() {
               onClick={() => setFilter(f)}
               className={`relative pb-1 transition-colors ${
                 filter === f
-                  ? "font-medium text-primary-main after:absolute after:inset-x-0 after:-bottom-[1px] after:h-[2px] after:rounded-full after:bg-reddish after:content-['']"
+                  ? "font-medium text-primary after:absolute after:inset-x-0 after:-bottom-[1px] after:h-[2px] after:rounded-full after:bg-reddish after:content-['']"
                   : ""
               }`}
             >
@@ -205,10 +200,10 @@ function EventComponent() {
         <ScrollArea className="h-[55vh]">
           {filteredEvents.length === 0 ? (
             <div className="rounded-[10px] border border-dashed border-primary-main/15 px-6 py-12 text-center">
-              <p className="font-header text-[15px] font-semibold text-primary-main">
+              <p className="font-header text-[15px] font-semibold text-primary">
                 No events match "{query}"
               </p>
-              <p className="mt-1 font-grotesk text-[13px] text-primary-main/50">
+              <p className="mt-1 font-grotesk text-[13px] text-primary/50">
                 Try a different search term, or clear the{" "}
                 {filter !== "All" ? `"${filter}" ` : ""}
                 filter.
@@ -245,7 +240,10 @@ function EventComponent() {
             <CircleX className="cursor-pointer" width={30} height={30} />
           </DrawerClose>
 
-          <Tabs value={isAlreadyRegistered ? "ticket" : "eventDetails"} className="p-0 h-full">
+          <Tabs
+            value={isAlreadyRegistered ? "ticket" : "eventDetails"}
+            className="p-0 h-full"
+          >
             <TabsContent value="eventDetails" className="p-0 m-0 space-y-2">
               <ScrollArea className="h-[85vh] no-scrollbar">
                 <div className="h-full overflow-y-auto ">
@@ -276,10 +274,10 @@ function EventComponent() {
                       </div>
 
                       <div className="w-full flex flex-col justify-end">
-                        <h2 className="font-header font-bold text-[16px] text-primary-main">
+                        <h2 className="font-header font-bold text-[16px] text-primary">
                           {format(new Date(selectedEvent.eventDate), "EEEE")}
                         </h2>
-                        <p className="font-grotesk text-primary-main/50 text-[13px] ">
+                        <p className="font-grotesk text-primary/50 text-[13px] ">
                           10:30pm - 14:10pm
                         </p>
                       </div>
@@ -289,7 +287,7 @@ function EventComponent() {
                   <DrawerTitle className="text-[15px] font-header ">
                     About This Event
                   </DrawerTitle>
-                  <DrawerDescription className="space-y-2 text-primary-main/50 text-[13px] leading-[18px] font-grotesk font-[400]">
+                  <DrawerDescription className="space-y-2 text-primary/50 text-[13px] leading-[18px] font-grotesk font-[400]">
                     {selectedEvent.eventDescription}
                   </DrawerDescription>
                 </div>
@@ -297,19 +295,28 @@ function EventComponent() {
             </TabsContent>
 
             <TabsContent value={"ticket"}>
-                <TicketComponent
-                  eventTitle={selectedEvent?.eventTitle}
-                  eventDate={selectedEvent?.eventDate}
-                  attendeeName={user?.fullName}
-                  qrValue={{eventId: matchingEvent?._1d, fullName: user?.fullName}}
-                  ticketId={matchingEvent?.reference ? matchingEvent?.reference : matchingEvent?.registrationCode}
-                  DrawerClose={DrawerClose}
-                />
+              <TicketComponent
+                eventTitle={selectedEvent?.eventTitle}
+                eventDate={selectedEvent?.eventDate}
+                attendeeName={user?.fullName}
+                qrValue={{
+                  eventId: matchingEvent?._1d,
+                  fullName: user?.fullName,
+                }}
+                ticketId={
+                  matchingEvent?.reference
+                    ? matchingEvent?.reference
+                    : matchingEvent?.registrationCode
+                }
+                DrawerClose={DrawerClose}
+              />
             </TabsContent>
           </Tabs>
 
           <DrawerFooter className="p-0">
-            {isAlreadyRegistered ? "" : selectedEvent?.eventType === "Free" ? (
+            {isAlreadyRegistered ? (
+              ""
+            ) : selectedEvent?.eventType === "Free" ? (
               <Button
                 onClick={() => register()}
                 disabled={isPending}

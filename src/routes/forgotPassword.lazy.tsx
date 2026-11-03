@@ -1,6 +1,6 @@
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Mail, ArrowLeft} from "lucide-react";
+import { Mail, ArrowLeft } from "lucide-react";
 import { FieldError } from "@/components/error/fieldError";
 import { useForgotPassword } from "@/features/auth/hooks/useForgotPassword";
 
@@ -13,8 +13,12 @@ function ForgotPasswordPage() {
   const [error, setError] = useState("");
   // const [isLoading, setIsLoading] = useState(false);
 
-
-  const { mutate: submitRequest, isPending, isSuccess, reset } = useForgotPassword();
+  const {
+    mutate: submitRequest,
+    isPending,
+    isSuccess,
+    reset,
+  } = useForgotPassword();
 
   const validate = () => {
     if (!email.trim()) {
@@ -136,7 +140,7 @@ function ForgotPasswordPage() {
               Didn't receive it? Check your spam folder or{" "}
               <button
                 onClick={() => reset()}
-                className="text-blue-600 hover:underline font-medium"
+                className="text-primary hover:underline font-medium"
               >
                 try a different email
               </button>

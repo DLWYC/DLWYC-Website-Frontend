@@ -23,51 +23,16 @@ type Event = {
 const events: Event[] = [
   {
     title: "Diocesan Youth Harvest 2026",
-    date: "August 15-17, 2026",
+    date: "December 20-23, 2026",
     time: "9:00 AM Daily",
-    location: "Cathedral Church Grounds",
+    location: "City Of God, Ipaja",
     description:
       "Our annual gathering featuring powerful worship, impactful teachings, and networking opportunities for youths across all parishes.",
     featured: false,
-    image: "/pix13.jpg",
+    image:
+      "https://res.cloudinary.com/djmokqjxb/image/upload/v1793657793/ReSET_Youth_Conference_Poster_in_Lagos_couwpo.png",
     fullDetails:
       "The Diocesan Youth Convention is our flagship annual event. Expect three days of powerful worship sessions, anointed guest speakers, breakout workshops on career and ministry, evening concerts, and a grand awards night. All parishes are expected to register their delegates by July 30th. Accommodation and feeding will be provided for out-of-town delegates.",
-  },
-  {
-    title: "Youth Week of Prayer",
-    date: "July 20-26, 2026",
-    time: "6:00 PM Daily",
-    location: "St. Paul Anglican Church Hall",
-    description:
-      "Seven days of intensive prayer and fasting, seeking God's direction for the new chaplaincy year.",
-    featured: false,
-    image: "/pix14.jpg",
-    fullDetails:
-      "Join us for seven evenings of corporate prayer, fasting, and prophetic declarations. Each night carries a specific theme: Monday — Consecration, Tuesday — Breakthrough, Wednesday — Healing, Thursday — Family & Relationships, Friday — Career & Purpose, Saturday — Deliverance, Sunday — Thanksgiving & Celebration. Come expectant.",
-  },
-  {
-    title: "Diocesan Youth Camp 2026",
-    date: "December 5-7, 2026",
-    time: "All Day",
-    location: "Diocesan Camp Ground",
-    description:
-      "A weekend retreat for all youth, youth executives and leaders focusing on spiritual renewal and strategic planning.",
-    featured: true,
-    image: "/pix15.jpg",
-    fullDetails:
-      "An exclusive retreat for all Youth,  parish Presidents, Secretaries, Prayer Coordinators, and Choir Leaders etc. across the 300+ parishes. Sessions include strategic planning for the chaplaincy year, conflict resolution training, financial stewardship for youth groups, and a night of spiritual impartation. Transport leaves Secretariat at 7:00 AM on Friday.",
-  },
-  {
-    title: "Christmas Carol & Awards Night",
-    date: "December 20, 2026",
-    time: "4:00 PM",
-    location: "Cathedral Church",
-    description:
-      "Celebrating the birth of Christ with carols, drama presentations, and recognition of outstanding youth members.",
-    featured: false,
-    image: "/pix16.jpg",
-    fullDetails:
-      "End the year in grand style! The Christmas Carol features drama, dance, spoken word, and special renditions from our diocesan youth choir. The Awards Night recognizes outstanding youths in categories like Evangelism, Creative Arts, Academic Excellence, and Community Service. Red-carpet arrivals begin at 3:00 PM. Dress Code: White & Gold.",
   },
 ];
 
@@ -83,14 +48,14 @@ function EventsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Link
           to="/"
-          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 transition-colors mb-10 font-grotesk"
+          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition-colors mb-10 font-grotesk"
         >
           <FaArrowLeft size={12} /> Back to Home
         </Link>
 
         {/* Custom Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <span className="inline-block text-blue-600 text-sm font-semibold tracking-widest uppercase mb-4 font-grotesk">
+          <span className="inline-block text-primary text-sm font-semibold tracking-widest uppercase mb-4 font-grotesk">
             Coming Up
           </span>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 mb-5 font-geom">
@@ -149,7 +114,7 @@ function EventsPage() {
                     </div>
 
                     <div className="flex-1 bg-white">
-                      <h3 className="font-geom text-xl sm:text-2xl font-bold text-slate-900 mb-2 group-hover:text-blue-600 transition-colors">
+                      <h3 className="font-geom text-xl sm:text-2xl font-bold text-slate-900 mb-2 group-hover:text-primary transition-colors">
                         {event.title}
                       </h3>
                       <p className="text-slate-500 text-sm leading-relaxed font-grotesk">
@@ -242,7 +207,7 @@ function EventsPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-sm uppercase tracking-wider text-blue-600 font-semibold mb-2 font-grotesk">
+                  <h3 className="text-sm uppercase tracking-wider text-primary font-semibold mb-2 font-grotesk">
                     About This Event
                   </h3>
                   <p className="text-slate-600 leading-relaxed font-grotesk">
@@ -252,7 +217,7 @@ function EventsPage() {
 
                 <div className="pt-4 flex flex-col sm:flex-row gap-3">
                   <a
-                    href="https://dlwyouth.org/userlogin"
+                    href="/login"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex-1 px-6 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-500 transition-colors font-grotesk text-center"

@@ -32,6 +32,8 @@ function GalleryPreview() {
               <img
                 src={images[0]}
                 alt="Gallery photo 1"
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover hover:scale-105 transition-transform duration-500"
               />
             </motion.div>
@@ -45,6 +47,8 @@ function GalleryPreview() {
               <img
                 src={images[1]}
                 alt="Gallery photo 2"
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover hover:scale-105 transition-transform duration-500"
               />
             </motion.div>
@@ -69,6 +73,8 @@ function GalleryPreview() {
                   <img
                     src={src}
                     alt={`Gallery highlight ${i + 1}`}
+                    loading="eager"
+                    decoding="async"
                     className="h-full w-full object-cover"
                   />
                 </SwiperSlide>
@@ -87,6 +93,8 @@ function GalleryPreview() {
               <img
                 src={images[2]}
                 alt="Gallery photo 3"
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover hover:scale-105 transition-transform duration-500"
               />
             </motion.div>
@@ -100,6 +108,8 @@ function GalleryPreview() {
               <img
                 src={images[3]}
                 alt="Gallery photo 4"
+                loading="lazy"
+                decoding="async"
                 className="h-full w-full object-cover hover:scale-105 transition-transform duration-500"
               />
             </motion.div>

@@ -51,12 +51,12 @@ function LoginView() {
       <div className="flex flex-col justify-center items-center w-full lg:w-[40%] px-5 sm:px-12 py-12 bg-white">
         <div className="max-w-sm w-full mx-auto">
           <div className="mb-5">
-            <Link to={'/'}>
-            <img src={Logo} alt="DLWYC Logo" className="h-10 w-auto" />
+            <Link to={"/"}>
+              <img src={Logo} alt="DLWYC Logo" className="h-10 w-auto" />
             </Link>
           </div>
 
-          <h1 className="text-[25px] font-bold text-primary-main pt-1 pb-1 mb-1 text-center">
+          <h1 className="text-[25px] font-bold text-primary pt-1 pb-1 mb-1 text-center">
             Welcome Back 👋
           </h1>
 
@@ -135,7 +135,7 @@ function LoginView() {
             <button
               onClick={handleSubmit}
               disabled={isPending}
-              className={`w-full bg-primary-main hover:bg-reddish active:scale-[0.98] text-white py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer duration-150 ${isPending ? 'disabled' : ''} disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
+              className={`w-full bg-primary-main hover:bg-reddish active:scale-[0.98] text-white py-2.5 rounded-lg text-sm font-semibold transition-all cursor-pointer duration-150 ${isPending ? "disabled" : ""} disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2`}
             >
               {isPending ? (
                 <>
@@ -146,13 +146,14 @@ function LoginView() {
                 "Sign in"
               )}
             </button>
-
-            
           </div>
 
           <p className="text-sm text-center mt-5 text-gray-500">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-reddish font-medium hover:underline">
+            <Link
+              to="/signup"
+              className="text-reddish font-medium hover:underline"
+            >
               Sign up
             </Link>
           </p>

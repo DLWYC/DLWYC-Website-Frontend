@@ -117,7 +117,7 @@ function ProfileSummaryCard({
           <Button
             type="button"
             size="icon"
-            className="absolute bottom-0 right-0 h-8 w-8 cursor-pointer rounded-full shadow bg-white text-primary-main hover:text-white"
+            className="absolute bottom-0 right-0 h-8 w-8 cursor-pointer rounded-full shadow bg-white text-primary hover:text-white"
             aria-label="Edit profile photo"
             onClick={() => setDialogOpen(true)}
           >
