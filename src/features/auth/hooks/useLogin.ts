@@ -11,6 +11,7 @@ export function useLogin() {
     mutationFn: async (credentials: Record<string, string>) => {
       // 🍪 Axios automatically handles the cookie assignment returned here!
       const res = await api.post('/auth/login', credentials)
+      localStorage.setItem("token", res?.data?.token);
       return res.data
     },
     onSuccess: async (res) => {
