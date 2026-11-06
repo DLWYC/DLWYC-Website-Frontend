@@ -5,7 +5,14 @@ export const fetchUserQueryOptions = () => {
   return queryOptions({
     queryKey: ["authUser"],
     queryFn: async () => {
-      const user = await api.get("/user/profile");
+      const token = localStorage.getItem("token");
+      // console.log("TOKEIN: ", token)
+      const user = await api.get("/user/profile", {
+        headers: {
+          authorization: `Bearer ${token}`
+        }
+      });
+      // console.log("USER: ", user)
       return user.data;
     },
     staleTime: Infinity,
