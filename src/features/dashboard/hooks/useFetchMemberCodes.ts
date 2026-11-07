@@ -48,8 +48,18 @@ export function useFetchMemberCodes(eventId: string) {
   return useQuery({
     queryKey: ["member-codes", eventId],
     queryFn: async ({ signal }) => {
+      const token = localStorage.getItem("token");
+
       // `signal` cancels the in-flight request when the user switches events fast.
-      const res = await api.get(`/events/member-codes?eventID=${eventId}`, { signal });
+      const res = await api.get(
+        `/events/member-codes?eventID=${eventId}`,
+        { signal },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      );
       return res.data as CodesResponse;
     },
     enabled: Boolean(eventId), // no request until an event is picked
