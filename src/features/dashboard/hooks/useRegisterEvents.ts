@@ -12,7 +12,17 @@ export function useVerifyCode() {
       eventId: string;
       code: string;
     }) => {
-      const res = await api.post("/events/verify-code", { eventId, code });
+      const token = localStorage.getItem("token");
+
+      const res = await api.post(
+        "/events/verify-code",
+        { eventId, code },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      );
       return res.data;
     },
     onError: (error: any) => {
@@ -24,7 +34,17 @@ export function useVerifyCode() {
 export function useFreeEventRegistration(eventId: any) {
   return useMutation({
     mutationFn: async () => {
-      const res = await api.post("events/free", { eventId });
+      const token = localStorage.getItem("token");
+
+      const res = await api.post(
+        "events/free",
+        { eventId },
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
+      );
       return res.data;
     },
     onSuccess: (data: any) => {
@@ -50,16 +70,22 @@ export function useInitalizePaymentTransaction() {
       eventTime: string;
       eventLocation: string;
     }) => {
+      const token = localStorage.getItem("token");
+
       const res = await api.post(
         "events/initializeTransaction",
         paymentRequest,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        },
       );
       return res.data;
     },
     onSuccess: (response: {
       data: { data: { authorization_url: string } };
     }) => {
-
       // Clean extraction with no errors
       const authUrl = response.data?.data?.authorization_url;
 

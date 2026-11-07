@@ -11,12 +11,11 @@ export function useFetchAllEvents() {
     queryKey: ["allEvents"],
     queryFn: async () => {
       const res = await api.get("/events/all-events");
-      console.log("Response: ", res)
+      console.log("Response: ", res);
       return res.data;
     },
   });
 }
-
 
 export function useGetSingleEventData(eventId: string) {
   const queryClient = useQueryClient();
@@ -65,7 +64,11 @@ export function useGetUserRegisteredEvents() {
   return useQuery({
     queryKey: ["userRegisteredEvents"],
     queryFn: async () => {
-      const registeredEvents = await api.get("/events/userRegisteredEvents");
+      const registeredEvents = await api.get("/events/userRegisteredEvents", {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       return registeredEvents.data?.events;
     },
   });
@@ -75,14 +78,16 @@ export function usePaymentWebHook(reference: string) {
   return useQuery({
     queryKey: ["transactionStatus", reference],
     queryFn: async () => {
-      const res = await api.get(`/events/verify-payment/${reference}`);
+      const token = localStorage.getItem("token");
+
+      const res = await api.get(`/events/verify-payment/${reference}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       return res.data?.status;
     },
     enabled: !!reference && reference !== "", // Only run this query if reference is truthy
     retry: false,
   });
 }
-
-
-
- 
