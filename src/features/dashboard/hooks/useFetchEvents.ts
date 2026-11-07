@@ -11,6 +11,7 @@ export function useFetchAllEvents() {
     queryKey: ["allEvents"],
     queryFn: async () => {
       const res = await api.get("/events/all-events");
+      console.log("Response: ", res)
       return res.data;
     },
   });

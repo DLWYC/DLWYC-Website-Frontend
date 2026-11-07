@@ -224,14 +224,20 @@ function RouteComponent() {
       return;
     } // guards the double-click race
 
+
     initializePayment({
       email: user?.email,
       amount: total,
       reference: activeRef,
       eventId: id,
       amountOfPeople: quantity,
+      fullName: user?.fullName,
+      eventTitle: event?.eventTitle,
+      eventDate: event?.eventDate,
+      eventTime: event?.eventTime,
+      eventLocation: event?.eventLocation
     });
-  }, [paymentPending, initializePayment, user?.email, total, id, quantity]);
+  }, [paymentPending, initializePayment, user?.email, total, id, quantity, event?.eventTitle, event?.eventLocation, event?.eventDate, event?.eventTime]);
 
   const handleNext = useCallback(() => {
     switch (tabState) {

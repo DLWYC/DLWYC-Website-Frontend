@@ -61,14 +61,14 @@ export function EventCard({ events: event }: EventCardProps) {
   };
 
   return (
-    <div className="group relative flex h-44 overflow-hidden rounded-[10px] border border-primary-main/10 bg-white transition-shadow hover:shadow-md">
+    <div className="group relative flex lg:flex-row flex-col lg:h-44 overflow-hidden rounded-[10px] border border-primary-main/10 bg-white transition-shadow hover:shadow-md">
       {/* Poster */}
-      <div className="relative w-2/5 shrink-0 overflow-hidden bg-primary-main/5">
+      <div className="relative lg:w-2/5 shrink-0 overflow-hidden bg-primary-main/5">
         {event.eventImage ? (
           <img
             src={event.eventImage}
             alt={event.eventTitle}
-            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+            className="lg:h-full h-50 w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
           />
         ) : null}
 
