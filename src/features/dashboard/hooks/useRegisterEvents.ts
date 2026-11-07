@@ -44,6 +44,11 @@ export function useInitalizePaymentTransaction() {
       reference: string;
       eventId: string;
       amountOfPeople: number;
+      fullName: string;
+      eventTitle: string;
+      eventDate: string;
+      eventTime: string;
+      eventLocation: string;
     }) => {
       const res = await api.post(
         "events/initializeTransaction",
