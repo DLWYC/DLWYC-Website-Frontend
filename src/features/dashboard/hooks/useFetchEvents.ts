@@ -64,6 +64,7 @@ export function useGetUserRegisteredEvents() {
   return useQuery({
     queryKey: ["userRegisteredEvents"],
     queryFn: async () => {
+      const token = localStorage.getItem("token");
       const registeredEvents = await api.get("/events/userRegisteredEvents", {
         headers: {
           authorization: `Bearer ${token}`,
