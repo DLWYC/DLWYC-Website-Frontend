@@ -8,9 +8,14 @@ export function useProfileImageUploader() {
 
   return useMutation({
     mutationFn: async (userImage: File) => {
+      const token = localStorage.getItem("token");
       const formData = new FormData();
       formData.append("file", userImage);
-      const res = await api.patch("/user/uploadProfileImage", formData);
+      const res = await api.patch("/user/uploadProfileImage", formData, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       return res.data;
     },
     onSuccess: (res) => {
@@ -39,7 +44,7 @@ interface BasicInformation {
 
 export function useUpdateProfile() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: async (formData: BasicInformation) => {
@@ -52,17 +57,21 @@ export function useUpdateProfile() {
         parish: formData.parish,
         profession: formData.occupation,
       };
+      const token = localStorage.getItem("token");
 
-      const res = await api.patch("user/profile/update", payload);
+      const res = await api.patch("user/profile/update", payload, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       return res.data;
-
     },
     onSuccess: (data) => {
       // 1. Tell TanStack Query to refetch user data everywhere on the site
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
 
       // 2. Optional: If you want to flash a success state or redirect somewhere using TanStack Router
-      navigate({ to: '/dashboard' });
+      navigate({ to: "/dashboard" });
 
       toast.success(data.message || "Profile updated successfully!");
     },

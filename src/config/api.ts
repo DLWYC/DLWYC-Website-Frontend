@@ -273,10 +273,12 @@ setupResponseInterceptors(api, refreshApi);
 export const handleLogout = async (): Promise<void> => {
   try {
     await refreshApi.post("/auth/logout");
+    localStorage.removeItem('token')
   } catch (error) {
     console.error("[Auth System] Structural logout routine cookie clearing failed:", error);
   } finally {
     setAccessToken(null); // Completely wipe structural memory footprint
+    localStorage.removeItem('token')
     if (typeof window !== "undefined" && window.location.pathname !== "/login") {
       window.location.href = "/login";
     }
