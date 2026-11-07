@@ -6,9 +6,7 @@ export const Route = createFileRoute("/dashboard")({
     try {
       const user = await context.queryClient.ensureQueryData(
         fetchUserQueryOptions(),
-      );
-      console.log(`User Data: ${JSON.stringify(user)}`);
-      console.log(`Context: ${JSON.stringify(context)}`); 
+      ); 
 
       if (!user) {
         throw redirect({

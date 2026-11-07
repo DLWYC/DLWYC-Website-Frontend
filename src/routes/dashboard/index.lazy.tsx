@@ -263,10 +263,12 @@ function RouteComponent() {
             // The height MUST be set on ScrollArea (fixed or max) so the viewport can overflow.
               <div className="flex flex-col gap-3 pr-4">
                 {latestEvents.map((event) => (
+                  <Link to={'/dashboard/events'}>
                   <EventCard
                     events={event}
                     key={event._id ?? event.id ?? event.eventTitle}
-                  />
+                    />
+                    </Link>
                 ))}
               </div>
           )}
