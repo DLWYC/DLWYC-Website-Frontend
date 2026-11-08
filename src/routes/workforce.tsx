@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { FaArrowLeft, FaUsers, FaPaperPlane } from "react-icons/fa";
-import workforceOptions from "@/data/workforce"
+import workforceOptions from "../data/workforce"
 
 
 type WorkforceOption = (typeof workforceOptions)[number];
@@ -90,7 +90,7 @@ function WorkforcePage() {
               onChange={(e) => setSelected(e.target.value as WorkforceOption)}
               className={inputClass}
             >
-              {workforceOptions.map((option) => (
+              {workforceOptions.map((option: any) => (
                 <option key={option} value={option}>
                   {option}
                 </option>
