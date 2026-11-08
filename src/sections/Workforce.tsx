@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { FaUsers, FaArrowRight } from "react-icons/fa";
 import SectionTitle from "@/components/SectionTitle";
-import workforceOptions from "@/data/workforce"
+import workforceOptions from "../data/workforce"
 
 function WorkforceSection() {
   // const workforceOptions = [
@@ -26,7 +26,7 @@ function WorkforceSection() {
         />
 
         <div className="flex flex-wrap justify-center gap-2 mt-8 mb-10">
-          {workforceOptions.map((option) => (
+          {workforceOptions.map((option: any) => (
             <span
               key={option}
               className="px-4 py-2 rounded-full text-xs font-medium border border-slate-200 bg-slate-50 text-slate-600 font-grotesk"

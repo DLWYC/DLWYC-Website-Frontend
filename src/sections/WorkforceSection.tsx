@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import workforceOptions from "@/data/workforce"
+import workforceOptions from "../data/workforce"
 
 
 function WorkforceSection() {
