@@ -14,7 +14,6 @@ import {
 import Churches from "../data/churches";
 import Professions from "../data/professions";
 import { FieldError } from "@/components/error/fieldError";
-import { Testimonial } from "@/components/testimonial";
 import Logo from "@/assets/main_logo.svg";
 import SignupBackground from "@/assets/signupbg.png";
 import { useRegister } from "@/features/auth/hooks/useSign";
@@ -418,7 +417,6 @@ function SignUpView() {
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
-        <Testimonial />
       </div>
     </div>
   );

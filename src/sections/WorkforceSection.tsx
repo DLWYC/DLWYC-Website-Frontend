@@ -1,4 +1,6 @@
 import { Link } from "@tanstack/react-router";
+import workforceOptions from "@/data/workforce"
+
 
 function WorkforceSection() {
   const columnA = ["/pix3.jpg", "/pix4.jpg", "/pix5.jpg"];
@@ -24,14 +26,7 @@ function WorkforceSection() {
             </p>
 
             <div className="grid gap-3 sm:grid-cols-2 max-w-xl">
-              {[
-                "Prayer & Worship",
-                "Media & Communication",
-                "Outreach & Service",
-                "Hospitality & Logistics",
-                "Creative Arts",
-                "Leadership Support",
-              ].map((label) => (
+              {workforceOptions.map((label) => (
                 <div
                   key={label}
                   className="rounded-3xl border border-slate-200 bg-white px-5 py-4 text-sm font-semibold text-slate-800 shadow-sm"
@@ -43,7 +38,7 @@ function WorkforceSection() {
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <Link
-                to={"/"}
+                to={"/workforce"}
                 className="inline-flex items-center gap-3 rounded-full bg-blue-600 pl-7 pr-2 py-2 text-sm font-semibold text-white transition hover:bg-blue-500"
               >
                 Join a Workforce

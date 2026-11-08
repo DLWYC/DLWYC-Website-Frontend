@@ -1,15 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { FaArrowLeft, FaUsers, FaPaperPlane } from "react-icons/fa";
+import workforceOptions from "@/data/workforce"
 
-const workforceOptions = [
-  "Prayer & Worship",
-  "Media & Communication",
-  "Outreach & Service",
-  "Hospitality & Logistics",
-  "Creative Arts",
-  "Leadership Support",
-] as const;
 
 type WorkforceOption = (typeof workforceOptions)[number];
 
@@ -111,7 +104,7 @@ function WorkforcePage() {
                 <FaUsers className="text-primary" size={18} />
               </div>
               <p className="font-semibold text-slate-800">
-                6 teams to choose from
+                {workforceOptions.length} teams to choose from
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
