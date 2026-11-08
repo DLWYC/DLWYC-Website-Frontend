@@ -1,16 +1,20 @@
 import { Link } from "@tanstack/react-router";
 import { FaUsers, FaArrowRight } from "react-icons/fa";
 import SectionTitle from "@/components/SectionTitle";
+import workforceOptions from "@/data/workforce"
 
 function WorkforceSection() {
-  const workforceOptions = [
-    "Prayer & Worship",
-    "Media & Communication",
-    "Outreach & Service",
-    "Hospitality & Logistics",
-    "Creative Arts",
-    "Leadership Support",
-  ];
+  // const workforceOptions = [
+  //   "Program",
+  //   "Security",
+  //   "Medical",
+  //   "Media & Publicity",
+  //   "Accomodation",
+  //   "Protocol & Ushering",
+  //   "Music",
+  //   "Technical",
+  //   "Logistic",
+  // ];
 
   return (
     <section className="py-24 bg-white">

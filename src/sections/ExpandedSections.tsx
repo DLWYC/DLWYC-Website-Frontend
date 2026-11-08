@@ -197,15 +197,15 @@ export function FutureSection() {
               place to belong, be strengthened, and make a lasting impact.
             </p>
             <div className="my-8 flex items-center place-content-center gap-4">
-              <Link
+              {/* <Link
                 to={"/"}
                 className="rounded-full bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-500 transition-colors"
               >
                 Join the Chaplaincy
-              </Link>
+              </Link> */}
               <Link
-                to={"/"}
-                className="rounded-full border border-slate-300 px-6 py-3 font-semibold text-slate-700 hover:bg-slate-100 transition-colors"
+                to={"/contact"}
+                className="rounded-full bg-blue-600 px-6 py-3 font-semibold text-white hover:bg-blue-500 transition-colors"
               >
                 Contact Us
               </Link>

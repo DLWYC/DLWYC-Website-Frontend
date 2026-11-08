@@ -5,7 +5,6 @@ import { FieldError } from "@/components/error/fieldError";
 import Logo from "@/assets/main_logo.svg";
 import LoginBackground from "@/assets/LoginBackground.png";
 import { Eye, EyeOff } from "lucide-react";
-import { Testimonial } from "@/components/testimonial";
 
 export const Route = createLazyFileRoute("/login")({
   component: LoginView,
@@ -174,7 +173,6 @@ function LoginView() {
           aria-hidden="true"
         />
         <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
-        <Testimonial />
       </div>
     </div>
 
