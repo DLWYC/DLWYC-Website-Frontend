@@ -1,27 +1,31 @@
-import { Outlet, createRootRoute, useLocation } from '@tanstack/react-router'
-import { GoogleOAuthProvider } from '@react-oauth/google'
-import NavBar from '@/components/Nav_Bar/Nav_Bar'
-import Footer from '@/components/Footer/Footer'
+import {
+  createRootRouteWithContext,
+  Outlet,
+  useLocation,
+} from "@tanstack/react-router";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Navbar from "../components/Navbar";
+import type { MyRouterContext } from "@/main";
+import Footer from "@/components/Footer";
 
-export const Route = createRootRoute({
-  component: () => {
-    const location = useLocation()
-    return (
-      <>
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-          {location.pathname.startsWith('/userdashboard') ||
-          location.pathname.startsWith('/superadmin') ||
-          location.pathname.startsWith('/registrationunit') ? null : (
-            <NavBar />
-          )}
-          <Outlet />
-          {location.pathname.startsWith('/userdashboard') ||
-          location.pathname.startsWith('/superadmin') ||
-          location.pathname.startsWith('/registrationunit') ? null : (
-            <Footer />
-          )}
-        </GoogleOAuthProvider>
-      </>
-    )
-  },
-})
+// 🟢 3. Upgrade from 'createRootRoute' to 'createRootRouteWithContext'
+export const Route = createRootRouteWithContext<MyRouterContext>()({
+  component: RootLayout,
+});
+
+function RootLayout() {
+  const location = useLocation();
+  return (
+    <div className="min-h-screen bg-background text-foreground font-sans antialiased selection:bg-primary/20">
+      {!location.pathname.includes("dashboard") &&
+        location.pathname !== "/signup" &&
+        location.pathname !== "/login" && <Navbar />}
+      <Outlet />
+      {!location.pathname.includes("dashboard") &&
+        location.pathname !== "/signup" &&
+        location.pathname !== "/login" && <Footer />}
+      <ToastContainer position="top-right" autoClose={3000} theme="colored" />
+    </div>
+  );
+}

@@ -1,34 +1,51 @@
-import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { AuthProvider } from '@/lib/AuthContext'
-import App from './App'
-import './styles.css'
-import reportWebVitals from './reportWebVitals.ts'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider, createRouter } from "@tanstack/react-router";
+import {
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query"; // 🟢 Add this line
+import { routeTree } from "./routeTree.gen";
+import "./index.css";
 
-// Create QueryClient at the top level
-const queryClient = new QueryClient({
+// 1. 🟢 Create and EXPORT the global query engine
+
+export interface MyRouterContext {
+  queryClient: QueryClient;
+}
+
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5,
+      refetchOnWindowFocus: false,
       retry: 1,
     },
   },
-})
+});
 
-// Render the app
-const rootElement = document.getElementById('app')
-if (rootElement && !rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-  root.render(
-    <StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </QueryClientProvider>
-    </StrictMode>,
-  )
+export const router = createRouter({
+  routeTree,
+  context: {
+    queryClient,
+  },
+});
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
 }
 
-reportWebVitals()
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+);
