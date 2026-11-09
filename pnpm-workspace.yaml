@@ -1,0 +1,5 @@
+allowBuilds:
+  core-js: false
+permissions:
+  '@tanstack/router-plugin':
+    skills: false
