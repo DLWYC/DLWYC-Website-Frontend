@@ -3,7 +3,8 @@ FROM node:18-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN pnpm ci --legacy-peer-deps
-COPY .env ./
+
+
 COPY . .
 RUN pnpm run build
 
