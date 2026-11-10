@@ -1,9 +1,9 @@
-FROM node:18-alpine AS build
+FROM node:22-alpine AS build
 
 WORKDIR /app
-COPY package*.json ./
-RUN pnpm ci --legacy-peer-deps
-
+RUN corepack enable && corepack prepare pnpm@10.8.1 --activate
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 RUN pnpm run build
