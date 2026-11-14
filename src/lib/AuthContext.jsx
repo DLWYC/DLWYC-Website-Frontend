@@ -100,7 +100,7 @@ const registrationUnitLogin = useMutation({
   const {data: userPaymentRecord, isLoading: fetchingUserPaymentRecordLoadingStatus, isError: errorLoadingUserPaymentRecord, refetch} = useQuery({
     queryKey: ['UserPaymentRecord', user?.uniqueId],
     queryFn: async () =>{
-      const UserPaymentRecord = await axios.get(`${backendUrl}/api/payment/payment-history/${user?.uniqueId}`)
+      const UserPaymentRecord = await axios.get(`${backendUrl}/api/payment/payment-history/${encodeURIComponent(user?.uniqueId)}`)
       
         return UserPaymentRecord.data.data
     },
@@ -120,7 +120,7 @@ const registrationUnitLogin = useMutation({
   const {data: userRegisteredEvents, isLoading: fetchingUserRegisteredEventsLoadingStatus, isError: errorLoadingUserRegisteredEvents} = useQuery({
     queryKey: ['userRegisteredEvents', user?.uniqueId],
     queryFn: async () =>{
-      const userRegisteredEvents = await axios.get(`${backendUrl}/api/userRegisteredEvents/${user?.email}/${user?.uniqueId}`)
+      const userRegisteredEvents = await axios.get(`${backendUrl}/api/userRegisteredEvents/${encodeURIComponent(user?.email)}/${encodeURIComponent(user?.uniqueId)}`)
         return userRegisteredEvents?.data?.data
     },
     onError: (error)=>{
