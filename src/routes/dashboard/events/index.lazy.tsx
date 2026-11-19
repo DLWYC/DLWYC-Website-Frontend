@@ -74,7 +74,10 @@ function useEventFilters(events: EventItem[]) {
   const counts = useMemo(
     () =>
       Object.fromEntries(
-        FILTERS.map((f) => [f, events.filter((e) => matchesFilter(e, f)).length]),
+        FILTERS.map((f) => [
+          f,
+          events.filter((e) => matchesFilter(e, f)).length,
+        ]),
       ) as Record<FilterValue, number>,
     [events],
   );
@@ -97,7 +100,12 @@ function useEventFilters(events: EventItem[]) {
 /* ───────────────────────── 4. List UI ───────────────────────── */
 
 function Skeleton({ className = "" }: { className?: string }) {
-  return <div aria-hidden="true" className={`animate-pulse rounded bg-primary-main/10 ${className}`} />;
+  return (
+    <div
+      aria-hidden="true"
+      className={`animate-pulse rounded bg-primary-main/10 ${className}`}
+    />
+  );
 }
 
 /* Each section owns its own loading UI, so the page just passes `loading` down */
@@ -112,7 +120,9 @@ function PageHeader({ loading, count }: { loading: boolean; count: number }) {
   }
   return (
     <header>
-      <h1 className="font-main text-lg font-semibold tracking-tight text-primary">All events</h1>
+      <h1 className="font-main text-lg font-semibold tracking-tight text-primary">
+        All events
+      </h1>
       {count > 0 && (
         <p className="mt-1 font-grotesk text-[13px] text-primary/50">
           {count} event{count === 1 ? "" : "s"} available right now
@@ -143,7 +153,11 @@ function SearchBar({
         className="w-full bg-transparent font-grotesk text-[13px] text-primary outline-none placeholder:text-primary/40"
       />
       {value && (
-        <button type="button" onClick={() => onChange("")} aria-label="Clear search">
+        <button
+          type="button"
+          onClick={() => onChange("")}
+          aria-label="Clear search"
+        >
           <X className="h-4 w-4 text-primary/40" />
         </button>
       )}
@@ -196,16 +210,30 @@ function FilterTabs({
   );
 }
 
-function EmptyState({ query, filter, onReset }: { query: string; filter: FilterValue; onReset: () => void }) {
+function EmptyState({
+  query,
+  filter,
+  onReset,
+}: {
+  query: string;
+  filter: FilterValue;
+  onReset: () => void;
+}) {
   return (
     <div className="rounded-[10px] border border-dashed border-primary-main/15 px-6 py-12 text-center">
       <p className="font-main text-[15px] font-semibold text-primary">
-        {query ? `No events match “${query}”` : `No ${filter.toLowerCase()} events right now`}
+        {query
+          ? `No events match “${query}”`
+          : `No ${filter.toLowerCase()} events right now`}
       </p>
       <p className="mt-1 font-grotesk text-[13px] text-primary/50">
         Try a different search, or switch back to all events.
       </p>
-      <button type="button" onClick={onReset} className="mt-3 font-grotesk text-[12px] font-medium text-reddish">
+      <button
+        type="button"
+        onClick={onReset}
+        className="mt-3 font-grotesk text-[12px] font-medium text-reddish"
+      >
         Show all events
       </button>
     </div>
@@ -219,9 +247,12 @@ function NoEventsYet({ onRefresh }: { onRefresh: () => void }) {
       <span className="grid h-12 w-12 place-items-center rounded-full bg-primary-main/5">
         <CalendarX className="h-6 w-6 text-primary/50" />
       </span>
-      <p className="mt-3 font-main text-[15px] font-semibold text-primary">No events yet</p>
+      <p className="mt-3 font-main text-[15px] font-semibold text-primary">
+        No events yet
+      </p>
       <p className="mt-1 max-w-xs font-grotesk text-[13px] text-primary/50">
-        New events will appear here as soon as they are published. Check back soon.
+        New events will appear here as soon as they are published. Check back
+        soon.
       </p>
       <button
         type="button"
@@ -236,10 +267,21 @@ function NoEventsYet({ onRefresh }: { onRefresh: () => void }) {
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
-    <div role="alert" className="rounded-[10px] border border-dashed border-red-300 px-6 py-14 text-center">
-      <p className="font-main text-[15px] font-semibold text-primary">Couldn’t load events</p>
-      <p className="mt-1 font-grotesk text-[13px] text-primary/50">Check your connection and try again.</p>
-      <Button type="button" onClick={onRetry} className="mt-4 h-10 rounded-lg bg-primary-main px-5 text-white">
+    <div
+      role="alert"
+      className="rounded-[10px] border border-dashed border-red-300 px-6 py-14 text-center"
+    >
+      <p className="font-main text-[15px] font-semibold text-primary">
+        Couldn’t load events
+      </p>
+      <p className="mt-1 font-grotesk text-[13px] text-primary/50">
+        Check your connection and try again.
+      </p>
+      <Button
+        type="button"
+        onClick={onRetry}
+        className="mt-4 h-10 rounded-lg bg-primary-main px-5 text-white"
+      >
         Try again
       </Button>
     </div>
@@ -248,15 +290,28 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
 
 function EventsSkeleton() {
   return (
-    <div aria-busy="true" aria-label="Loading events" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-2">
+    <div
+      aria-busy="true"
+      aria-label="Loading events"
+      className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-2"
+    >
       {Array.from({ length: 6 }, (_, i) => (
-        <div key={i} className="h-40 animate-pulse rounded-[10px] bg-primary-main/5" />
+        <div
+          key={i}
+          className="h-40 animate-pulse rounded-[10px] bg-primary-main/5"
+        />
       ))}
     </div>
   );
 }
 
-function EventGrid({ events, onSelect }: { events: EventItem[]; onSelect: (e: EventItem) => void }) {
+function EventGrid({
+  events,
+  onSelect,
+}: {
+  events: EventItem[];
+  onSelect: (e: EventItem) => void;
+}) {
   return (
     <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-2">
       {events.map((event) => (
@@ -283,30 +338,55 @@ type FooterProps = {
   onRegister: () => void;
 };
 
-function EventFooter({ event, registered, isPending, hasError, onRegister }: FooterProps) {
+function EventFooter({
+  event,
+  registered,
+  isPending,
+  hasError,
+  onRegister,
+}: FooterProps) {
   if (registered) return null;
-  const base = "flex h-11 w-full items-center justify-center rounded-lg font-main text-[15px] font-medium text-white";
+  const base =
+    "flex h-11 w-full items-center justify-center rounded-lg font-main text-[15px] font-medium text-white";
 
   return (
     <DrawerFooter className="shrink-0 gap-2 bg-white px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-3">
-      {isFull(event) ? (
-        <Link to={event._id} className={`${base} bg-gray-500`}>
-          Event full – enter code if available
+      {isFull(event) && event?.eventType === "Paid" ? (
+        <Link to={event._id} className={`${base} bg-primary`}>
+          Payment Closed, Enter Code Shared
         </Link>
       ) : event.eventType === "Free" ? (
-        <Button
-          type="button"
-          onClick={onRegister}
-          disabled={isPending}
-          aria-busy={isPending}
-          className={`${base} ${isPending ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"}`}
-        >
-          {isPending ? "Registering…" : hasError ? "Try again" : "Register for free"}
-        </Button>
+        isFull(event) ? (
+          <Button
+            type="button"
+            disabled
+            className={`${base} cursor-not-allowed bg-gray-400`}
+          >
+            Event filled up
+          </Button>
+        ) : (
+          <Button
+            type="button"
+            onClick={onRegister}
+            disabled={isPending}
+            aria-busy={isPending}
+            className={`${base} ${isPending ? "bg-gray-400" : "bg-green-600 hover:bg-green-700"}`}
+          >
+            {isPending
+              ? "Registering…"
+              : hasError
+                ? "Try again"
+                : "Register for free"}
+          </Button>
+        )
       ) : (
         <div className="flex gap-3">
           <DrawerClose asChild>
-            <Button type="button" variant="outline" className="h-11 flex-1 rounded-lg">
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 flex-1 rounded-lg"
+            >
               Close
             </Button>
           </DrawerClose>
@@ -315,6 +395,7 @@ function EventFooter({ event, registered, isPending, hasError, onRegister }: Foo
           </Link>
         </div>
       )}
+
       {hasError && !isPending && (
         <p role="alert" className="text-center text-[12px] text-red-600">
           Registration failed. Check your connection and try again.
@@ -325,12 +406,18 @@ function EventFooter({ event, registered, isPending, hasError, onRegister }: Foo
 }
 
 function EventDetails({ event }: { event: EventItem }) {
-  const lowSpots = event.eventType !== "Free" && !isFull(event) && spotsLeft(event) <= 20;
+  const lowSpots =
+    event.eventType !== "Free" && !isFull(event) && spotsLeft(event) <= 20;
   return (
     <>
       <div className="relative aspect-[16/9] max-h-[38dvh] w-full shrink-0 overflow-hidden bg-primary-main/5">
         {event.eventImage ? (
-          <img src={event.eventImage} alt={event.eventTitle} loading="lazy" className="h-full w-full object-cover" />
+          <img
+            src={event.eventImage}
+            alt={event.eventTitle}
+            loading="lazy"
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className="shimmer h-full w-full" />
         )}
@@ -353,12 +440,16 @@ function EventDetails({ event }: { event: EventItem }) {
           {event.eventTitle}
         </DrawerTitle>
         {lowSpots && (
-          <p className="mt-1 text-[12px] font-medium text-amber-600">Only {spotsLeft(event)} spots left</p>
+          <p className="mt-1 text-[12px] font-medium text-amber-600">
+            Only {spotsLeft(event)} spots left
+          </p>
         )}
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-3">
-        <h3 className="mb-1 font-main text-[14px] font-semibold">About this event</h3>
+        <h3 className="mb-1 font-main text-[14px] font-semibold">
+          About this event
+        </h3>
         <DrawerDescription className="whitespace-pre-line font-grotesk text-[13px] leading-[19px] text-primary/70">
           {event.eventDescription}
         </DrawerDescription>
@@ -378,19 +469,29 @@ function EventsPage() {
   const [selected, setSelected] = useState<EventItem | null>(null);
   const [open, setOpen] = useState(false);
 
-  const { mutate: register, isPending, error, isSuccess } = useFreeEventRegistration(selected?._id);
+  const {
+    mutate: register,
+    isPending,
+    error,
+    isSuccess,
+  } = useFreeEventRegistration(selected?._id);
 
   const events: EventItem[] = useMemo(() => data?.events ?? [], [data]);
-  const { query, setQuery, filter, setFilter, counts, filtered, reset } = useEventFilters(events);
+  const { query, setQuery, filter, setFilter, counts, filtered, reset } =
+    useEventFilters(events);
 
   const hasEvents = events.length > 0;
-  const matchingEvent = registeredEvents?.find((r: RegisteredEvent) => r.eventId === selected?._id);
+  const matchingEvent = registeredEvents?.find(
+    (r: RegisteredEvent) => r.eventId === selected?._id,
+  );
   const registered = Boolean(matchingEvent);
 
   useEffect(() => {
     if (!isSuccess) return;
     (async () => {
-      await queryClient.invalidateQueries({ queryKey: ["userRegisteredEvents"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["userRegisteredEvents"],
+      });
       await router.invalidate();
     })();
   }, [isSuccess, router]);
@@ -410,7 +511,12 @@ function EventsPage() {
         {(isLoading || hasEvents) && (
           <>
             <SearchBar loading={isLoading} value={query} onChange={setQuery} />
-            <FilterTabs loading={isLoading} active={filter} counts={counts} onChange={setFilter} />
+            <FilterTabs
+              loading={isLoading}
+              active={filter}
+              counts={counts}
+              onChange={setFilter}
+            />
           </>
         )}
 
@@ -431,18 +537,32 @@ function EventsPage() {
 
       {selected && (
         <DrawerContent className="flex h-[100dvh] w-full flex-col rounded-none bg-white p-0 lg:w-[40%] lg:min-w-[420px]">
-          <Tabs value={registered ? "ticket" : "details"} className="flex min-h-0 flex-1 flex-col">
-            <TabsContent value="details" className="m-0 flex min-h-0 flex-1 flex-col data-[state=inactive]:hidden">
+          <Tabs
+            value={registered ? "ticket" : "details"}
+            className="flex min-h-0 flex-1 flex-col"
+          >
+            <TabsContent
+              value="details"
+              className="m-0 flex min-h-0 flex-1 flex-col data-[state=inactive]:hidden"
+            >
               <EventDetails event={selected} />
             </TabsContent>
 
-            <TabsContent value="ticket" className="m-0 min-h-0 flex-1 overflow-y-auto p-4 data-[state=inactive]:hidden">
+            <TabsContent
+              value="ticket"
+              className="m-0 min-h-0 flex-1 overflow-y-auto p-4 data-[state=inactive]:hidden"
+            >
               <TicketComponent
                 eventTitle={selected.eventTitle}
                 eventDate={selected.eventDate}
                 attendeeName={user?.fullName}
-                qrValue={{ eventId: matchingEvent?._id, fullName: user?.fullName }}
-                ticketId={matchingEvent?.reference ?? matchingEvent?.registrationCode}
+                qrValue={{
+                  eventId: matchingEvent?._id,
+                  fullName: user?.fullName,
+                }}
+                ticketId={
+                  matchingEvent?.reference ?? matchingEvent?.registrationCode
+                }
                 DrawerClose={DrawerClose}
               />
             </TabsContent>
